@@ -1,0 +1,44 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/camera_background_black"
+    android:orientation="vertical"
+    tools:context="com.defectradar.activity.defect.camera.PreviewPhotoActivity">
+
+    <ImageView
+        android:id="@+id/camera_display_photo_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="10dip">
+
+        <TextView
+            android:id="@+id/camera_display_retake"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:padding="20dip"
+            android:text="@string/camera_display_photo_retake"
+            android:textColor="@color/app_text_white"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/camera_display_use_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:padding="20dip"
+            android:text="@string/camera_display__use_photo"
+            android:textColor="@color/app_text_white"
+            android:textSize="18sp"/>
+    </RelativeLayout>
+
+</LinearLayout>
+

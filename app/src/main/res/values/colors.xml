@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="project_overview_background_pressed">#6397BA</color>
+    <color name="project_overview_background_unpressed">#373943</color>
+    <color name="camera_background_black">#000000</color>
+    <color name="orange">#FFEB3B</color>
+    <color name="app_text_white">#FAFAFA</color>
+</resources>
