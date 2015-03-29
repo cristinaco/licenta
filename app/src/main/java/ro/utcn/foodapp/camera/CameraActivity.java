@@ -1,4 +1,4 @@
-package ro.utcn.licenseapp.presentation.activities.camera;
+package ro.utcn.foodapp.camera;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -13,9 +13,9 @@ import android.view.MenuItem;
 
 import java.io.File;
 
-import ro.utcn.licenseapp.R;
+import ro.utcn.foodapp.R;
 
-public class DefectRadarCameraActivity extends Activity implements
+public class CameraActivity extends Activity implements
         ActionBar.OnNavigationListener {
 
     public static final String TEMP_FILE_PATH = "TEMP_FILE_PATH";
@@ -29,9 +29,9 @@ public class DefectRadarCameraActivity extends Activity implements
     public static File tempFilePath;
     private boolean hasTwoCameras = (Camera.getNumberOfCameras() > 1);
     private boolean isLockedToLandscape = false;
-    private DefectRadarCameraFragment current = null;
-    private DefectRadarCameraFragment std = null;
-    private DefectRadarCameraFragment ffc = null;
+    private FCameraFragment current = null;
+    private FCameraFragment std = null;
+    private FCameraFragment ffc = null;
     private boolean useFFC;
 
     @Override
@@ -41,7 +41,7 @@ public class DefectRadarCameraActivity extends Activity implements
         useFFC = false;
 
 
-        current = DefectRadarCameraFragment.newInstance(useFFC);
+        current = FCameraFragment.newInstance(useFFC);
         getFragmentManager().beginTransaction()
                 .replace(R.id.activity_defect_radar_camera_container, current).commit();
 
@@ -73,13 +73,13 @@ public class DefectRadarCameraActivity extends Activity implements
     public boolean onNavigationItemSelected(int position, long id) {
         if (position == 0) {
             if (std == null) {
-                std = DefectRadarCameraFragment.newInstance(false);
+                std = FCameraFragment.newInstance(false);
             }
 
             current = std;
         } else {
             if (ffc == null) {
-                ffc = DefectRadarCameraFragment.newInstance(true);
+                ffc = FCameraFragment.newInstance(true);
             }
 
             current = ffc;

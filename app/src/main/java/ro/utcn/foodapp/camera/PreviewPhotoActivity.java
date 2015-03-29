@@ -1,4 +1,4 @@
-package ro.utcn.licenseapp.presentation.activities.camera;
+package ro.utcn.foodapp.camera;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,7 +11,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
-import ro.utcn.licenseapp.R;
+import ro.utcn.foodapp.R;
 
 public class PreviewPhotoActivity extends Activity {
     public static final String TEMP_FILE_PATH = "TEMP_FILE_PATH";
@@ -32,7 +32,7 @@ public class PreviewPhotoActivity extends Activity {
         Intent intent = getIntent();
         file = new File((intent.getStringExtra(TEMP_FILE_PATH)));
 
-        // Used the Picasso library to display and scale the photo to fit in the image view
+        // Use the Picasso library to display and scale the photo to fit in the image view
         Picasso.with(this)
                 .load(file)
                 .fit().centerInside()

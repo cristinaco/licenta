@@ -1,4 +1,4 @@
-package ro.utcn.licenseapp.presentation.activities.camera;
+package ro.utcn.foodapp.camera;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
@@ -28,7 +28,6 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.commonsware.cwac.camera.CameraFragment;
 import com.commonsware.cwac.camera.CameraHost;
 import com.commonsware.cwac.camera.PictureTransaction;
 import com.commonsware.cwac.camera.SimpleCameraHost;
@@ -37,12 +36,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import ro.utcn.licenseapp.R;
+import ro.utcn.foodapp.R;
 
 /**
  * Created by cristinaco on 06.03.15.
  */
-public class DefectRadarCameraFragment extends CameraFragment implements
+public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment implements
         OnSeekBarChangeListener, View.OnTouchListener {
 
     public static final int SELECT_PICTURE = 0x833F;
@@ -83,8 +82,8 @@ public class DefectRadarCameraFragment extends CameraFragment implements
     private float oldDist = 1f;
 
 
-    public static DefectRadarCameraFragment newInstance(boolean useFFC) {
-        DefectRadarCameraFragment f = new DefectRadarCameraFragment();
+    public static FCameraFragment newInstance(boolean useFFC) {
+        FCameraFragment f = new FCameraFragment();
         Bundle args = new Bundle();
 
         args.putBoolean(KEY_USE_FFC, useFFC);
@@ -136,8 +135,8 @@ public class DefectRadarCameraFragment extends CameraFragment implements
         if (savedInstanceState != null) {
             selectedFlashType = savedInstanceState.getString("selectedFlashType");
             zoomProgress = savedInstanceState.getInt("zoomProgress");
-            DefectRadarCameraActivity.tempFilePath = new File(savedInstanceState.getString(DefectRadarCameraActivity.TEMP_FILE_PATH));
-            DefectRadarCameraActivity.tempDir = new File(savedInstanceState.getString(DefectRadarCameraActivity.TEMP_DIR_PATH));
+            CameraActivity.tempFilePath = new File(savedInstanceState.getString(CameraActivity.TEMP_FILE_PATH));
+            CameraActivity.tempDir = new File(savedInstanceState.getString(CameraActivity.TEMP_DIR_PATH));
             zoom.setProgress(zoomProgress);
             doCameraZoom();
         } else {
@@ -242,8 +241,8 @@ public class DefectRadarCameraFragment extends CameraFragment implements
 
         outState.putString("selectedFlashType", selectedFlashType);
         outState.putInt("zoomProgress", zoomProgress);
-        outState.putString(DefectRadarCameraActivity.TEMP_FILE_PATH, DefectRadarCameraActivity.tempFilePath.getAbsolutePath());
-        outState.putString(DefectRadarCameraActivity.TEMP_DIR_PATH, DefectRadarCameraActivity.tempDir.getAbsolutePath());
+        outState.putString(CameraActivity.TEMP_FILE_PATH, CameraActivity.tempFilePath.getAbsolutePath());
+        outState.putString(CameraActivity.TEMP_DIR_PATH, CameraActivity.tempDir.getAbsolutePath());
     }
 
     @Override
@@ -408,7 +407,7 @@ public class DefectRadarCameraFragment extends CameraFragment implements
                 useFrontCamera = !useFrontCamera;
 
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
-                DefectRadarCameraFragment newFragment = DefectRadarCameraFragment.newInstance(useFrontCamera);
+                FCameraFragment newFragment = FCameraFragment.newInstance(useFrontCamera);
                 ft.replace(R.id.activity_defect_radar_camera_container, newFragment, "cameraFragment");
                 ft.commit();
             }
@@ -681,13 +680,12 @@ public class DefectRadarCameraFragment extends CameraFragment implements
                 if (value == 1) {
 
                     Intent intent = new Intent();
-                    DefectRadarCameraFragment.this.getActivity().setResult(Activity.RESULT_OK, intent);
+                    FCameraFragment.this.getActivity().setResult(Activity.RESULT_OK, intent);
                     getActivity().finish();
                 }
             }
         }
     }
-
 
 
     class DemoCameraHost extends SimpleCameraHost implements
@@ -717,23 +715,23 @@ public class DefectRadarCameraFragment extends CameraFragment implements
                 singleShotProcessing = false;
 
                 super.saveImage(pictureTransaction, image);
-
                 Intent displayPhotoIntent = new Intent(getActivity(), PreviewPhotoActivity.class);
 
-                displayPhotoIntent.putExtra(DefectRadarCameraActivity.TEMP_FILE_PATH, DefectRadarCameraActivity.tempFilePath.getAbsolutePath());
-                DefectRadarCameraFragment.this.startActivityForResult(displayPhotoIntent, SAVE_PHOTO);
+                displayPhotoIntent.putExtra(CameraActivity.TEMP_FILE_PATH, CameraActivity.tempFilePath.getAbsolutePath());
+                FCameraFragment.this.startActivityForResult(displayPhotoIntent, SAVE_PHOTO);
 
             }
         }
 
         @Override
         protected File getPhotoPath() {
-            return DefectRadarCameraActivity.tempFilePath;
+            return CameraActivity.tempFilePath;
         }
 
         @Override
         protected File getPhotoDirectory() {
-            return DefectRadarCameraActivity.tempDir;
+            return CameraActivity.tempDir;
+
         }
 
         @Override
@@ -785,8 +783,8 @@ public class DefectRadarCameraFragment extends CameraFragment implements
                     }
                 }).go();
                 zoom.setMax(parameters.getMaxZoom());
-                zoom.setOnSeekBarChangeListener(DefectRadarCameraFragment.this);
-                cameraContainer.setOnTouchListener(DefectRadarCameraFragment.this);
+                zoom.setOnSeekBarChangeListener(FCameraFragment.this);
+                cameraContainer.setOnTouchListener(FCameraFragment.this);
             } else {
                 zoom.setEnabled(false);
             }

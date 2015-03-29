@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ro.utcn.licenseapp">
+    package="ro.utcn.foodapp">
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
+        android:largeHeap="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
@@ -22,13 +24,13 @@
 
         <!-- Camera -->
         <activity
-            android:name=".presentation.activities.camera.DefectRadarCameraActivity"
+            android:name=".camera.CameraActivity"
             android:label="@string/title_activity_defect_radar_camera"
             android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
 
         <activity
-            android:name=".presentation.activities.camera.PreviewPhotoActivity"
+            android:name=".camera.PreviewPhotoActivity"
             android:label="@string/title_activity_display"
             android:screenOrientation="portrait">
         </activity>
