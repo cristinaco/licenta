@@ -101,12 +101,12 @@ public class MainActivity extends ActionBarActivity {
                                     int position, long id) {
                 switch (position) {
                     case 0:
-                        mDrawerToggle.setAnimateEnabled(false);
-                        drawerArrow.setProgress(1f);
+//                        mDrawerToggle.setAnimateEnabled(false);
+//                        drawerArrow.setProgress(1f);
                         break;
                     case 1:
-                        mDrawerToggle.setAnimateEnabled(false);
-                        drawerArrow.setProgress(0f);
+//                        mDrawerToggle.setAnimateEnabled(false);
+//                        drawerArrow.setProgress(0f);
                         break;
                 }
 

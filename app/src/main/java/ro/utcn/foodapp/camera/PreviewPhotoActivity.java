@@ -2,11 +2,15 @@ package ro.utcn.foodapp.camera;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.googlecode.tesseract.android.TessBaseAPI;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -19,6 +23,7 @@ public class PreviewPhotoActivity extends Activity {
     private TextView retakePhoto;
     private TextView usePhoto;
     private File file;
+    private TessBaseAPI tessBaseAPI;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,12 +63,31 @@ public class PreviewPhotoActivity extends Activity {
         usePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent resultIntent = new Intent();
 
-                resultIntent.putExtra("save", 1);
-                setResult(Activity.RESULT_OK, resultIntent);
+                tessBaseAPI = new TessBaseAPI();
+                tessBaseAPI.setDebug(true);
 
-                PreviewPhotoActivity.this.finish();
+
+                String datapath = Environment.getExternalStorageDirectory() + "/tesseract/";
+                String language = "eng";
+                File dir = new File(datapath + "tessdata/");
+                if (!dir.exists())
+                    dir.mkdirs();
+                tessBaseAPI.init(datapath, language);
+
+                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                tessBaseAPI.setImage(BitmapFactory.decodeFile(file.getAbsolutePath(),bmOptions));
+                String recognizedText = tessBaseAPI.getUTF8Text();
+                Toast.makeText(getApplicationContext(),recognizedText,Toast.LENGTH_LONG).show();
+
+
+
+//                Intent resultIntent = new Intent();
+//
+//                resultIntent.putExtra("save", 1);
+//                setResult(Activity.RESULT_OK, resultIntent);
+//
+//                PreviewPhotoActivity.this.finish();
             }
         });
     }
@@ -72,5 +96,10 @@ public class PreviewPhotoActivity extends Activity {
     public void onPause() {
         super.onPause();
 
+    }
+    @Override
+    public void onDestroy() {
+        if (tessBaseAPI != null)
+            tessBaseAPI.end();
     }
 }
