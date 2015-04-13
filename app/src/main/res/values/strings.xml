@@ -19,5 +19,8 @@
     <string name="no_camera_available">No camera detected on this device</string>
     <string name="title_activity_defect_radar_camera">Camera</string>
     <string name="activity_main_button_take_picture">Take picture</string>
+    <string name="drawer_open">Drawer open</string>
+    <string name="drawer_close">Drawer closed</string>
+    <string name="app_description">Android drawer icon with material design animation</string>
 
 </resources>
