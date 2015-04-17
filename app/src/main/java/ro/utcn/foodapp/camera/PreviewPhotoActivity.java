@@ -2,7 +2,9 @@ package ro.utcn.foodapp.camera;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -24,6 +26,7 @@ public class PreviewPhotoActivity extends Activity {
     private TextView retakePhoto;
     private TextView usePhoto;
     private File file;
+    private Bitmap bitmap;
     private TessBaseAPI tessBaseAPI;
 
     @Override
@@ -43,6 +46,25 @@ public class PreviewPhotoActivity extends Activity {
                 .load(file)
                 .fit().centerInside()
                 .into(imageView);
+
+
+
+//        tessBaseAPI = new TessBaseAPI();
+//        tessBaseAPI.setDebug(true);
+//
+//
+//        String datapath = Environment.getExternalStorageDirectory() + "/tesseract/";
+//        String language = "ron";
+//        File dir = new File(datapath + "tessdata/");
+//        if (!dir.exists())
+//            dir.mkdirs();
+//        tessBaseAPI.init(datapath, language);
+//
+//        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+//        tessBaseAPI.setImage(BitmapFactory.decodeFile(file.getAbsolutePath(),bmOptions));
+//        String recognizedText = tessBaseAPI.getUTF8Text();
+//        Toast.makeText(getApplicationContext(),recognizedText,Toast.LENGTH_LONG).show();
+//        Log.d("Recognized text: ",recognizedText);
 
 
         retakePhoto.setOnClickListener(new View.OnClickListener() {
@@ -65,6 +87,7 @@ public class PreviewPhotoActivity extends Activity {
             @Override
             public void onClick(View view) {
 
+
                 tessBaseAPI = new TessBaseAPI();
                 tessBaseAPI.setDebug(true);
 
@@ -77,11 +100,13 @@ public class PreviewPhotoActivity extends Activity {
                 tessBaseAPI.init(datapath, language);
 
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-                tessBaseAPI.setImage(BitmapFactory.decodeFile(file.getAbsolutePath(),bmOptions));
-                String recognizedText = tessBaseAPI.getUTF8Text();
-                Toast.makeText(getApplicationContext(),recognizedText,Toast.LENGTH_LONG).show();
-                Log.d("Recognized text: ",recognizedText);
+                bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                tessBaseAPI.setImage(bitmap);
 
+                //bitmap.compress(CompressFormat.JPEG, 75, ostream);
+                String recognizedText = tessBaseAPI.getUTF8Text();
+                Toast.makeText(getApplicationContext(), recognizedText, Toast.LENGTH_LONG).show();
+                Log.d("Recognized text",recognizedText);
 
 
 //                Intent resultIntent = new Intent();
@@ -99,6 +124,7 @@ public class PreviewPhotoActivity extends Activity {
         super.onPause();
 
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
