@@ -3,7 +3,6 @@ package ro.utcn.foodapp.camera;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Environment;
@@ -84,7 +83,7 @@ public class PreviewPhotoActivity extends Activity {
 
                 String recognizedText = tessBaseAPI.getUTF8Text();
                 Toast.makeText(getApplicationContext(), recognizedText, Toast.LENGTH_LONG).show();
-                Log.d("Recognized text",recognizedText);
+                Log.d("Recognized text", recognizedText);
                 tessBaseAPI.end();
 
 

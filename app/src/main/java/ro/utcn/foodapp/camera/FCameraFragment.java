@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ro.utcn.foodapp.R;
-import ro.utcn.foodapp.presentation.customview.FocusBoxView;
 
 /**
  * Created by cristinaco on 06.03.15.
@@ -71,7 +70,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
     private TextView flashOn;
     private TextView flashOff;
     private FrameLayout cameraContainer;
-    private FocusBoxView focusBoxView;
     private LinearLayout takePictureContainer;
     private String selectedFlashType;
     private List<TextView> flashTypes;
@@ -118,7 +116,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         flashAuto = (TextView) results.findViewById(R.id.camera_flash_type_auto);
         flashOn = (TextView) results.findViewById(R.id.camera_flash_type_on);
         flashOff = (TextView) results.findViewById(R.id.camera_flash_type_off);
-        focusBoxView = (FocusBoxView) results.findViewById(R.id.focus_box);
         cameraContainer = (FrameLayout) results.findViewById(R.id.camera_container);
 
         flashTypes = new ArrayList<TextView>();
@@ -755,7 +752,7 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
                 supportsFaces = true;
             }
 
-           parameters.setFocusMode(Parameters.FOCUS_MODE_MACRO);
+            parameters.setFocusMode(Parameters.FOCUS_MODE_MACRO);
 
             return (super.adjustPreviewParameters(parameters));
         }
