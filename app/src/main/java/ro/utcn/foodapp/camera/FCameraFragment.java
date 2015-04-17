@@ -1,7 +1,6 @@
 package ro.utcn.foodapp.camera;
 
 import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -67,7 +66,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
     private SeekBar zoom = null;
     private ImageView takePicture;
     private ImageButton showFlashTypes;
-    private ImageButton switchCamera;
     private TextView cancelTakePhoto;
     private TextView flashAuto;
     private TextView flashOn;
@@ -116,7 +114,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         takePicture = (ImageView) results.findViewById(R.id.take_photo);
         takePictureContainer = (LinearLayout) results.findViewById(R.id.take_picture_container);
         showFlashTypes = (ImageButton) results.findViewById(R.id.camera_display_flash_types);
-        switchCamera = (ImageButton) results.findViewById(R.id.switch_camera);
         cancelTakePhoto = (TextView) results.findViewById(R.id.camera_cancel_take_photo);
         flashAuto = (TextView) results.findViewById(R.id.camera_flash_type_auto);
         flashOn = (TextView) results.findViewById(R.id.camera_flash_type_on);
@@ -130,10 +127,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         flashTypes.add(flashOff);
 
         hasTwoCameras = (Camera.getNumberOfCameras() > 1);
-        if (!hasTwoCameras) {
-            // If the second camera does not exist, hide the switch camera button
-            switchCamera.setVisibility(View.GONE);
-        }
 
         if (savedInstanceState != null) {
             selectedFlashType = savedInstanceState.getString("selectedFlashType");
@@ -404,18 +397,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
             }
         });
 
-        switchCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                useFrontCamera = !useFrontCamera;
-
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                FCameraFragment newFragment = FCameraFragment.newInstance(useFrontCamera);
-                ft.replace(R.id.activity_defect_radar_camera_container, newFragment, "cameraFragment");
-                ft.commit();
-            }
-        });
-
         showFlashTypes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -428,9 +409,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
                         }
                         txView.setTextColor(getResources().getColor(R.color.app_text_white));
                     }
-                    if (hasTwoCameras) {
-                        switchCamera.setVisibility(View.VISIBLE);
-                    }
                     flashMenuDisplayed = false;
                 }
             }
@@ -442,7 +420,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
                 final Animation toLeftAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_in_left);
 
                 if (!flashMenuDisplayed) {
-                    switchCamera.setVisibility(View.GONE);
                     showFlashTypes.setEnabled(true);
                     for (TextView txView : flashTypes) {
                         txView.setEnabled(true);
@@ -468,9 +445,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
 
                     flashOn.setVisibility(View.GONE);
                     flashOff.setVisibility(View.GONE);
-                    if (hasTwoCameras) {
-                        switchCamera.setVisibility(View.VISIBLE);
-                    }
                     flashMenuDisplayed = false;
 
                     final Animation toRightAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_out_left);
@@ -494,7 +468,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
                 final Animation toLeftAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_in_left);
 
                 if (!flashMenuDisplayed) {
-                    switchCamera.setVisibility(View.GONE);
                     showFlashTypes.setEnabled(true);
                     for (TextView txView : flashTypes) {
                         txView.setEnabled(true);
@@ -521,9 +494,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
                     flashOn.setTextColor(getResources().getColor(R.color.orange));
                     flashAuto.setVisibility(View.GONE);
                     flashOff.setVisibility(View.GONE);
-                    if (hasTwoCameras) {
-                        switchCamera.setVisibility(View.VISIBLE);
-                    }
                     flashMenuDisplayed = false;
 
                     final Animation toRightAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_out_left);
@@ -547,7 +517,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
                 final Animation toLeftAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_in_left);
 
                 if (!flashMenuDisplayed) {
-                    switchCamera.setVisibility(View.GONE);
                     showFlashTypes.setEnabled(true);
                     for (TextView txView : flashTypes) {
                         txView.setEnabled(true);
@@ -573,9 +542,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
 
                     flashOn.setVisibility(View.GONE);
                     flashAuto.setVisibility(View.GONE);
-                    if (hasTwoCameras) {
-                        switchCamera.setVisibility(View.VISIBLE);
-                    }
                     flashMenuDisplayed = false;
 
                     final Animation toRightAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_out_left);
@@ -604,7 +570,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
 
             case ORIENTATION_PORTRAIT_NORMAL:
                 takePicture.setRotation(0);
-                switchCamera.setRotation(0);
                 showFlashTypes.setRotation(0);
                 cancelTakePhoto.setRotation(0);
                 flashAuto.setRotation(0);
@@ -613,7 +578,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
                 break;
             case ORIENTATION_LANDSCAPE_NORMAL:
                 takePicture.setRotation(90);
-                switchCamera.setRotation(90);
                 showFlashTypes.setRotation(90);
                 cancelTakePhoto.setRotation(90);
                 flashAuto.setRotation(90);
@@ -622,7 +586,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
                 break;
             case ORIENTATION_PORTRAIT_INVERTED:
                 takePicture.setRotation(180);
-                switchCamera.setRotation(180);
                 showFlashTypes.setRotation(180);
                 cancelTakePhoto.setRotation(180);
                 flashAuto.setRotation(180);
@@ -631,7 +594,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
                 break;
             case ORIENTATION_LANDSCAPE_INVERTED:
                 takePicture.setRotation(270);
-                switchCamera.setRotation(270);
                 showFlashTypes.setRotation(270);
                 cancelTakePhoto.setRotation(270);
                 flashAuto.setRotation(270);
@@ -664,9 +626,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
 
             if (!txView.getTag().equals(selectedFlashType)) {
                 txView.setVisibility(View.GONE);
-            }
-            if (hasTwoCameras) {
-                switchCamera.setVisibility(View.VISIBLE);
             }
             txView.setTextColor(getResources().getColor(R.color.app_text_white));
         }

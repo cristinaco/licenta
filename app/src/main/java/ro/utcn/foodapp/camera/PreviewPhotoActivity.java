@@ -47,26 +47,6 @@ public class PreviewPhotoActivity extends Activity {
                 .fit().centerInside()
                 .into(imageView);
 
-
-
-//        tessBaseAPI = new TessBaseAPI();
-//        tessBaseAPI.setDebug(true);
-//
-//
-//        String datapath = Environment.getExternalStorageDirectory() + "/tesseract/";
-//        String language = "ron";
-//        File dir = new File(datapath + "tessdata/");
-//        if (!dir.exists())
-//            dir.mkdirs();
-//        tessBaseAPI.init(datapath, language);
-//
-//        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-//        tessBaseAPI.setImage(BitmapFactory.decodeFile(file.getAbsolutePath(),bmOptions));
-//        String recognizedText = tessBaseAPI.getUTF8Text();
-//        Toast.makeText(getApplicationContext(),recognizedText,Toast.LENGTH_LONG).show();
-//        Log.d("Recognized text: ",recognizedText);
-
-
         retakePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,20 +73,19 @@ public class PreviewPhotoActivity extends Activity {
 
 
                 String datapath = Environment.getExternalStorageDirectory() + "/tesseract/";
-                String language = "eng";
+                String language = "ron";
                 File dir = new File(datapath + "tessdata/");
                 if (!dir.exists())
                     dir.mkdirs();
                 tessBaseAPI.init(datapath, language);
 
-                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
                 bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
                 tessBaseAPI.setImage(bitmap);
 
-                //bitmap.compress(CompressFormat.JPEG, 75, ostream);
                 String recognizedText = tessBaseAPI.getUTF8Text();
                 Toast.makeText(getApplicationContext(), recognizedText, Toast.LENGTH_LONG).show();
                 Log.d("Recognized text",recognizedText);
+                tessBaseAPI.end();
 
 
 //                Intent resultIntent = new Intent();

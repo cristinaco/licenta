@@ -66,25 +66,6 @@
             android:text="@string/camera_flash_off"
             android:textColor="@color/app_text_white" />
 
-        <LinearLayout
-            android:id="@+id/switch_camera_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:layout_gravity="center_vertical"
-            android:gravity="center_vertical">
-
-            <ImageButton
-                android:id="@+id/switch_camera"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="5dip"
-                android:background="@drawable/ic_action_switch_camera"
-                android:gravity="center_vertical" />
-        </LinearLayout>
-
 
     </RelativeLayout>
 
