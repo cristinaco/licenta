@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import ro.utcn.foodapp.R;
 import ro.utcn.foodapp.camera.PreviewPhotoActivity;
 import ro.utcn.foodapp.utils.Constants;
 
@@ -25,6 +27,7 @@ public class OcrInitAsyncTask extends AsyncTask<Void, Void, Void> {
     private String language;
     private PreviewPhotoActivity previewPhotoActivity;
     private String recognizedText;
+    private MaterialDialog progressDialog;
 
     public OcrInitAsyncTask(PreviewPhotoActivity previewPhotoActivity, TessBaseAPI tessBaseAPI, Bitmap bitmap) {
         this.previewPhotoActivity = previewPhotoActivity;
@@ -37,6 +40,11 @@ public class OcrInitAsyncTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        progressDialog = new MaterialDialog.Builder(previewPhotoActivity)
+                .content(R.string.wait_while_performing_ocr)
+                .progress(true, 0)
+                .cancelable(false)
+                .show();
 
     }
 
@@ -83,6 +91,10 @@ public class OcrInitAsyncTask extends AsyncTask<Void, Void, Void> {
         previewPhotoActivity.setRecognizedText(recognizedText);
         previewPhotoActivity.displayRecognizedText();
         tessBaseAPI.end();
+        if (progressDialog != null) {
+
+            progressDialog.dismiss();
+        }
     }
 
     private void copyFile(InputStream in, OutputStream out) {

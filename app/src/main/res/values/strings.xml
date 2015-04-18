@@ -23,4 +23,7 @@
     <string name="drawer_close">Drawer closed</string>
     <string name="app_description">Android drawer icon with material design animation</string>
 
+    <string name="progress_dialog">Progress Dialog</string>
+    <string name="wait_while_performing_ocr">Please wait while performing OCR…</string>
+
 </resources>
