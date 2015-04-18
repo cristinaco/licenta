@@ -3,6 +3,7 @@ package ro.utcn.foodapp.presentation.activities;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -150,7 +151,7 @@ public class MainActivity extends ActionBarActivity {
         takePicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+                if (Camera.getNumberOfCameras()>0) {
 
                     final Intent takePictureIntent = new Intent(MainActivity.this, CameraActivity.class);
                     tempFilePath = new File(tempDir, String.valueOf(System.currentTimeMillis() + ".jpg"));

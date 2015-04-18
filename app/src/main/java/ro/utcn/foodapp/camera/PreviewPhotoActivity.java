@@ -5,12 +5,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.squareup.picasso.Picasso;
@@ -18,15 +17,19 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 
 import ro.utcn.foodapp.R;
+import ro.utcn.foodapp.ocr.OcrInitAsyncTask;
 
 public class PreviewPhotoActivity extends Activity {
     public static final String TEMP_FILE_PATH = "TEMP_FILE_PATH";
     private ImageView imageView;
     private TextView retakePhoto;
     private TextView usePhoto;
+    private ScrollView displayOcrScrollView;
+    private TextView displayOcrTextView;
     private File file;
     private Bitmap bitmap;
     private TessBaseAPI tessBaseAPI;
+    private String recognizedText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,6 +39,9 @@ public class PreviewPhotoActivity extends Activity {
         imageView = (ImageView) findViewById(R.id.camera_display_photo_container);
         retakePhoto = (TextView) findViewById(R.id.camera_display_retake);
         usePhoto = (TextView) findViewById(R.id.camera_display_use_photo);
+        displayOcrTextView = (TextView) findViewById(R.id.ocr_recognized_text);
+        displayOcrScrollView = (ScrollView) findViewById(R.id.ocr_recognized_text_scroll_view);
+        displayOcrScrollView.setVisibility(View.INVISIBLE);
 
         Intent intent = getIntent();
         file = new File((intent.getStringExtra(TEMP_FILE_PATH)));
@@ -65,36 +71,19 @@ public class PreviewPhotoActivity extends Activity {
         usePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
                 tessBaseAPI = new TessBaseAPI();
-                tessBaseAPI.setDebug(true);
-
-
-                String datapath = Environment.getExternalStorageDirectory() + "/tesseract/";
-                String language = "ron";
-                File dir = new File(datapath + "tessdata/");
-                if (!dir.exists())
-                    dir.mkdirs();
-                tessBaseAPI.init(datapath, language);
-
                 bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-                tessBaseAPI.setImage(bitmap);
 
-                String recognizedText = tessBaseAPI.getUTF8Text();
-                Toast.makeText(getApplicationContext(), recognizedText, Toast.LENGTH_LONG).show();
-                Log.d("Recognized text", recognizedText);
-                tessBaseAPI.end();
-
-
-//                Intent resultIntent = new Intent();
-//
-//                resultIntent.putExtra("save", 1);
-//                setResult(Activity.RESULT_OK, resultIntent);
-//
-//                PreviewPhotoActivity.this.finish();
+                OcrInitAsyncTask ocrInitAsyncTask = new OcrInitAsyncTask(PreviewPhotoActivity.this, tessBaseAPI, bitmap);
+                ocrInitAsyncTask.execute();
             }
         });
+    }
+
+    public void displayRecognizedText() {
+        Log.d("Recognized text", recognizedText);
+        displayOcrScrollView.setVisibility(View.VISIBLE);
+        displayOcrTextView.setText(recognizedText);
     }
 
     @Override
@@ -108,5 +97,13 @@ public class PreviewPhotoActivity extends Activity {
         super.onDestroy();
         if (tessBaseAPI != null)
             tessBaseAPI.end();
+    }
+
+    public String getRecognizedText() {
+        return recognizedText;
+    }
+
+    public void setRecognizedText(String recognizedText) {
+        this.recognizedText = recognizedText;
     }
 }
