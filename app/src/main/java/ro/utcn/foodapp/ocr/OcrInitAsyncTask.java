@@ -54,13 +54,13 @@ public class OcrInitAsyncTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         AssetManager assetManager = previewPhotoActivity.getAssets();
-        String destinationPath = Environment.getExternalStorageDirectory() + "/tesseract/tessdata/";
+        String destinationPath = Environment.getExternalStorageDirectory() + "/tesseract/";
         InputStream in = null;
         OutputStream out = null;
         if (!new File(destinationPath).exists()) {
             try {
                 in = assetManager.open("tesseract/tessdata/ron.traineddata");
-                File outFile = new File(destinationPath);
+                File outFile = new File(destinationPath+"/tessdata/");
                 if (!outFile.exists())
                     outFile.mkdirs();
                 //datapath + File.separator + "tessdata" + File.separator + "ron" + ".traineddata"
@@ -76,15 +76,15 @@ public class OcrInitAsyncTask extends AsyncTask<Void, Void, Void> {
             }
 //        File dir = new File(datapath + "tessdata/");
 //
-            tessBaseAPI = new TessBaseAPI();
-            tessBaseAPI.setDebug(true);
 
-
-            tessBaseAPI.init(destinationPath, language);
-            tessBaseAPI.setImage(bitmap);
-            recognizedText = tessBaseAPI.getUTF8Text();
         }
+        tessBaseAPI = new TessBaseAPI();
+        tessBaseAPI.setDebug(true);
 
+
+        tessBaseAPI.init(destinationPath, language);
+        tessBaseAPI.setImage(bitmap);
+        recognizedText = tessBaseAPI.getUTF8Text();
 
         return null;
     }
