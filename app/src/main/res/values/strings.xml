@@ -25,5 +25,10 @@
 
     <string name="progress_dialog">Progress Dialog</string>
     <string name="wait_while_performing_ocr">Please wait while performing OCR…</string>
+    <string name="title_activity_add_product">Add product</string>
+    <string name="product_name">Name</string>
+    <string name="product_description">Description</string>
+    <string name="action_save">Save</string>
+    <string name="activity_add_product_image">Picture of the product</string>
 
 </resources>

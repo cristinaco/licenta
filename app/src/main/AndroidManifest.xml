@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ro.utcn.foodapp">
+    package="ro.utcn.foodapp" >
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -8,13 +8,13 @@
 
     <application
         android:allowBackup="true"
-        android:largeHeap="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:largeHeap="true"
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".presentation.activities.MainActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,14 +25,17 @@
         <!-- Camera -->
         <activity
             android:name=".camera.CameraActivity"
-            android:label="@string/title_activity_defect_radar_camera"
-            android:configChanges="orientation|keyboardHidden|screenSize">
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_defect_radar_camera" >
         </activity>
-
         <activity
             android:name=".camera.PreviewPhotoActivity"
             android:label="@string/title_activity_display"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".presentation.activities.AddProductActivity"
+            android:label="@string/title_activity_add_product" >
         </activity>
     </application>
 

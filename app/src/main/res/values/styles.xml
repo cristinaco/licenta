@@ -1,17 +1,18 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat">
         <item name="actionBarStyle">@style/ActionBar</item>
     </style>
 
-    <style name="ActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="ActionBar" parent="Theme.AppCompat">
         <item name="drawerArrowStyle">@style/AppTheme.DrawerArrowToggle</item>
-        <item name="background">@color/primary_pressed</item>
+        <item name="background">@color/indigo_primary</item>
     </style>
 
     <style name="AppTheme.DrawerArrowToggle" parent="Base.Widget.AppCompat.DrawerArrowToggle">
-        <item name="color">@color/primary_pressed</item>
+        <item name="color">@color/indigo_primary</item>
+        <item name="spinBars">true</item>
     </style>
 
 
