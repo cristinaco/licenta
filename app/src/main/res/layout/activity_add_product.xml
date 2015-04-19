@@ -20,8 +20,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:textSize="18sp"
-            android:textColor="@color/material_blue_grey_900"
-            android:text="@string/activity_add_product_image" />
+            android:textColorHint="@color/material_blue_grey_900"
+            android:hint="@string/activity_add_product_image" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -43,7 +43,7 @@
 
 
     <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/activity_add_product_edit_text_product_name"
+        android:id="@+id/activity_add_product_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dip"
@@ -57,7 +57,7 @@
         app:met_singleLineEllipsis="true" />
 
     <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/activity_add_product_edit_text_product_description"
+        android:id="@+id/activity_add_product_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dip"
@@ -69,5 +69,23 @@
         app:met_floatingLabel="highlight"
         app:met_primaryColor="@color/ripple"
         app:met_singleLineEllipsis="true" />
+    <TextView
+        android:id="@+id/activity_add_product_exp_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dip"
+        android:layout_gravity="center_vertical"
+        android:textSize="18sp"
+        android:textColorHint="@color/material_blue_grey_900"
+        android:hint="@string/product_expiration_date"/>
+    <TextView
+        android:id="@+id/activity_add_product_exp_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dip"
+        android:layout_gravity="center_vertical"
+        android:textSize="18sp"
+        android:textColorHint="@color/material_blue_grey_900"
+        android:hint="@string/product_expiration_status"/>
 
 </LinearLayout>

@@ -60,9 +60,7 @@ public class PreviewPhotoActivity extends Activity {
                 Picasso.with(getApplicationContext()).invalidate(file);
 
                 Intent resultIntent = new Intent();
-
-                resultIntent.putExtra("save", 0);
-                setResult(Activity.RESULT_OK, resultIntent);
+                setResult(Activity.RESULT_CANCELED, resultIntent);
 
                 PreviewPhotoActivity.this.finish();
             }
@@ -76,6 +74,11 @@ public class PreviewPhotoActivity extends Activity {
 
                 OcrInitAsyncTask ocrInitAsyncTask = new OcrInitAsyncTask(PreviewPhotoActivity.this, tessBaseAPI, bitmap);
                 ocrInitAsyncTask.execute();
+
+                Intent resultIntent = new Intent();
+                setResult(Activity.RESULT_OK, resultIntent);
+
+                //PreviewPhotoActivity.this.finish();
             }
         });
     }

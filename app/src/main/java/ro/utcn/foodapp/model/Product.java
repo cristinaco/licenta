@@ -1,6 +1,7 @@
 package ro.utcn.foodapp.model;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by coponipi on 19.04.2015.
@@ -12,6 +13,7 @@ public class Product {
     private int piecesNumber;
     private Date expirationDate;
     private String expirationStatus;
+    private List<String> urls;
 
     public String getUid() {
         return uid;
@@ -59,5 +61,13 @@ public class Product {
 
     public void setExpirationStatus(String expirationStatus) {
         this.expirationStatus = expirationStatus;
+    }
+
+    public List<String> getUrls() {
+        return urls;
+    }
+
+    public void setUrls(List<String> urls) {
+        this.urls = urls;
     }
 }
