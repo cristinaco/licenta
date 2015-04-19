@@ -30,7 +30,7 @@ repositories {
 }
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.android.support:appcompat-v7:21.0.+'
     compile 'com.commonsware.cwac:camera:0.6.12'
     compile 'com.github.traex.rippleeffect:library:1.2.3'
     compile 'com.squareup.picasso:picasso:2.5.0'

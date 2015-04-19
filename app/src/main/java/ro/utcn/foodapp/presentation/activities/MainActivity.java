@@ -83,14 +83,14 @@ public class MainActivity extends ActionBarActivity {
                 invalidateOptionsMenu();
             }
         };
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerToggle.syncState();
+        //mDrawerLayout.setDrawerListener(mDrawerToggle);
+       // mDrawerToggle.setDrawerIndicatorEnabled(true);
+        //mDrawerToggle.syncState();
 
 
         String[] values = new String[]{
-                "Stop Animation (Back icon)",
-                "Stop Animation (Home icon)"
+                "View products",
+                "Preferences"
         };
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1, values);
@@ -138,13 +138,13 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
+       // mDrawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
+        //mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     private void setListeners() {

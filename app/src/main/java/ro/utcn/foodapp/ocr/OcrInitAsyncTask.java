@@ -91,8 +91,8 @@ public class OcrInitAsyncTask extends AsyncTask<Void, Void, Void> {
         previewPhotoActivity.setRecognizedText(recognizedText);
         previewPhotoActivity.displayRecognizedText();
         tessBaseAPI.end();
-        if (progressDialog != null) {
 
+        if (progressDialog != null) {
             progressDialog.dismiss();
         }
     }
