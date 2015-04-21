@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import java.io.File;
 
@@ -50,6 +51,14 @@ public class CameraActivity extends Activity implements
         this.tempFilePath = new File(fp);
         final String dp = intent.getStringExtra(TEMP_DIR_PATH);
         this.tempDir = new File(dp);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
     }
 
     @Override

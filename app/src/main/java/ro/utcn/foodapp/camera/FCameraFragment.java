@@ -3,12 +3,10 @@ package ro.utcn.foodapp.camera;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.Camera.Face;
 import android.hardware.Camera.Parameters;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.FloatMath;
@@ -24,6 +22,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -44,7 +43,7 @@ import ro.utcn.foodapp.presentation.customview.CameraBoxView;
  * Created by cristinaco on 06.03.15.
  */
 public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment implements
-        OnSeekBarChangeListener, View.OnTouchListener {
+        OnSeekBarChangeListener {
 
     public static final int SELECT_PICTURE = 0x833F;
     // We can be in one of these 3 states when touch the screen
@@ -65,13 +64,13 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
     private boolean hasTwoCameras;
     private boolean useFrontCamera;
     private boolean hasFlash;
-    private SeekBar zoom = null;
+    //private SeekBar zoom = null;
     private ImageView takePicture;
-    private ImageButton showFlashTypes;
-    private TextView cancelTakePhoto;
-    private TextView flashAuto;
-    private TextView flashOn;
-    private TextView flashOff;
+//    private ImageButton showFlashTypes;
+//    private TextView cancelTakePhoto;
+//    private TextView flashAuto;
+//    private TextView flashOn;
+//    private TextView flashOff;
     private FrameLayout cameraContainer;
     private CameraBoxView cameraBoxView;
     private CameraManager cameraManager;
@@ -114,23 +113,24 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         View results = inflater.inflate(R.layout.camera_fragment, container, false);
         ((ViewGroup) results.findViewById(R.id.camera_container)).addView(cameraView);
 
-        zoom = (SeekBar) results.findViewById(R.id.zoom);
+        //zoom = (SeekBar) results.findViewById(R.id.zoom);
         takePicture = (ImageView) results.findViewById(R.id.take_photo);
-        takePictureContainer = (LinearLayout) results.findViewById(R.id.take_picture_container);
-        showFlashTypes = (ImageButton) results.findViewById(R.id.camera_display_flash_types);
-        cancelTakePhoto = (TextView) results.findViewById(R.id.camera_cancel_take_photo);
-        flashAuto = (TextView) results.findViewById(R.id.camera_flash_type_auto);
-        flashOn = (TextView) results.findViewById(R.id.camera_flash_type_on);
-        flashOff = (TextView) results.findViewById(R.id.camera_flash_type_off);
+        //takePictureContainer = (LinearLayout) results.findViewById(R.id.take_picture_container);
+//        showFlashTypes = (ImageButton) results.findViewById(R.id.camera_display_flash_types);
+//        cancelTakePhoto = (TextView) results.findViewById(R.id.camera_cancel_take_photo);
+//        flashAuto = (TextView) results.findViewById(R.id.camera_flash_type_auto);
+//        flashOn = (TextView) results.findViewById(R.id.camera_flash_type_on);
+//        flashOff = (TextView) results.findViewById(R.id.camera_flash_type_off);
         cameraContainer = (FrameLayout) results.findViewById(R.id.camera_container);
         cameraBoxView = (CameraBoxView) results.findViewById(R.id.camera_box_view);
+//        RelativeLayout flashBtnContainer = (RelativeLayout) results.findViewById(R.id.camera_flash_buttons_container);
 
         cameraBoxView.setCameraManager(cameraManager);
 
-        flashTypes = new ArrayList<TextView>();
-        flashTypes.add(flashAuto);
-        flashTypes.add(flashOn);
-        flashTypes.add(flashOff);
+//        flashTypes = new ArrayList<TextView>();
+//        flashTypes.add(flashAuto);
+//        flashTypes.add(flashOn);
+//        flashTypes.add(flashOff);
 
         hasTwoCameras = (Camera.getNumberOfCameras() > 1);
 
@@ -139,18 +139,18 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
             zoomProgress = savedInstanceState.getInt("zoomProgress");
             CameraActivity.tempFilePath = new File(savedInstanceState.getString(CameraActivity.TEMP_FILE_PATH));
             CameraActivity.tempDir = new File(savedInstanceState.getString(CameraActivity.TEMP_DIR_PATH));
-            zoom.setProgress(zoomProgress);
-            doCameraZoom();
+            //zoom.setProgress(zoomProgress);
+            //doCameraZoom();
         } else {
-            selectedFlashType = (String) flashAuto.getTag();
-            zoomProgress = zoom.getProgress();
+            //selectedFlashType = (String) flashAuto.getTag();
+            //zoomProgress = zoom.getProgress();
         }
 
         useFrontCamera = getArguments().getBoolean(KEY_USE_FFC, false);
 
-        flashOff.setVisibility(View.GONE);
-        flashOn.setVisibility(View.GONE);
-        flashAuto.setVisibility(View.VISIBLE);
+//        flashOff.setVisibility(View.GONE);
+//        flashOn.setVisibility(View.GONE);
+//        flashAuto.setVisibility(View.VISIBLE);
 
         flashMenuDisplayed = false;
 
@@ -168,17 +168,24 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
             camera.release();
         }
 
-        if (!hasFlash) {
-            for (TextView txtView : flashTypes) {
-                txtView.setEnabled(false);
-            }
-            showFlashTypes.setEnabled(false);
-            showFlashTypes.setBackground(getResources().getDrawable(R.drawable.ic_action_flash_off));
-            flashAuto.setVisibility(View.GONE);
-        }
+//        if (!hasFlash) {
+//            for (TextView txtView : flashTypes) {
+//                txtView.setEnabled(false);
+//            }
+//            showFlashTypes.setEnabled(false);
+//            showFlashTypes.setBackground(getResources().getDrawable(R.drawable.ic_action_flash_off));
+//            flashAuto.setVisibility(View.GONE);
+//        }
 
-        zoom.setKeepScreenOn(true);
+       // zoom.setKeepScreenOn(true);
         setListeners();
+
+        // TODO uncomment this
+//        flashBtnContainer.setVisibility(View.GONE);
+//        showFlashTypes.setVisibility(View.GONE);
+//        flashAuto.setVisibility(View.GONE);
+//        flashOff.setVisibility(View.GONE);
+//        flashOn.setVisibility(View.GONE);
 
         return (results);
     }
@@ -190,53 +197,53 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         getActivity().invalidateOptionsMenu();
         // Release the Camera because we don't need it when paused
         // and other activities might need to use it.
-        orientationEventListener.disable();
+        //orientationEventListener.disable();
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        if (flashMenuDisplayed) {
-            showFlashTypes.setEnabled(false);
-        }
-        takePicture.setEnabled(true);
-
-        // Detect the screen orientation using SensorManager
-        if (orientationEventListener == null) {
-            orientationEventListener = new OrientationEventListener(getActivity(), SensorManager.SENSOR_DELAY_NORMAL) {
-
-                @Override
-                public void onOrientationChanged(int orientation) {
-                    int lastOrientation = mOrientation;
-
-                    if (orientation >= 315 || orientation < 45) {
-                        if (mOrientation != ORIENTATION_PORTRAIT_NORMAL) {
-                            mOrientation = ORIENTATION_PORTRAIT_NORMAL;
-                        }
-                    } else if (orientation < 315 && orientation >= 225) {
-                        if (mOrientation != ORIENTATION_LANDSCAPE_NORMAL) {
-                            mOrientation = ORIENTATION_LANDSCAPE_NORMAL;
-                        }
-                    } else if (orientation < 225 && orientation >= 135) {
-                        if (mOrientation != ORIENTATION_PORTRAIT_INVERTED) {
-                            mOrientation = ORIENTATION_PORTRAIT_INVERTED;
-                        }
-                    } else {
-                        if (mOrientation != ORIENTATION_LANDSCAPE_INVERTED) {
-                            mOrientation = ORIENTATION_LANDSCAPE_INVERTED;
-                        }
-                    }
-
-                    if (lastOrientation != mOrientation) {
-                        changeRotation(mOrientation);
-                    }
-                }
-            };
-        }
-        if (orientationEventListener.canDetectOrientation()) {
-            orientationEventListener.enable();
-        }
+//        if (flashMenuDisplayed) {
+//            showFlashTypes.setEnabled(false);
+//        }
+//        takePicture.setEnabled(true);
+//
+//        // Detect the screen orientation using SensorManager
+//        if (orientationEventListener == null) {
+//            orientationEventListener = new OrientationEventListener(getActivity(), SensorManager.SENSOR_DELAY_NORMAL) {
+//
+//                @Override
+//                public void onOrientationChanged(int orientation) {
+//                    int lastOrientation = mOrientation;
+//
+//                    if (orientation >= 315 || orientation < 45) {
+//                        if (mOrientation != ORIENTATION_PORTRAIT_NORMAL) {
+//                            mOrientation = ORIENTATION_PORTRAIT_NORMAL;
+//                        }
+//                    } else if (orientation < 315 && orientation >= 225) {
+//                        if (mOrientation != ORIENTATION_LANDSCAPE_NORMAL) {
+//                            mOrientation = ORIENTATION_LANDSCAPE_NORMAL;
+//                        }
+//                    } else if (orientation < 225 && orientation >= 135) {
+//                        if (mOrientation != ORIENTATION_PORTRAIT_INVERTED) {
+//                            mOrientation = ORIENTATION_PORTRAIT_INVERTED;
+//                        }
+//                    } else {
+//                        if (mOrientation != ORIENTATION_LANDSCAPE_INVERTED) {
+//                            mOrientation = ORIENTATION_LANDSCAPE_INVERTED;
+//                        }
+//                    }
+//
+//                    if (lastOrientation != mOrientation) {
+//                        changeRotation(mOrientation);
+//                    }
+//                }
+//            };
+//        }
+//        if (orientationEventListener.canDetectOrientation()) {
+//            orientationEventListener.enable();
+//        }
     }
 
     @Override
@@ -249,10 +256,10 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         outState.putString(CameraActivity.TEMP_DIR_PATH, CameraActivity.tempDir.getAbsolutePath());
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(null);
-    }
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        super.onConfigurationChanged(null);
+//    }
 
     public boolean isSingleShotProcessing() {
         return (singleShotProcessing);
@@ -262,10 +269,10 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
     public void onProgressChanged(SeekBar seekBar, int progress,
                                   boolean fromUser) {
         if (fromUser) {
-            zoom.setEnabled(false);
+            //zoom.setEnabled(false);
 
-            doCameraZoom();
-            zoomProgress = zoom.getProgress();
+            //doCameraZoom();
+            //zoomProgress = zoom.getProgress();
         }
     }
 
@@ -279,55 +286,55 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         // ignore
     }
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-
-            case MotionEvent.ACTION_DOWN:
-                mode = MOTION_EVENT_MODE_DRAG;
-                break;
-
-            case MotionEvent.ACTION_UP:
-
-            case MotionEvent.ACTION_POINTER_UP:
-                mode = MOTION_EVENT_MODE_NONE;
-                zoom.setProgress(zoomProgress);
-                break;
-
-            case MotionEvent.ACTION_POINTER_DOWN:
-                // Calculates the distance between two points where user touched.
-                oldDist = spacing(event);
-                // Minimal distance between both the fingers
-                if (oldDist > 0) {
-                    mode = MOTION_EVENT_MODE_ZOOM;
-                    zoom.setVisibility(View.VISIBLE);
-                }
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                // Pinch zooming in
-                if (mode == MOTION_EVENT_MODE_ZOOM) {
-                    float newDist = spacing(event);
-                    zoom.setVisibility(View.VISIBLE);
-
-                    // Zooming in
-                    if (newDist > oldDist && zoom.getProgress() < zoom.getMax()) {
-                        zoomProgress += 1;
-                        zoom.setProgress(zoomProgress);
-                        doCameraZoom();
-                    }
-                    // Zooming out
-                    if (newDist < oldDist && (zoom.getProgress() <= zoom.getMax()) && (zoom.getProgress() > 0)) {
-                        zoomProgress--;
-                        zoom.setProgress(zoomProgress);
-                        doCameraZoom();
-                    }
-                }
-                break;
-        }
-
-        return true;
-    }
+//    @Override
+//    public boolean onTouch(View v, MotionEvent event) {
+//        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+//
+//            case MotionEvent.ACTION_DOWN:
+//                mode = MOTION_EVENT_MODE_DRAG;
+//                break;
+//
+//            case MotionEvent.ACTION_UP:
+//
+//            case MotionEvent.ACTION_POINTER_UP:
+//                mode = MOTION_EVENT_MODE_NONE;
+//                zoom.setProgress(zoomProgress);
+//                break;
+//
+//            case MotionEvent.ACTION_POINTER_DOWN:
+//                // Calculates the distance between two points where user touched.
+//                oldDist = spacing(event);
+//                // Minimal distance between both the fingers
+//                if (oldDist > 0) {
+//                    mode = MOTION_EVENT_MODE_ZOOM;
+//                    zoom.setVisibility(View.VISIBLE);
+//                }
+//                break;
+//
+//            case MotionEvent.ACTION_MOVE:
+//                // Pinch zooming in
+//                if (mode == MOTION_EVENT_MODE_ZOOM) {
+//                    float newDist = spacing(event);
+//                    zoom.setVisibility(View.VISIBLE);
+//
+//                    // Zooming in
+//                    if (newDist > oldDist && zoom.getProgress() < zoom.getMax()) {
+//                        zoomProgress += 1;
+//                        zoom.setProgress(zoomProgress);
+//                        doCameraZoom();
+//                    }
+//                    // Zooming out
+//                    if (newDist < oldDist && (zoom.getProgress() <= zoom.getMax()) && (zoom.getProgress() > 0)) {
+//                        zoomProgress--;
+//                        zoom.setProgress(zoomProgress);
+//                        doCameraZoom();
+//                    }
+//                }
+//                break;
+//        }
+//
+//        return true;
+//    }
 
     /**
      * Check if flash is available for current camera
@@ -354,14 +361,14 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         return true;
     }
 
-    private void doCameraZoom() {
-        zoomTo(zoom.getProgress()).onComplete(new Runnable() {
-            @Override
-            public void run() {
-                zoom.setEnabled(true);
-            }
-        }).go();
-    }
+//    private void doCameraZoom() {
+//        zoomTo(zoom.getProgress()).onComplete(new Runnable() {
+//            @Override
+//            public void run() {
+//                zoom.setEnabled(true);
+//            }
+//        }).go();
+//    }
 
     private float spacing(MotionEvent event) {
         float x = event.getX(0) - event.getX(1);
@@ -374,22 +381,22 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         return x;
     }
 
-    private void hideSeekBar() {
-        zoom.postDelayed(new Runnable() {
-            public void run() {
-                zoom.setVisibility(View.GONE);
-            }
-        }, 5000);
-    }
+//    private void hideSeekBar() {
+//        zoom.postDelayed(new Runnable() {
+//            public void run() {
+//                zoom.setVisibility(View.GONE);
+//            }
+//        }, 5000);
+//    }
 
     private void setListeners() {
 
-        cancelTakePhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getActivity().finish();
-            }
-        });
+//        cancelTakePhoto.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                getActivity().finish();
+//            }
+//        });
 
         takePicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -398,12 +405,12 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
             }
         });
 
-        takePictureContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                takeSimplePicture();
-            }
-        });
+//        takePictureContainer.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                takeSimplePicture();
+//            }
+//        });
 // Set listener to change the size of the viewfinder rectangle.
         cameraBoxView.setOnTouchListener(new View.OnTouchListener() {
             int lastX = -1;
@@ -485,211 +492,211 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
             }
         });
 
-        showFlashTypes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Flash types menu is closing
-                if (flashMenuDisplayed) {
-                    for (TextView txView : flashTypes) {
-
-                        if (!txView.getTag().equals(selectedFlashType)) {
-                            txView.setVisibility(View.GONE);
-                        }
-                        txView.setTextColor(getResources().getColor(R.color.app_text_white));
-                    }
-                    flashMenuDisplayed = false;
-                }
-            }
-        });
-
-        flashAuto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Animation toLeftAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_in_left);
-
-                if (!flashMenuDisplayed) {
-                    showFlashTypes.setEnabled(true);
-                    for (TextView txView : flashTypes) {
-                        txView.setEnabled(true);
-                        txView.setVisibility(View.VISIBLE);
-
-                        if (txView.getTag().equals(selectedFlashType)) {
-                            txView.setTextColor(getResources().getColor(R.color.orange));
-                            txView.startAnimation(toLeftAnimation);
-                            toLeftAnimation.setAnimationListener(this.setVisibilityOnFinish(txView, View.VISIBLE, new Runnable() {
-
-                                public void run() {
-
-                                }
-                            }));
-                        } else {
-                            txView.setTextColor(getResources().getColor(R.color.app_text_white));
-                        }
-                    }
-                    flashMenuDisplayed = true;
-                } else {
-                    selectedFlashType = (String) view.getTag();
-                    setFlashMode(Parameters.FLASH_MODE_AUTO);
-
-                    flashOn.setVisibility(View.GONE);
-                    flashOff.setVisibility(View.GONE);
-                    flashMenuDisplayed = false;
-
-                    final Animation toRightAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_out_left);
-                    toRightAnimation.setAnimationListener(this.setVisibilityOnFinish(flashAuto, View.VISIBLE, new Runnable() {
-
-                        public void run() {
-
-                        }
-                    }));
-                }
-            }
-
-            private Animation.AnimationListener setVisibilityOnFinish(TextView flashAuto, int visible, Runnable runnable) {
-                return null;
-            }
-        });
-
-        flashOn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Animation toLeftAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_in_left);
-
-                if (!flashMenuDisplayed) {
-                    showFlashTypes.setEnabled(true);
-                    for (TextView txView : flashTypes) {
-                        txView.setEnabled(true);
-                        txView.setVisibility(View.VISIBLE);
-
-                        if (txView.getTag().equals(selectedFlashType)) {
-                            txView.setTextColor(getResources().getColor(R.color.orange));
-                            txView.startAnimation(toLeftAnimation);
-                            toLeftAnimation.setAnimationListener(this.setVisibilityOnFinish(txView, View.VISIBLE, new Runnable() {
-
-                                public void run() {
-
-                                }
-                            }));
-                        } else {
-                            txView.setTextColor(getResources().getColor(R.color.app_text_white));
-                        }
-                    }
-                    flashMenuDisplayed = true;
-                } else {
-                    selectedFlashType = (String) view.getTag();
-                    setFlashMode(Parameters.FLASH_MODE_ON);
-
-                    flashOn.setTextColor(getResources().getColor(R.color.orange));
-                    flashAuto.setVisibility(View.GONE);
-                    flashOff.setVisibility(View.GONE);
-                    flashMenuDisplayed = false;
-
-                    final Animation toRightAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_out_left);
-                    toRightAnimation.setAnimationListener(this.setVisibilityOnFinish(flashOn, View.VISIBLE, new Runnable() {
-
-                        public void run() {
-
-                        }
-                    }));
-                }
-            }
-
-            private Animation.AnimationListener setVisibilityOnFinish(TextView flashOn, int visible, Runnable runnable) {
-                return null;
-            }
-        });
-
-        flashOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Animation toLeftAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_in_left);
-
-                if (!flashMenuDisplayed) {
-                    showFlashTypes.setEnabled(true);
-                    for (TextView txView : flashTypes) {
-                        txView.setEnabled(true);
-                        txView.setVisibility(View.VISIBLE);
-
-                        if (txView.getTag().equals(selectedFlashType)) {
-                            txView.setTextColor(getResources().getColor(R.color.orange));
-                            txView.startAnimation(toLeftAnimation);
-                            toLeftAnimation.setAnimationListener(this.setVisibilityOnFinish(txView, View.VISIBLE, new Runnable() {
-
-                                public void run() {
-
-                                }
-                            }));
-                        } else {
-                            txView.setTextColor(getResources().getColor(R.color.app_text_white));
-                        }
-                    }
-                    flashMenuDisplayed = true;
-                } else {
-                    selectedFlashType = (String) view.getTag();
-                    setFlashMode(Parameters.FLASH_MODE_OFF);
-
-                    flashOn.setVisibility(View.GONE);
-                    flashAuto.setVisibility(View.GONE);
-                    flashMenuDisplayed = false;
-
-                    final Animation toRightAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_out_left);
-                    toRightAnimation.setAnimationListener(this.setVisibilityOnFinish(flashOff, View.VISIBLE, new Runnable() {
-
-                        public void run() {
-
-                        }
-                    }));
-                }
-            }
-
-            private Animation.AnimationListener setVisibilityOnFinish(TextView flashOff, int visible, Runnable runnable) {
-                return null;
-            }
-        });
+//        showFlashTypes.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                // Flash types menu is closing
+//                if (flashMenuDisplayed) {
+//                    for (TextView txView : flashTypes) {
+//
+//                        if (!txView.getTag().equals(selectedFlashType)) {
+//                            txView.setVisibility(View.GONE);
+//                        }
+//                        txView.setTextColor(getResources().getColor(R.color.app_text_white));
+//                    }
+//                    flashMenuDisplayed = false;
+//                }
+//            }
+//        });
+//
+//        flashAuto.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                final Animation toLeftAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_in_left);
+//
+//                if (!flashMenuDisplayed) {
+//                    showFlashTypes.setEnabled(true);
+//                    for (TextView txView : flashTypes) {
+//                        txView.setEnabled(true);
+//                        txView.setVisibility(View.VISIBLE);
+//
+//                        if (txView.getTag().equals(selectedFlashType)) {
+//                            txView.setTextColor(getResources().getColor(R.color.orange));
+//                            txView.startAnimation(toLeftAnimation);
+//                            toLeftAnimation.setAnimationListener(this.setVisibilityOnFinish(txView, View.VISIBLE, new Runnable() {
+//
+//                                public void run() {
+//
+//                                }
+//                            }));
+//                        } else {
+//                            txView.setTextColor(getResources().getColor(R.color.app_text_white));
+//                        }
+//                    }
+//                    flashMenuDisplayed = true;
+//                } else {
+//                    selectedFlashType = (String) view.getTag();
+//                    setFlashMode(Parameters.FLASH_MODE_AUTO);
+//
+//                    flashOn.setVisibility(View.GONE);
+//                    flashOff.setVisibility(View.GONE);
+//                    flashMenuDisplayed = false;
+//
+//                    final Animation toRightAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_out_left);
+//                    toRightAnimation.setAnimationListener(this.setVisibilityOnFinish(flashAuto, View.VISIBLE, new Runnable() {
+//
+//                        public void run() {
+//
+//                        }
+//                    }));
+//                }
+//            }
+//
+//            private Animation.AnimationListener setVisibilityOnFinish(TextView flashAuto, int visible, Runnable runnable) {
+//                return null;
+//            }
+//        });
+//
+//        flashOn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                final Animation toLeftAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_in_left);
+//
+//                if (!flashMenuDisplayed) {
+//                    showFlashTypes.setEnabled(true);
+//                    for (TextView txView : flashTypes) {
+//                        txView.setEnabled(true);
+//                        txView.setVisibility(View.VISIBLE);
+//
+//                        if (txView.getTag().equals(selectedFlashType)) {
+//                            txView.setTextColor(getResources().getColor(R.color.orange));
+//                            txView.startAnimation(toLeftAnimation);
+//                            toLeftAnimation.setAnimationListener(this.setVisibilityOnFinish(txView, View.VISIBLE, new Runnable() {
+//
+//                                public void run() {
+//
+//                                }
+//                            }));
+//                        } else {
+//                            txView.setTextColor(getResources().getColor(R.color.app_text_white));
+//                        }
+//                    }
+//                    flashMenuDisplayed = true;
+//                } else {
+//                    selectedFlashType = (String) view.getTag();
+//                    setFlashMode(Parameters.FLASH_MODE_ON);
+//
+//                    flashOn.setTextColor(getResources().getColor(R.color.orange));
+//                    flashAuto.setVisibility(View.GONE);
+//                    flashOff.setVisibility(View.GONE);
+//                    flashMenuDisplayed = false;
+//
+//                    final Animation toRightAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_out_left);
+//                    toRightAnimation.setAnimationListener(this.setVisibilityOnFinish(flashOn, View.VISIBLE, new Runnable() {
+//
+//                        public void run() {
+//
+//                        }
+//                    }));
+//                }
+//            }
+//
+//            private Animation.AnimationListener setVisibilityOnFinish(TextView flashOn, int visible, Runnable runnable) {
+//                return null;
+//            }
+//        });
+//
+//        flashOff.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                final Animation toLeftAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_in_left);
+//
+//                if (!flashMenuDisplayed) {
+//                    showFlashTypes.setEnabled(true);
+//                    for (TextView txView : flashTypes) {
+//                        txView.setEnabled(true);
+//                        txView.setVisibility(View.VISIBLE);
+//
+//                        if (txView.getTag().equals(selectedFlashType)) {
+//                            txView.setTextColor(getResources().getColor(R.color.orange));
+//                            txView.startAnimation(toLeftAnimation);
+//                            toLeftAnimation.setAnimationListener(this.setVisibilityOnFinish(txView, View.VISIBLE, new Runnable() {
+//
+//                                public void run() {
+//
+//                                }
+//                            }));
+//                        } else {
+//                            txView.setTextColor(getResources().getColor(R.color.app_text_white));
+//                        }
+//                    }
+//                    flashMenuDisplayed = true;
+//                } else {
+//                    selectedFlashType = (String) view.getTag();
+//                    setFlashMode(Parameters.FLASH_MODE_OFF);
+//
+//                    flashOn.setVisibility(View.GONE);
+//                    flashAuto.setVisibility(View.GONE);
+//                    flashMenuDisplayed = false;
+//
+//                    final Animation toRightAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.translate_out_left);
+//                    toRightAnimation.setAnimationListener(this.setVisibilityOnFinish(flashOff, View.VISIBLE, new Runnable() {
+//
+//                        public void run() {
+//
+//                        }
+//                    }));
+//                }
+//            }
+//
+//            private Animation.AnimationListener setVisibilityOnFinish(TextView flashOff, int visible, Runnable runnable) {
+//                return null;
+//            }
+//        });
     }
 
-    /**
-     * Performs required action to accommodate new orientation
-     *
-     * @param orientation
-     */
-    private void changeRotation(int orientation) {
-        switch (orientation) {
-
-            case ORIENTATION_PORTRAIT_NORMAL:
-                takePicture.setRotation(0);
-                showFlashTypes.setRotation(0);
-                cancelTakePhoto.setRotation(0);
-                flashAuto.setRotation(0);
-                flashOn.setRotation(0);
-                flashOff.setRotation(0);
-                break;
-            case ORIENTATION_LANDSCAPE_NORMAL:
-                takePicture.setRotation(90);
-                showFlashTypes.setRotation(90);
-                cancelTakePhoto.setRotation(90);
-                flashAuto.setRotation(90);
-                flashOn.setRotation(90);
-                flashOff.setRotation(90);
-                break;
-            case ORIENTATION_PORTRAIT_INVERTED:
-                takePicture.setRotation(180);
-                showFlashTypes.setRotation(180);
-                cancelTakePhoto.setRotation(180);
-                flashAuto.setRotation(180);
-                flashOn.setRotation(180);
-                flashOff.setRotation(180);
-                break;
-            case ORIENTATION_LANDSCAPE_INVERTED:
-                takePicture.setRotation(270);
-                showFlashTypes.setRotation(270);
-                cancelTakePhoto.setRotation(270);
-                flashAuto.setRotation(270);
-                flashOn.setRotation(270);
-                flashOff.setRotation(270);
-                break;
-        }
-    }
+//    /**
+//     * Performs required action to accommodate new orientation
+//     *
+//     * @param orientation
+//     */
+//    private void changeRotation(int orientation) {
+//        switch (orientation) {
+//
+//            case ORIENTATION_PORTRAIT_NORMAL:
+//                takePicture.setRotation(0);
+//                showFlashTypes.setRotation(0);
+//                cancelTakePhoto.setRotation(0);
+//                flashAuto.setRotation(0);
+//                flashOn.setRotation(0);
+//                flashOff.setRotation(0);
+//                break;
+//            case ORIENTATION_LANDSCAPE_NORMAL:
+//                takePicture.setRotation(90);
+//                showFlashTypes.setRotation(90);
+//                cancelTakePhoto.setRotation(90);
+//                flashAuto.setRotation(90);
+//                flashOn.setRotation(90);
+//                flashOff.setRotation(90);
+//                break;
+//            case ORIENTATION_PORTRAIT_INVERTED:
+//                takePicture.setRotation(180);
+//                showFlashTypes.setRotation(180);
+//                cancelTakePhoto.setRotation(180);
+//                flashAuto.setRotation(180);
+//                flashOn.setRotation(180);
+//                flashOff.setRotation(180);
+//                break;
+//            case ORIENTATION_LANDSCAPE_INVERTED:
+//                takePicture.setRotation(270);
+//                showFlashTypes.setRotation(270);
+//                cancelTakePhoto.setRotation(270);
+//                flashAuto.setRotation(270);
+//                flashOn.setRotation(270);
+//                flashOff.setRotation(270);
+//                break;
+//        }
+//    }
 
 
     private void takeSimplePicture() {
@@ -788,7 +795,7 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         public void autoFocusAvailable() {
             if (supportsFaces) {
                 startFaceDetection();
-                doCameraZoom();
+                //doCameraZoom();
             }
             takePicture.setEnabled(true);
         }
@@ -814,29 +821,30 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         public Parameters adjustPreviewParameters(Parameters parameters) {
             if (hasFlash) {
 
-                if (selectedFlashType.equals(flashOn.getTag())) {
-                    setFlashMode(Parameters.FLASH_MODE_ON);
-                } else if (selectedFlashType.equals(flashOff.getTag())) {
-                    setFlashMode(Parameters.FLASH_MODE_OFF);
-                } else if (selectedFlashType.equals(flashAuto.getTag())) {
-                    setFlashMode(Parameters.FLASH_MODE_AUTO);
-                } else {
-                    setFlashMode(Parameters.FLASH_MODE_AUTO);
-                }
+//                if (selectedFlashType.equals(flashOn.getTag())) {
+//                    setFlashMode(Parameters.FLASH_MODE_ON);
+//                } else if (selectedFlashType.equals(flashOff.getTag())) {
+//                    setFlashMode(Parameters.FLASH_MODE_OFF);
+//                } else if (selectedFlashType.equals(flashAuto.getTag())) {
+//                    setFlashMode(Parameters.FLASH_MODE_AUTO);
+//                } else {
+//                    setFlashMode(Parameters.FLASH_MODE_AUTO);
+//                }
+                setFlashMode(Parameters.FLASH_MODE_OFF);
             }
 
             if (doesZoomReallyWork() && parameters.getMaxZoom() > 0) {
                 zoomTo((int) zoomProgress).onComplete(new Runnable() {
                     @Override
                     public void run() {
-                        zoom.setEnabled(true);
+                       // zoom.setEnabled(true);
                     }
                 }).go();
-                zoom.setMax(parameters.getMaxZoom());
-                zoom.setOnSeekBarChangeListener(FCameraFragment.this);
-                cameraContainer.setOnTouchListener(FCameraFragment.this);
+                ///zoom.setMax(parameters.getMaxZoom());
+                //zoom.setOnSeekBarChangeListener(FCameraFragment.this);
+                //cameraContainer.setOnTouchListener(FCameraFragment.this);
             } else {
-                zoom.setEnabled(false);
+               // zoom.setEnabled(false);
             }
 
             if (parameters.getMaxNumDetectedFaces() > 0) {
@@ -851,17 +859,18 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         @Override
         public Camera.Parameters adjustPictureParameters(PictureTransaction xact,
                                                          Camera.Parameters parameters) {
-            if (hasFlash) {
-                if (selectedFlashType.equals(flashOn.getTag())) {
-                    setFlashMode(Parameters.FLASH_MODE_ON);
-                } else if (selectedFlashType.equals(flashOff.getTag())) {
-                    setFlashMode(Parameters.FLASH_MODE_OFF);
-                } else if (selectedFlashType.equals(flashAuto.getTag())) {
-                    setFlashMode(Parameters.FLASH_MODE_AUTO);
-                } else {
-                    setFlashMode(Parameters.FLASH_MODE_AUTO);
-                }
-            }
+//            if (hasFlash) {
+//                if (selectedFlashType.equals(flashOn.getTag())) {
+//                    setFlashMode(Parameters.FLASH_MODE_ON);
+//                } else if (selectedFlashType.equals(flashOff.getTag())) {
+//                    setFlashMode(Parameters.FLASH_MODE_OFF);
+//                } else if (selectedFlashType.equals(flashAuto.getTag())) {
+//                    setFlashMode(Parameters.FLASH_MODE_AUTO);
+//                } else {
+//                    setFlashMode(Parameters.FLASH_MODE_AUTO);
+//                }
+//            }
+            setFlashMode(Parameters.FLASH_MODE_OFF);
             parameters.setFocusMode(Parameters.FOCUS_MODE_MACRO);
             return (parameters);
         }

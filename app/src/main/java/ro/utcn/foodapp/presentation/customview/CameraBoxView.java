@@ -99,7 +99,6 @@ public class CameraBoxView extends View {
         this.cameraManager = cameraManager;
     }
 
-    @SuppressWarnings("unused")
     @Override
     public void onDraw(Canvas canvas) {
         Rect frame = cameraManager.getFramingRect();
