@@ -125,6 +125,8 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         cameraContainer = (FrameLayout) results.findViewById(R.id.camera_container);
         cameraBoxView = (CameraBoxView) results.findViewById(R.id.camera_box_view);
 
+        cameraBoxView.setCameraManager(cameraManager);
+
         flashTypes = new ArrayList<TextView>();
         flashTypes.add(flashAuto);
         flashTypes.add(flashOn);

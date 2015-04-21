@@ -92,12 +92,12 @@ public class CameraBoxView extends View {
         //    bounds = new Rect();
         previewFrame = new Rect();
         rect = new Rect();
-        cameraManager = new CameraManager(context);
+        //cameraManager = new CameraManager(context);
     }
 
-//    public void setCameraManager(CameraManager cameraManager) {
-//        this.cameraManager = cameraManager;
-//    }
+    public void setCameraManager(CameraManager cameraManager) {
+        this.cameraManager = cameraManager;
+    }
 
     @SuppressWarnings("unused")
     @Override
