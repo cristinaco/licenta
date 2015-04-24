@@ -4,11 +4,6 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
-import android.os.Handler;
-
-import java.io.IOException;
-
-import ro.utcn.foodapp.ocr.PlanarYUVLuminanceSource;
 
 /**
  * This object wraps the Camera service object and expects to be the only one talking to it. The
@@ -17,16 +12,16 @@ import ro.utcn.foodapp.ocr.PlanarYUVLuminanceSource;
  * Created by coponipi on 20.04.2015.
  */
 public class CameraManager {
-//    private static final String TAG = CameraManager.class.getSimpleName();
+    //    private static final String TAG = CameraManager.class.getSimpleName();
 //
     private static final int MIN_FRAME_WIDTH = 50; // originally 240
     private static final int MIN_FRAME_HEIGHT = 20; // originally 240
     private static final int MAX_FRAME_WIDTH = 800; // originally 480
     private static final int MAX_FRAME_HEIGHT = 600; // originally 360
-//
+    //
     private final Context context;
     private final CameraConfigurationManager configManager;
-//    /**
+    //    /**
 //     * Preview frames are delivered here, which we pass on to the registered handler. Make sure to
 //     * clear the handler so it will only receive one message.
 //     */
@@ -36,11 +31,12 @@ public class CameraManager {
     private Rect framingRect;
     private Rect framingRectInPreview;
     private boolean initialized;
-//    private boolean previewing;
+    //    private boolean previewing;
 //    private boolean reverseImage;
     private int requestedFramingRectWidth;
     private int requestedFramingRectHeight;
-//
+
+    //
     public CameraManager(Context context) {
         this.context = context;
         this.configManager = new CameraConfigurationManager(context);
@@ -145,6 +141,7 @@ public class CameraManager {
 //        autoFocusManager.start(delay);
 //    }
 //
+
     /**
      * Calculates the framing rect which the UI should draw to show the user where to place the
      * barcode. This target helps with alignment as well as forces the user to hold the device
@@ -154,9 +151,6 @@ public class CameraManager {
      */
     public synchronized Rect getFramingRect() {
         if (framingRect == null) {
-//            if (camera == null) {
-//                return null;
-//            }
             Point screenResolution = configManager.getScreenResolution();
             if (screenResolution == null) {
                 // Called early, before init even finished
@@ -180,29 +174,29 @@ public class CameraManager {
         }
         return framingRect;
     }
-//
-//    /**
-//     * Like {@link #getFramingRect} but coordinates are in terms of the preview frame,
-//     * not UI / screen.
-//     */
-//    public synchronized Rect getFramingRectInPreview() {
-//        if (framingRectInPreview == null) {
-//            Rect rect = new Rect(getFramingRect());
-//            Point cameraResolution = configManager.getCameraResolution();
-//            Point screenResolution = configManager.getScreenResolution();
-//            if (cameraResolution == null || screenResolution == null) {
-//                // Called early, before init even finished
-//                return null;
-//            }
-//            rect.left = rect.left * cameraResolution.x / screenResolution.x;
-//            rect.right = rect.right * cameraResolution.x / screenResolution.x;
-//            rect.top = rect.top * cameraResolution.y / screenResolution.y;
-//            rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
-//            framingRectInPreview = rect;
-//        }
-//        return framingRectInPreview;
-//    }
-//
+
+    /**
+     * Like {@link #getFramingRect} but coordinates are in terms of the preview frame,
+     * not UI / screen.
+     */
+    public synchronized Rect getFramingRectInPreview() {
+        if (framingRectInPreview == null) {
+            Rect rect = new Rect(getFramingRect());
+            Point cameraResolution = configManager.getCameraResolution();
+            Point screenResolution = configManager.getScreenResolution();
+            if (cameraResolution == null || screenResolution == null) {
+                // Called early, before init even finished
+                return null;
+            }
+            rect.left = rect.left * cameraResolution.x / screenResolution.x;
+            rect.right = rect.right * cameraResolution.x / screenResolution.x;
+            rect.top = rect.top * cameraResolution.y / screenResolution.y;
+            rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
+            framingRectInPreview = rect;
+        }
+        return framingRectInPreview;
+    }
+
     /**
      * Changes the size of the framing rect.
      *
@@ -211,22 +205,22 @@ public class CameraManager {
      */
     public synchronized void adjustFramingRect(int deltaWidth, int deltaHeight) {
         //if (initialized) {
-            Point screenResolution = configManager.getScreenResolution();
+        Point screenResolution = configManager.getScreenResolution();
 
-            // Set maximum and minimum sizes
-            if ((framingRect.width() + deltaWidth > screenResolution.x - 4) || (framingRect.width() + deltaWidth < 50)) {
-                deltaWidth = 0;
-            }
-            if ((framingRect.height() + deltaHeight > screenResolution.y - 4) || (framingRect.height() + deltaHeight < 50)) {
-                deltaHeight = 0;
-            }
+        // Set maximum and minimum sizes
+        if ((framingRect.width() + deltaWidth > screenResolution.x - 4) || (framingRect.width() + deltaWidth < 50)) {
+            deltaWidth = 0;
+        }
+        if ((framingRect.height() + deltaHeight > screenResolution.y - 4) || (framingRect.height() + deltaHeight < 50)) {
+            deltaHeight = 0;
+        }
 
-            int newWidth = framingRect.width() + deltaWidth;
-            int newHeight = framingRect.height() + deltaHeight;
-            int leftOffset = (screenResolution.x - newWidth) / 2;
-            int topOffset = (screenResolution.y - newHeight) / 2;
-            framingRect = new Rect(leftOffset, topOffset, leftOffset + newWidth, topOffset + newHeight);
-            framingRectInPreview = null;
+        int newWidth = framingRect.width() + deltaWidth;
+        int newHeight = framingRect.height() + deltaHeight;
+        int leftOffset = (screenResolution.x - newWidth) / 2;
+        int topOffset = (screenResolution.y - newHeight) / 2;
+        framingRect = new Rect(leftOffset, topOffset, leftOffset + newWidth, topOffset + newHeight);
+        framingRectInPreview = null;
 //        } else {
 //            requestedFramingRectWidth = deltaWidth;
 //            requestedFramingRectHeight = deltaHeight;

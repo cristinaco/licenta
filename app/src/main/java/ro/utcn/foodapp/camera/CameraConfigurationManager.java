@@ -40,7 +40,7 @@ import java.util.List;
  * <p/>
  * The code for this class was adapted from the ZXing project: http://code.google.com/p/zxing
  */
-final class CameraConfigurationManager {
+public class CameraConfigurationManager {
 
     private static final String TAG = "CameraConfiguration";
     // This is bigger than the size of a small screen, which is still supported. The routine
@@ -50,8 +50,8 @@ final class CameraConfigurationManager {
     private static final int MAX_PREVIEW_PIXELS = 800 * 600; // more than large/HD screen
 
     private final Context context;
-    private Point screenResolution;
-    private Point cameraResolution;
+    private static Point screenResolution;
+    private static Point cameraResolution;
 
     CameraConfigurationManager(Context context) {
         this.context = context;
@@ -153,11 +153,11 @@ final class CameraConfigurationManager {
         camera.setParameters(parameters);
     }
 
-    Point getCameraResolution() {
+    public static Point getCameraResolution() {
         return cameraResolution;
     }
 
-    Point getScreenResolution() {
+    public static Point getScreenResolution() {
         return screenResolution;
     }
 

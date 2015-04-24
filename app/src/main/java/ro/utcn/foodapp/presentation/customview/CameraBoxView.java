@@ -6,6 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.List;
@@ -67,6 +69,7 @@ public class CameraBoxView extends View {
     private final int frameColor;
     private final int cornerColor;
     private CameraManager cameraManager;
+    private OnTouchListener touchListener;
     //private OcrResultText resultText;
     private String[] words;
     private List<Rect> regionBoundingBoxes;
@@ -92,6 +95,7 @@ public class CameraBoxView extends View {
         //    bounds = new Rect();
         previewFrame = new Rect();
         rect = new Rect();
+        this.setOnTouchListener(getTouchListener());
         //cameraManager = new CameraManager(context);
     }
 
@@ -294,8 +298,101 @@ public class CameraBoxView extends View {
         //postInvalidateDelayed(ANIMATION_DELAY, frame.left, frame.top, frame.right, frame.bottom);
     }
 
+    private OnTouchListener getTouchListener() {
+        if (touchListener == null)
+            touchListener = new OnTouchListener() {
+                int lastX = -1;
+                int lastY = -1;
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            lastX = -1;
+                            lastY = -1;
+                            return true;
+                        case MotionEvent.ACTION_MOVE:
+                            int currentX = (int) event.getX();
+                            int currentY = (int) event.getY();
+
+                            try {
+                                rect = cameraManager.getFramingRect();
+
+                                final int BUFFER = 50;
+                                final int BIG_BUFFER = 60;
+                                if (lastX >= 0) {
+                                    // Adjust the size of the viewfinder rectangle. Check if the touch event occurs in the corner areas first, because the regions overlap.
+                                    if (((currentX >= getRect().left - BIG_BUFFER && currentX <= getRect().left + BIG_BUFFER) || (lastX >= getRect().left - BIG_BUFFER && lastX <= getRect().left + BIG_BUFFER))
+                                            && ((currentY <= getRect().top + BIG_BUFFER && currentY >= getRect().top - BIG_BUFFER) || (lastY <= getRect().top + BIG_BUFFER && lastY >= getRect().top - BIG_BUFFER))) {
+                                        // Top left corner: adjust both top and left sides
+                                        cameraManager.adjustFramingRect(2 * (lastX - currentX), 2 * (lastY - currentY));
+                                        //cameraBoxView.removeResultText();
+                                    } else if (((currentX >= getRect().right - BIG_BUFFER && currentX <= getRect().right + BIG_BUFFER) || (lastX >= getRect().right - BIG_BUFFER && lastX <= getRect().right + BIG_BUFFER))
+                                            && ((currentY <= getRect().top + BIG_BUFFER && currentY >= getRect().top - BIG_BUFFER) || (lastY <= getRect().top + BIG_BUFFER && lastY >= getRect().top - BIG_BUFFER))) {
+                                        // Top right corner: adjust both top and right sides
+                                        cameraManager.adjustFramingRect(2 * (currentX - lastX), 2 * (lastY - currentY));
+                                        //cameraBoxView.removeResultText();
+                                    } else if (((currentX >= getRect().left - BIG_BUFFER && currentX <= getRect().left + BIG_BUFFER) || (lastX >= getRect().left - BIG_BUFFER && lastX <= getRect().left + BIG_BUFFER))
+                                            && ((currentY <= getRect().bottom + BIG_BUFFER && currentY >= getRect().bottom - BIG_BUFFER) || (lastY <= getRect().bottom + BIG_BUFFER && lastY >= getRect().bottom - BIG_BUFFER))) {
+                                        // Bottom left corner: adjust both bottom and left sides
+                                        cameraManager.adjustFramingRect(2 * (lastX - currentX), 2 * (currentY - lastY));
+                                        //cameraBoxView.removeResultText();
+                                    } else if (((currentX >= getRect().right - BIG_BUFFER && currentX <= getRect().right + BIG_BUFFER) || (lastX >= getRect().right - BIG_BUFFER && lastX <= getRect().right + BIG_BUFFER))
+                                            && ((currentY <= getRect().bottom + BIG_BUFFER && currentY >= getRect().bottom - BIG_BUFFER) || (lastY <= getRect().bottom + BIG_BUFFER && lastY >= getRect().bottom - BIG_BUFFER))) {
+                                        // Bottom right corner: adjust both bottom and right sides
+                                        cameraManager.adjustFramingRect(2 * (currentX - lastX), 2 * (currentY - lastY));
+                                        //cameraBoxView.removeResultText();
+                                    } else if (((currentX >= getRect().left - BUFFER && currentX <= getRect().left + BUFFER) || (lastX >= getRect().left - BUFFER && lastX <= getRect().left + BUFFER))
+                                            && ((currentY <= getRect().bottom && currentY >= getRect().top) || (lastY <= getRect().bottom && lastY >= getRect().top))) {
+                                        // Adjusting left side: event falls within BUFFER pixels of left side, and between top and bottom side limits
+                                        cameraManager.adjustFramingRect(2 * (lastX - currentX), 0);
+                                        //cameraBoxView.removeResultText();
+                                    } else if (((currentX >= getRect().right - BUFFER && currentX <= getRect().right + BUFFER) || (lastX >= getRect().right - BUFFER && lastX <= getRect().right + BUFFER))
+                                            && ((currentY <= getRect().bottom && currentY >= getRect().top) || (lastY <= getRect().bottom && lastY >= getRect().top))) {
+                                        // Adjusting right side: event falls within BUFFER pixels of right side, and between top and bottom side limits
+                                        cameraManager.adjustFramingRect(2 * (currentX - lastX), 0);
+                                        //cameraBoxView.removeResultText();
+                                    } else if (((currentY <= getRect().top + BUFFER && currentY >= getRect().top - BUFFER) || (lastY <= getRect().top + BUFFER && lastY >= getRect().top - BUFFER))
+                                            && ((currentX <= getRect().right && currentX >= getRect().left) || (lastX <= getRect().right && lastX >= getRect().left))) {
+                                        // Adjusting top side: event falls within BUFFER pixels of top side, and between left and right side limits
+                                        cameraManager.adjustFramingRect(0, 2 * (lastY - currentY));
+                                        //cameraBoxView.removeResultText();
+                                    } else if (((currentY <= getRect().bottom + BUFFER && currentY >= getRect().bottom - BUFFER) || (lastY <= getRect().bottom + BUFFER && lastY >= getRect().bottom - BUFFER))
+                                            && ((currentX <= getRect().right && currentX >= getRect().left) || (lastX <= getRect().right && lastX >= getRect().left))) {
+                                        // Adjusting bottom side: event falls within BUFFER pixels of bottom side, and between left and right side limits
+                                        cameraManager.adjustFramingRect(0, 2 * (currentY - lastY));
+                                        //cameraBoxView.removeResultText();
+                                    }
+                                }
+                            } catch (NullPointerException e) {
+                                Log.e("Error", "Framing rect not available", e);
+                            }
+                            v.invalidate();
+                            lastX = currentX;
+                            lastY = currentY;
+                            return true;
+                        case MotionEvent.ACTION_UP:
+                            lastX = -1;
+                            lastY = -1;
+                            return true;
+                    }
+                    return false;
+                }
+            };
+
+        return touchListener;
+    }
+
     public void drawViewfinder() {
         invalidate();
+    }
+
+    public Rect getRect() {
+        return rect;
+    }
+
+    public void setRect(Rect rect) {
+        this.rect = rect;
     }
 
 //    /**
