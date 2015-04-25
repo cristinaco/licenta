@@ -32,5 +32,8 @@
     <string name="activity_add_product_image">Picture of the product</string>
     <string name="product_expiration_date">Expiration date</string>
     <string name="product_expiration_status">Expiration status</string>
+    <string name="title_activity_capture">CaptureActivity</string>
+
+    <string name="image_dialog_description">Image Preview</string>
 
 </resources>

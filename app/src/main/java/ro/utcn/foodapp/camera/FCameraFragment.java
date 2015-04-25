@@ -11,7 +11,6 @@ import android.hardware.Camera.Parameters;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.FloatMath;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.OrientationEventListener;
@@ -81,7 +80,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
     private int zoomProgress = 0;
     private float oldDist = 1f;
 
-
     public static FCameraFragment newInstance(boolean useFFC) {
         FCameraFragment f = new FCameraFragment();
         Bundle args = new Bundle();
@@ -112,7 +110,7 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         ((ViewGroup) results.findViewById(R.id.camera_container)).addView(cameraView);
 
         //zoom = (SeekBar) results.findViewById(R.id.zoom);
-        takePicture = (ImageView) results.findViewById(R.id.take_photo);
+        takePicture = (ImageView) results.findViewById(R.id.activity_capture_take_photo_btn);
         //takePictureContainer = (LinearLayout) results.findViewById(R.id.take_picture_container);
 //        showFlashTypes = (ImageButton) results.findViewById(R.id.camera_display_flash_types);
 //        cancelTakePhoto = (TextView) results.findViewById(R.id.camera_cancel_take_photo);
@@ -123,7 +121,7 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         cameraBoxView = (CameraBoxView) results.findViewById(R.id.camera_box_view);
 //        RelativeLayout flashBtnContainer = (RelativeLayout) results.findViewById(R.id.camera_flash_buttons_container);
 
-        cameraBoxView.setCameraManager(cameraManager);
+        //cameraBoxView.setCameraManager(cameraManager);
 
 //        flashTypes = new ArrayList<TextView>();
 //        flashTypes.add(flashAuto);
@@ -771,8 +769,8 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
             if (useSingleShotMode()) {
                 singleShotProcessing = false;
                 // TODO crop the image: get only the image within the camera box
-                //Bitmap bmp = BitmapUtils.cropImage(image, cameraBoxView.getRect());
-                Bitmap bmp = BitmapUtils.cropImage(image, cameraManager.getFramingRectInPreview());
+
+                Bitmap bmp = BitmapUtils.cropImage(getActivity().getApplicationContext(), image, cameraBoxView.getBox());
 
                 super.saveImage(pictureTransaction, bmp);
                 Intent displayPhotoIntent = new Intent(getActivity(), PreviewPhotoActivity.class);
@@ -822,34 +820,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
 
         @Override
         public Parameters adjustPreviewParameters(Parameters parameters) {
-            if (hasFlash) {
-
-//                if (selectedFlashType.equals(flashOn.getTag())) {
-//                    setFlashMode(Parameters.FLASH_MODE_ON);
-//                } else if (selectedFlashType.equals(flashOff.getTag())) {
-//                    setFlashMode(Parameters.FLASH_MODE_OFF);
-//                } else if (selectedFlashType.equals(flashAuto.getTag())) {
-//                    setFlashMode(Parameters.FLASH_MODE_AUTO);
-//                } else {
-//                    setFlashMode(Parameters.FLASH_MODE_AUTO);
-//                }
-                setFlashMode(Parameters.FLASH_MODE_OFF);
-            }
-
-            if (doesZoomReallyWork() && parameters.getMaxZoom() > 0) {
-                zoomTo((int) zoomProgress).onComplete(new Runnable() {
-                    @Override
-                    public void run() {
-                        // zoom.setEnabled(true);
-                    }
-                }).go();
-                ///zoom.setMax(parameters.getMaxZoom());
-                //zoom.setOnSeekBarChangeListener(FCameraFragment.this);
-                //cameraContainer.setOnTouchListener(FCameraFragment.this);
-            } else {
-                // zoom.setEnabled(false);
-            }
-
             if (parameters.getMaxNumDetectedFaces() > 0) {
                 supportsFaces = true;
             }
@@ -862,17 +832,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         @Override
         public Camera.Parameters adjustPictureParameters(PictureTransaction xact,
                                                          Camera.Parameters parameters) {
-//            if (hasFlash) {
-//                if (selectedFlashType.equals(flashOn.getTag())) {
-//                    setFlashMode(Parameters.FLASH_MODE_ON);
-//                } else if (selectedFlashType.equals(flashOff.getTag())) {
-//                    setFlashMode(Parameters.FLASH_MODE_OFF);
-//                } else if (selectedFlashType.equals(flashAuto.getTag())) {
-//                    setFlashMode(Parameters.FLASH_MODE_AUTO);
-//                } else {
-//                    setFlashMode(Parameters.FLASH_MODE_AUTO);
-//                }
-//            }
             setFlashMode(Parameters.FLASH_MODE_OFF);
             parameters.setFocusMode(Parameters.FOCUS_MODE_MACRO);
             return (parameters);

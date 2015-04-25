@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import ro.utcn.foodapp.R;
 import ro.utcn.foodapp.camera.CameraActivity;
+import ro.utcn.foodapp.engenoid.tessocrtest.*;
 import ro.utcn.foodapp.model.Product;
 import ro.utcn.foodapp.utils.FileUtil;
 
@@ -107,7 +108,7 @@ public class AddProductActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 if (Camera.getNumberOfCameras() > 0) {
-                    final Intent takePictureIntent = new Intent(AddProductActivity.this, CameraActivity.class);
+                    final Intent takePictureIntent = new Intent(AddProductActivity.this, ro.utcn.foodapp.engenoid.tessocrtest.MainActivity.class);
                     tempFilePath = new File(tempDir, String.valueOf(System.currentTimeMillis() + ".jpg"));
                     takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
                     takePictureIntent.putExtra(TEMP_DIR_PATH, tempDir.getAbsolutePath());

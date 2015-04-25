@@ -68,10 +68,6 @@ public class CameraActivity extends Activity implements
                 getActionBar().setSelectedNavigationItem(savedInstanceState.getInt(STATE_SELECTED_NAVIGATION_ITEM));
             }
         }
-
-        if (current != null) {
-            current.lockToLandscape(isLockedToLandscape);
-        }
     }
 
     @Override
@@ -119,12 +115,6 @@ public class CameraActivity extends Activity implements
         // as you specify a parent activity in AndroidManifest.xml.
 
         return true;
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(null);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     @Override

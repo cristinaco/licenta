@@ -30,11 +30,14 @@
         </activity>
         <activity
             android:name=".camera.PreviewPhotoActivity"
-            android:label="@string/title_activity_display"
-            android:screenOrientation="landscape" >
+            android:label="@string/title_activity_display">
         </activity>
         <activity
             android:name=".presentation.activities.AddProductActivity"
+            android:label="@string/title_activity_add_product" >
+        </activity>
+        <activity
+            android:name=".engenoid.tessocrtest.MainActivity"
             android:label="@string/title_activity_add_product" >
         </activity>
     </application>
