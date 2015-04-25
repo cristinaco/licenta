@@ -6,7 +6,7 @@ import android.hardware.Camera;
 import android.util.Log;
 
 /**
- * Created by Fadi on 5/11/2014.
+ * Created by Coni on 25/04/2015.
  */
 public class CameraUtils {
 

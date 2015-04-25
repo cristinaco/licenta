@@ -7,7 +7,7 @@ import android.view.SurfaceHolder;
 import java.io.IOException;
 
 /**
- * Created by Fadi on 5/11/2014.
+ * Created by Coni on 25/04/2015.
  */
 public class CameraEngine {
 
@@ -24,22 +24,23 @@ public class CameraEngine {
         }
     };
 
+    private CameraEngine(SurfaceHolder surfaceHolder) {
+        this.surfaceHolder = surfaceHolder;
+    }
+
+    static public CameraEngine New(SurfaceHolder surfaceHolder) {
+        Log.d(TAG, "Creating camera engine");
+        return new CameraEngine(surfaceHolder);
+    }
+
     public boolean isOn() {
         return on;
     }
 
-    private CameraEngine(SurfaceHolder surfaceHolder){
-        this.surfaceHolder = surfaceHolder;
-    }
-
-    static public CameraEngine New(SurfaceHolder surfaceHolder){
-        Log.d(TAG, "Creating camera engine");
-        return  new CameraEngine(surfaceHolder);
-    }
-
     public void requestFocus() {
-        if (camera == null)
+        if (camera == null) {
             return;
+        }
 
         if (isOn()) {
             camera.autoFocus(autoFocusCallback);
@@ -51,8 +52,9 @@ public class CameraEngine {
         Log.d(TAG, "Entered CameraEngine - start()");
         this.camera = CameraUtils.getCamera();
 
-        if (this.camera == null)
+        if (this.camera == null) {
             return;
+        }
 
         Log.d(TAG, "Got camera hardware");
 
@@ -71,9 +73,9 @@ public class CameraEngine {
         }
     }
 
-    public void stop(){
+    public void stop() {
 
-        if(camera != null){
+        if (camera != null) {
             //this.autoFocusEngine.stop();
             camera.release();
             camera = null;
@@ -86,8 +88,8 @@ public class CameraEngine {
 
     public void takeShot(Camera.ShutterCallback shutterCallback,
                          Camera.PictureCallback rawPictureCallback,
-                         Camera.PictureCallback jpegPictureCallback ){
-        if(isOn()){
+                         Camera.PictureCallback jpegPictureCallback) {
+        if (isOn()) {
             camera.takePicture(shutterCallback, rawPictureCallback, jpegPictureCallback);
         }
     }

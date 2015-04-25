@@ -6,21 +6,20 @@
 
     <SurfaceView
         android:id="@+id/camera_frame"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <ro.utcn.foodapp.engenoid.tessocrtest.Core.ExtraViews.FocusBoxView
         android:id="@+id/focus_box"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <Button
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/shutter_button"
         android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="50dp"
-        android:background="@drawable/shutter_layout" />
+        android:background="@drawable/ic_camera_alt_white_48dp" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -30,7 +29,6 @@
         android:layout_gravity="end|bottom"
         android:layout_marginRight="50dp"
         android:layout_marginEnd="50dp"
-        android:layout_marginBottom="62dp"
         android:background="@drawable/focus_layout" />
 
 

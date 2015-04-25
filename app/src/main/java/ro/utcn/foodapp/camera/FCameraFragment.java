@@ -32,8 +32,6 @@ import java.io.File;
 import java.util.List;
 
 import ro.utcn.foodapp.R;
-import ro.utcn.foodapp.presentation.customview.CameraBoxView;
-import ro.utcn.foodapp.utils.BitmapUtils;
 
 /**
  * Created by cristinaco on 06.03.15.
@@ -68,8 +66,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
 //    private TextView flashOn;
 //    private TextView flashOff;
     private FrameLayout cameraContainer;
-    private CameraBoxView cameraBoxView;
-    private CameraManager cameraManager;
     private LinearLayout takePictureContainer;
     private Rect rect;
     private String selectedFlashType;
@@ -97,7 +93,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         SimpleCameraHost.Builder builder =
                 new SimpleCameraHost.Builder(new DemoCameraHost(getActivity()));
         setHost(builder.useFullBleedPreview(true).build());
-        cameraManager = new CameraManager(getActivity().getApplicationContext());
     }
 
     @Override
@@ -118,7 +113,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
 //        flashOn = (TextView) results.findViewById(R.id.camera_flash_type_on);
 //        flashOff = (TextView) results.findViewById(R.id.camera_flash_type_off);
         cameraContainer = (FrameLayout) results.findViewById(R.id.camera_container);
-        cameraBoxView = (CameraBoxView) results.findViewById(R.id.camera_box_view);
 //        RelativeLayout flashBtnContainer = (RelativeLayout) results.findViewById(R.id.camera_flash_buttons_container);
 
         //cameraBoxView.setCameraManager(cameraManager);
@@ -155,12 +149,10 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
         if (useFrontCamera) {
             camera = Camera.open(1);
             hasFlash = hasFlash(camera);
-            cameraManager.initCamera(camera);
             camera.release();
         } else {
             camera = Camera.open(0);
             hasFlash = hasFlash(camera);
-            cameraManager.initCamera(camera);
             camera.release();
         }
 
@@ -182,8 +174,6 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
 //        flashAuto.setVisibility(View.GONE);
 //        flashOff.setVisibility(View.GONE);
 //        flashOn.setVisibility(View.GONE);
-        rect = cameraManager.getFramingRect();
-
         return (results);
     }
 
@@ -770,9 +760,9 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
                 singleShotProcessing = false;
                 // TODO crop the image: get only the image within the camera box
 
-                Bitmap bmp = BitmapUtils.cropImage(getActivity().getApplicationContext(), image, cameraBoxView.getBox());
+                //Bitmap bmp = BitmapUtils.cropImage(getActivity().getApplicationContext(), image, cameraBoxView.getBox());
 
-                super.saveImage(pictureTransaction, bmp);
+                super.saveImage(pictureTransaction, image);
                 Intent displayPhotoIntent = new Intent(getActivity(), PreviewPhotoActivity.class);
 
                 displayPhotoIntent.putExtra(CameraActivity.TEMP_FILE_PATH, CameraActivity.tempFilePath.getAbsolutePath());

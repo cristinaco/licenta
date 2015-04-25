@@ -4,6 +4,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -16,31 +17,33 @@ import java.io.OutputStream;
 
 import ro.utcn.foodapp.R;
 import ro.utcn.foodapp.camera.PreviewPhotoActivity;
+import ro.utcn.foodapp.engenoid.tessocrtest.CaptureActivity;
+import ro.utcn.foodapp.engenoid.tessocrtest.Core.Dialogs.ImageDialog;
 import ro.utcn.foodapp.utils.Constants;
 
 /**
  * Created by coponipi on 17.04.2015.
  */
-public class OcrInitAsyncTask extends AsyncTask<Void, Void, Void> {
+public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Void> {
     private TessBaseAPI tessBaseAPI;
     private Bitmap bitmap;
     private String language;
-    private PreviewPhotoActivity previewPhotoActivity;
+    private CaptureActivity captureActivity;
     private String recognizedText;
     private MaterialDialog progressDialog;
 
-    public OcrInitAsyncTask(PreviewPhotoActivity previewPhotoActivity, TessBaseAPI tessBaseAPI, Bitmap bitmap) {
-        this.previewPhotoActivity = previewPhotoActivity;
-        this.tessBaseAPI = tessBaseAPI;
+    public OcrRecognizeAsyncTask(CaptureActivity captureActivity, Bitmap bitmap) {
+        this.captureActivity = captureActivity;
         this.bitmap = bitmap;
         this.language = Constants.OCR_TRAINED_DATA_LANGUAGE;
+        tessBaseAPI = new TessBaseAPI();
 
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        progressDialog = new MaterialDialog.Builder(previewPhotoActivity)
+        progressDialog = new MaterialDialog.Builder(captureActivity)
                 .content(R.string.wait_while_performing_ocr)
                 .progress(true, 0)
                 .cancelable(false)
@@ -55,7 +58,7 @@ public class OcrInitAsyncTask extends AsyncTask<Void, Void, Void> {
 
         // If traineddata file does not exists in tesseract/tessdata, copy it from assets to device storage
         if (!new File(destinationPath + File.separator + "tessdata" + File.separator + "ron.traineddata").exists()) {
-            AssetManager assetManager = previewPhotoActivity.getAssets();
+            AssetManager assetManager = captureActivity.getAssets();
             InputStream in = null;
             OutputStream out = null;
             try {
@@ -78,23 +81,28 @@ public class OcrInitAsyncTask extends AsyncTask<Void, Void, Void> {
 
         // Init the tesseract engine with the path of traineddata and the used language
         tessBaseAPI.init(destinationPath, language);
-        // Send the image to tesseract engine to perform ocr
         tessBaseAPI.setImage(bitmap);
         // Get the recognized text from image
         recognizedText = tessBaseAPI.getUTF8Text();
+        tessBaseAPI.end();
 
         return null;
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        previewPhotoActivity.setRecognizedText(recognizedText);
-        previewPhotoActivity.displayRecognizedText();
+        //captureActivity.setRecognizedText(recognizedText);
+        //captureActivity.displayRecognizedText();
+        Log.d("Result", recognizedText);
         tessBaseAPI.end();
 
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
+        ImageDialog.New()
+                .addBitmap(bitmap)
+                .addTitle(recognizedText)
+                .show(captureActivity.getFragmentManager(),"TAG");
     }
 
     private void copyFile(InputStream in, OutputStream out) {

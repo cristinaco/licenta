@@ -37,7 +37,7 @@
             android:label="@string/title_activity_add_product" >
         </activity>
         <activity
-            android:name=".engenoid.tessocrtest.MainActivity"
+            android:name=".engenoid.tessocrtest.CaptureActivity"
             android:label="@string/title_activity_add_product" >
         </activity>
     </application>

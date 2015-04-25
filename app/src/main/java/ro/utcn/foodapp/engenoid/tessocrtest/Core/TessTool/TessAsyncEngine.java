@@ -9,7 +9,7 @@ import ro.utcn.foodapp.engenoid.tessocrtest.Core.Dialogs.ImageDialog;
 import ro.utcn.foodapp.engenoid.tessocrtest.Core.Imaging.Tools;
 
 /**
- * Created by Fadi on 6/11/2014.
+ * Created by Coni on 25/04/2015.
  */
 public class TessAsyncEngine extends AsyncTask<Object, Void, String> {
 

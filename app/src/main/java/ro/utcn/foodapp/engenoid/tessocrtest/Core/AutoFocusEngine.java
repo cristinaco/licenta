@@ -7,7 +7,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Created by Fadi on 5/11/2014.
+ * Created by Coni on 25/04/2015.
  */
 public class AutoFocusEngine implements Camera.AutoFocusCallback {
 
@@ -17,17 +17,16 @@ public class AutoFocusEngine implements Camera.AutoFocusCallback {
     private Timer timer;
     private Camera camera;
     private TimerTask timerTask;
+    private boolean running;
 
-    private AutoFocusEngine(Camera camera){
+    private AutoFocusEngine(Camera camera) {
         this.camera = camera;
         this.timer = new Timer();
     }
 
-    static public AutoFocusEngine New(Camera camera){
-        return  new AutoFocusEngine(camera);
+    static public AutoFocusEngine New(Camera camera) {
+        return new AutoFocusEngine(camera);
     }
-
-    private boolean running;
 
     public boolean isRunning() {
         return running;
@@ -53,7 +52,7 @@ public class AutoFocusEngine implements Camera.AutoFocusCallback {
         Log.d(TAG, "AutoFocusEngine Stopped");
     }
 
-    private void work(){
+    private void work() {
         camera.autoFocus(this);
     }
 

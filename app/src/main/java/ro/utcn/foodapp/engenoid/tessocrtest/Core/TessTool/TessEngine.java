@@ -7,7 +7,7 @@ import android.util.Log;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 /**
- * Created by Fadi on 6/11/2014.
+ * Created by Coni on 25/04/2015.
  */
 public class TessEngine {
 

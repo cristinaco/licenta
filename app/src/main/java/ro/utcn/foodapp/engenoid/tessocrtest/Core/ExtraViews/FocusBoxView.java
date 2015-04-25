@@ -11,9 +11,10 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import ro.utcn.foodapp.R;
+import ro.utcn.foodapp.ocr.PlanarYUVLuminanceSource;
 
 /**
- * Created by Fadi on 5/11/2014.
+ * Created by Coni on 25/04/2015.
  */
 public class FocusBoxView extends View {
 
@@ -226,12 +227,14 @@ public class FocusBoxView extends View {
         int width = canvas.getWidth();
         int height = canvas.getHeight();
 
+        // Draw the exterior (i.e. outside the framing rect) darkened
         paint.setColor(maskColor);
         canvas.drawRect(0, 0, width, frame.top, paint);
         canvas.drawRect(0, frame.top, frame.left, frame.bottom + 1, paint);
         canvas.drawRect(frame.right + 1, frame.top, width, frame.bottom + 1, paint);
         canvas.drawRect(0, frame.bottom + 1, width, height, paint);
 
+        // Draw a two pixel solid border inside the framing rect
         paint.setAlpha(0);
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(frameColor);
@@ -240,11 +243,35 @@ public class FocusBoxView extends View {
         canvas.drawRect(frame.right - 1, frame.top, frame.right + 1, frame.bottom - 1, paint);
         canvas.drawRect(frame.left, frame.bottom - 1, frame.right + 1, frame.bottom + 1, paint);
 
+        // Draw the framing rect corner UI elements
         paint.setColor(cornerColor);
-        canvas.drawCircle(frame.left - 32, frame.top - 32, 32, paint);
-        canvas.drawCircle(frame.right + 32, frame.top - 32, 32, paint);
-        canvas.drawCircle(frame.left - 32, frame.bottom + 32, 32, paint);
-        canvas.drawCircle(frame.right + 32, frame.bottom + 32, 32, paint);
+        canvas.drawRect(frame.left - 15, frame.top - 15, frame.left + 15, frame.top, paint);
+        canvas.drawRect(frame.left - 15, frame.top, frame.left, frame.top + 15, paint);
+        canvas.drawRect(frame.right - 15, frame.top - 15, frame.right + 15, frame.top, paint);
+        canvas.drawRect(frame.right, frame.top - 15, frame.right + 15, frame.top + 15, paint);
+        canvas.drawRect(frame.left - 15, frame.bottom, frame.left + 15, frame.bottom + 15, paint);
+        canvas.drawRect(frame.left - 15, frame.bottom - 15, frame.left, frame.bottom, paint);
+        canvas.drawRect(frame.right - 15, frame.bottom, frame.right + 15, frame.bottom + 15, paint);
+        canvas.drawRect(frame.right, frame.bottom - 15, frame.right + 15, frame.bottom + 15, paint);
 
+    }
+
+    /**
+     * A factory method to build the appropriate LuminanceSource object based on the format
+     * of the preview buffers, as described by Camera.Parameters.
+     *
+     * @param data A preview frame.
+     * @param width The width of the image.
+     * @param height The height of the image.
+     * @return A PlanarYUVLuminanceSource instance.
+     */
+    public PlanarYUVLuminanceSource buildLuminanceSource(byte[] data, int width, int height) {
+        Rect rect = getBox();
+        if (rect == null) {
+            return null;
+        }
+        // Go ahead and assume it's YUV rather than die.
+        return new PlanarYUVLuminanceSource(data, width, height, rect.left, rect.top,
+                rect.width(), rect.height(), true);
     }
 }

@@ -13,7 +13,7 @@ import android.widget.TextView;
 import ro.utcn.foodapp.R;
 
 /**
- * Created by Fadi on 5/11/2014.
+ * Created by Coni on 25/04/2015.
  */
 public class ImageDialog extends DialogFragment {
 

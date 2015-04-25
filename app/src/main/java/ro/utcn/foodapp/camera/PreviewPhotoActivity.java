@@ -17,7 +17,6 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 
 import ro.utcn.foodapp.R;
-import ro.utcn.foodapp.ocr.OcrInitAsyncTask;
 
 public class PreviewPhotoActivity extends Activity {
     public static final String TEMP_FILE_PATH = "TEMP_FILE_PATH";
@@ -72,8 +71,8 @@ public class PreviewPhotoActivity extends Activity {
                 tessBaseAPI = new TessBaseAPI();
                 bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
 
-                OcrInitAsyncTask ocrInitAsyncTask = new OcrInitAsyncTask(PreviewPhotoActivity.this, tessBaseAPI, bitmap);
-                ocrInitAsyncTask.execute();
+                //OcrInitAsyncTask ocrInitAsyncTask = new OcrInitAsyncTask(PreviewPhotoActivity.this, tessBaseAPI, bitmap);
+                //ocrInitAsyncTask.execute();
 
                 Intent resultIntent = new Intent();
                 setResult(Activity.RESULT_OK, resultIntent);
