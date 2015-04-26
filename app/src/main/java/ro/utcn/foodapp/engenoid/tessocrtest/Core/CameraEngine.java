@@ -7,7 +7,7 @@ import android.view.SurfaceHolder;
 import java.io.IOException;
 
 /**
- * Created by Coni on 25/04/2015.
+ * Created by Coni on 25/05/2015.
  */
 public class CameraEngine {
 
@@ -38,9 +38,8 @@ public class CameraEngine {
     }
 
     public void requestFocus() {
-        if (camera == null) {
+        if (camera == null)
             return;
-        }
 
         if (isOn()) {
             camera.autoFocus(autoFocusCallback);
@@ -52,9 +51,8 @@ public class CameraEngine {
         Log.d(TAG, "Entered CameraEngine - start()");
         this.camera = CameraUtils.getCamera();
 
-        if (this.camera == null) {
+        if (this.camera == null)
             return;
-        }
 
         Log.d(TAG, "Got camera hardware");
 

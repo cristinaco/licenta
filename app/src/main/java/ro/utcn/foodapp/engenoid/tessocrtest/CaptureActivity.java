@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -18,7 +19,7 @@ import ro.utcn.foodapp.R;
 import ro.utcn.foodapp.engenoid.tessocrtest.Core.CameraEngine;
 import ro.utcn.foodapp.engenoid.tessocrtest.Core.ExtraViews.FocusBoxView;
 import ro.utcn.foodapp.engenoid.tessocrtest.Core.Imaging.Tools;
-import ro.utcn.foodapp.ocr.OcrRecognizeAsyncTask;
+import ro.utcn.foodapp.engenoid.tessocrtest.Core.TessTool.TessAsyncEngine;
 
 
 public class CaptureActivity extends Activity implements SurfaceHolder.Callback, View.OnClickListener,
@@ -111,35 +112,35 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         SurfaceHolder surfaceHolder = cameraFrame.getHolder();
         surfaceHolder.removeCallback(this);
     }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putString(this.TEMP_FILE_PATH, this.tempFilePath.getAbsolutePath());
-        outState.putString(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
-    }
-
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
-//        if (requestCode == SAVE_PHOTO) {
-//            // Make sure the request was successful
-//            if (resultCode == getActivity().RESULT_OK) {
-//                int value = data.getExtras().getInt("save");
-//                if (value == 1) {
 //
-//                    Intent intent = new Intent();
-//                    FCameraFragment.this.getActivity().setResult(Activity.RESULT_OK, intent);
-//                    getActivity().finish();
-//                }
-//            }
-//        }
-    }
+//    @Override
+//    public void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//
+//        outState.putString(this.TEMP_FILE_PATH, this.tempFilePath.getAbsolutePath());
+//        outState.putString(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
+//    }
+//
+//    @Override
+//    public void onRestoreInstanceState(Bundle savedInstanceState) {
+//    }
+
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        // Check which request we're responding to
+////        if (requestCode == SAVE_PHOTO) {
+////            // Make sure the request was successful
+////            if (resultCode == getActivity().RESULT_OK) {
+////                int value = data.getExtras().getInt("save");
+////                if (value == 1) {
+////
+////                    Intent intent = new Intent();
+////                    FCameraFragment.this.getActivity().setResult(Activity.RESULT_OK, intent);
+////                    getActivity().finish();
+////                }
+////            }
+////        }
+//    }
 
     @Override
     public void onClick(View v) {
@@ -173,13 +174,11 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
 
         Log.d(TAG, "Initialization of TessBaseApi");
 
-        // new TessAsyncEngine().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, this, bmp);
+        new TessAsyncEngine().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, this, bmp);
         //Bitmap bmp = focusBox.buildLuminanceSource(data, focusBox.getWidth(), focusBox.getHeight()).renderCroppedGreyscaleBitmap();
 
-        OcrRecognizeAsyncTask ocrRecognizeAsyncTask = new OcrRecognizeAsyncTask(CaptureActivity.this, bmp);
-        ocrRecognizeAsyncTask.execute();
-
-
+//            OcrRecognizeAsyncTask ocrRecognizeAsyncTask = new OcrRecognizeAsyncTask(CaptureActivity.this, bmp);
+//            ocrRecognizeAsyncTask.execute();
     }
 
     @Override

@@ -23,8 +23,8 @@
 
     <Button
         style="?android:attr/buttonStyleSmall"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:id="@+id/focus_button"
         android:layout_gravity="end|bottom"
         android:layout_marginRight="50dp"
