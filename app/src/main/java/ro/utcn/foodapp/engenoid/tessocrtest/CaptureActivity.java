@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -18,8 +17,8 @@ import java.io.File;
 import ro.utcn.foodapp.R;
 import ro.utcn.foodapp.engenoid.tessocrtest.Core.CameraEngine;
 import ro.utcn.foodapp.engenoid.tessocrtest.Core.ExtraViews.FocusBoxView;
-import ro.utcn.foodapp.engenoid.tessocrtest.Core.Imaging.Tools;
-import ro.utcn.foodapp.engenoid.tessocrtest.Core.TessTool.TessAsyncEngine;
+import ro.utcn.foodapp.engenoid.tessocrtest.Core.Imaging.BitmapTools;
+import ro.utcn.foodapp.ocr.OcrRecognizeAsyncTask;
 
 
 public class CaptureActivity extends Activity implements SurfaceHolder.Callback, View.OnClickListener,
@@ -168,18 +167,15 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
             return;
         }
 
-        Bitmap bmp = Tools.getFocusedBitmap(this, camera, data, focusBox.getBox());
+        Bitmap bmp = BitmapTools.getFocusedBitmap(this, camera, data, focusBox.getBox());
+        BitmapTools.savePicture(bmp, this.tempFilePath, this.tempDir);
+        //new TessAsyncEngine().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, this, bmp);
 
-        Log.d(TAG, "Got bitmap");
-
-        Log.d(TAG, "Initialization of TessBaseApi");
-
-        new TessAsyncEngine().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, this, bmp);
         //Bitmap bmp = focusBox.buildLuminanceSource(data, focusBox.getWidth(), focusBox.getHeight()).renderCroppedGreyscaleBitmap();
-
-//            OcrRecognizeAsyncTask ocrRecognizeAsyncTask = new OcrRecognizeAsyncTask(CaptureActivity.this, bmp);
-//            ocrRecognizeAsyncTask.execute();
+        OcrRecognizeAsyncTask ocrRecognizeAsyncTask = new OcrRecognizeAsyncTask(CaptureActivity.this, bmp);
+        ocrRecognizeAsyncTask.execute();
     }
+
 
     @Override
     public void onShutter() {

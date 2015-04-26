@@ -6,7 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import ro.utcn.foodapp.engenoid.tessocrtest.Core.Dialogs.ImageDialog;
-import ro.utcn.foodapp.engenoid.tessocrtest.Core.Imaging.Tools;
+import ro.utcn.foodapp.engenoid.tessocrtest.Core.Imaging.BitmapTools;
 
 /**
  * Created by Coni on 25/04/2015.
@@ -51,7 +51,7 @@ public class TessAsyncEngine extends AsyncTask<Object, Void, String> {
             }
 
             if (rotate >= -180 && rotate <= 180 && rotate != 0) {
-                bmp = Tools.preRotateBitmap(bmp, rotate);
+                bmp = BitmapTools.preRotateBitmap(bmp, rotate);
                 Log.d(TAG, "Rotated OCR bitmap " + rotate + " degrees");
             }
 

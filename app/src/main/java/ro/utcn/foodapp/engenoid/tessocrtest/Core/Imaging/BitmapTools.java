@@ -9,6 +9,11 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
+import android.os.Environment;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import ro.utcn.foodapp.engenoid.tessocrtest.Core.ExtraViews.FocusBoxUtils;
 
@@ -16,7 +21,7 @@ import ro.utcn.foodapp.engenoid.tessocrtest.Core.ExtraViews.FocusBoxUtils;
 /**
  * Created by Coni on 25/04/2015.
  */
-public class Tools {
+public class BitmapTools {
 
     public static Bitmap rotateBitmap(Bitmap source, float angle) {
         Matrix matrix = new Matrix();
@@ -142,12 +147,12 @@ public class Tools {
         int X = (int) (k * CW);
         int Y = (int) (k * CH);
 
-        Bitmap unscaledBitmap = Tools.decodeByteArray(data, X, Y, ScalingLogic.CROP);
-        Bitmap bmp = Tools.createScaledBitmap(unscaledBitmap, X, Y, ScalingLogic.CROP);
+        Bitmap unscaledBitmap = BitmapTools.decodeByteArray(data, X, Y, ScalingLogic.CROP);
+        Bitmap bmp = BitmapTools.createScaledBitmap(unscaledBitmap, X, Y, ScalingLogic.CROP);
         unscaledBitmap.recycle();
 
         if (CW > CH)
-            bmp = Tools.rotateBitmap(bmp, 90);
+            bmp = BitmapTools.rotateBitmap(bmp, 90);
 
         int BW = bmp.getWidth();
         int BH = bmp.getHeight();
@@ -162,6 +167,29 @@ public class Tools {
         bmp.recycle();
 
         return res;
+    }
+
+    public static void savePicture(Bitmap bmp, File tempFilePath, File tempDir) {
+        File dir = new File(Environment.getExternalStorageDirectory() + tempDir.getAbsolutePath());
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(tempFilePath);
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
+            // PNG is a lossless format, the compression factor (100) is ignored
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static enum ScalingLogic {
