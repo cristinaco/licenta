@@ -31,7 +31,6 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
     public static File tempFilePath;
 
     private Button shutterButton;
-    private Button focusButton;
     private FocusBoxView focusBox;
     private SurfaceView cameraFrame;
     private CameraEngine cameraEngine;
@@ -46,26 +45,27 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         this.tempFilePath = new File(fp);
         final String dp = intent.getStringExtra(TEMP_DIR_PATH);
         this.tempDir = new File(dp);
+
+        cameraEngine = CameraEngine.getInstance(getApplicationContext());
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        initCamera(holder);
+    }
 
-        Log.d(TAG, "Surface Created - starting camera");
-
-        if (cameraEngine != null && !cameraEngine.isOn()) {
-            cameraEngine.start();
+    /**
+     * Initializes the camera and starts the handler to begin previewing.
+     */
+    private void initCamera(SurfaceHolder holder) {
+        if (holder == null) {
+            throw new IllegalStateException("No SurfaceHolder provided");
         }
-
-        if (cameraEngine != null && cameraEngine.isOn()) {
-            Log.d(TAG, "Camera engine already on");
-            return;
+        if (cameraEngine != null) {
+            // Open and initialize the camera
+            cameraEngine.openDriver(holder);
+            cameraEngine.startPreview();
         }
-
-        cameraEngine = CameraEngine.New(holder);
-        cameraEngine.start();
-
-        Log.d(TAG, "Camera engine started");
     }
 
     @Override
@@ -88,10 +88,8 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         cameraFrame = (SurfaceView) findViewById(R.id.camera_frame);
         shutterButton = (Button) findViewById(R.id.shutter_button);
         focusBox = (FocusBoxView) findViewById(R.id.focus_box);
-        focusButton = (Button) findViewById(R.id.focus_button);
 
         shutterButton.setOnClickListener(this);
-        focusButton.setOnClickListener(this);
 
         SurfaceHolder surfaceHolder = cameraFrame.getHolder();
         surfaceHolder.addCallback(this);
@@ -105,9 +103,8 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
     protected void onPause() {
         super.onPause();
 
-        if (cameraEngine != null && cameraEngine.isOn()) {
-            cameraEngine.stop();
-        }
+        // Stop using the camera, to avoid conflicting with other camera-based apps
+        cameraEngine.closeDriver();
 
         SurfaceHolder surfaceHolder = cameraFrame.getHolder();
         surfaceHolder.removeCallback(this);
@@ -146,18 +143,11 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
     public void onClick(View v) {
         if (v == shutterButton) {
             if (cameraEngine != null && cameraEngine.isOn()) {
-                //cameraEngine.requestFocus();
+                cameraEngine.requestAutoFocus(350L);
                 cameraEngine.takeShot(this, this, this);
                 shutterButton.setEnabled(false);
                 shutterButton.setVisibility(View.INVISIBLE);
-                focusButton.setVisibility(View.INVISIBLE);
                 focusBox.setVisibility(View.INVISIBLE);
-            }
-        }
-
-        if (v == focusButton) {
-            if (cameraEngine != null && cameraEngine.isOn()) {
-                cameraEngine.requestFocus();
             }
         }
     }
@@ -192,8 +182,10 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
 
     private void restartPreview() {
         if (cameraEngine != null && cameraEngine.isOn()) {
-            cameraEngine.stop();
-            cameraEngine.start();
+            //cameraEngine.closeDriver();
+            cameraEngine.stopPreview();
+            //cameraEngine.openDriver(cameraFrame.getHolder());
+            cameraEngine.startPreview();
         }
     }
 
@@ -201,6 +193,5 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         shutterButton.setEnabled(true);
         focusBox.setVisibility(View.VISIBLE);
         shutterButton.setVisibility(View.VISIBLE);
-        focusButton.setVisibility(View.VISIBLE);
     }
 }
