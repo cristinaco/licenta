@@ -98,6 +98,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
         cameraFrame.setOnClickListener(this);
+        shutterButton.setEnabled(true);
     }
 
     @Override
@@ -147,6 +148,10 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
             if (cameraEngine != null && cameraEngine.isOn()) {
                 //cameraEngine.requestFocus();
                 cameraEngine.takeShot(this, this, this);
+                shutterButton.setEnabled(false);
+                shutterButton.setVisibility(View.INVISIBLE);
+                focusButton.setVisibility(View.INVISIBLE);
+                focusBox.setVisibility(View.INVISIBLE);
             }
         }
 
@@ -168,18 +173,34 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         }
 
         Bitmap bmp = BitmapTools.getFocusedBitmap(this, camera, data, focusBox.getBox());
-        BitmapTools.savePicture(bmp, this.tempFilePath, this.tempDir);
+        // TODO uncomment this line to save the photo
+        //BitmapTools.savePicture(bmp, this.tempFilePath, this.tempDir);
+
         //new TessAsyncEngine().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, this, bmp);
 
         //Bitmap bmp = focusBox.buildLuminanceSource(data, focusBox.getWidth(), focusBox.getHeight()).renderCroppedGreyscaleBitmap();
+        restartPreview();
         OcrRecognizeAsyncTask ocrRecognizeAsyncTask = new OcrRecognizeAsyncTask(CaptureActivity.this, bmp);
         ocrRecognizeAsyncTask.execute();
-    }
 
+    }
 
     @Override
     public void onShutter() {
 
     }
 
+    private void restartPreview() {
+        if (cameraEngine != null && cameraEngine.isOn()) {
+            cameraEngine.stop();
+            cameraEngine.start();
+        }
+    }
+
+    public void enableCameraButtons() {
+        shutterButton.setEnabled(true);
+        focusBox.setVisibility(View.VISIBLE);
+        shutterButton.setVisibility(View.VISIBLE);
+        focusButton.setVisibility(View.VISIBLE);
+    }
 }

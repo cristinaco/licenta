@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import ro.utcn.foodapp.R;
-import ro.utcn.foodapp.camera.PreviewPhotoActivity;
 import ro.utcn.foodapp.engenoid.tessocrtest.CaptureActivity;
 import ro.utcn.foodapp.engenoid.tessocrtest.Core.Dialogs.ImageDialog;
 import ro.utcn.foodapp.utils.Constants;
@@ -103,6 +102,7 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Void> {
                 .addBitmap(bitmap)
                 .addTitle(recognizedText)
                 .show(captureActivity.getFragmentManager(),"TAG");
+        captureActivity.enableCameraButtons();
     }
 
     private void copyFile(InputStream in, OutputStream out) {
