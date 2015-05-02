@@ -18,6 +18,8 @@ import java.io.OutputStream;
 import ro.utcn.foodapp.R;
 import ro.utcn.foodapp.engenoid.tessocrtest.CaptureActivity;
 import ro.utcn.foodapp.engenoid.tessocrtest.Core.Dialogs.ImageDialog;
+import ro.utcn.foodapp.engenoid.tessocrtest.Core.Imaging.BitmapTools;
+import ro.utcn.foodapp.model.OcrResult;
 import ro.utcn.foodapp.utils.Constants;
 
 /**
@@ -93,15 +95,20 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Void> {
         //captureActivity.setRecognizedText(recognizedText);
         //captureActivity.displayRecognizedText();
         Log.d("Result", recognizedText);
+        OcrResult ocrResult = new OcrResult();
+        ocrResult.setText(recognizedText);
+        ocrResult.setBitmap(bitmap);
+        ocrResult.setWordBoundingBoxes(tessBaseAPI.getWords().getBoxRects());
         tessBaseAPI.end();
 
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
+
         ImageDialog.New()
-                .addBitmap(bitmap)
+                .addBitmap(BitmapTools.getAnnotatedBitmap(ocrResult))
                 .addTitle(recognizedText)
-                .show(captureActivity.getFragmentManager(),"TAG");
+                .show(captureActivity.getFragmentManager(), "TAG");
         captureActivity.enableCameraButtons();
     }
 

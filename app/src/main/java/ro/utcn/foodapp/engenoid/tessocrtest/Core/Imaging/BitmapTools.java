@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import ro.utcn.foodapp.engenoid.tessocrtest.Core.ExtraViews.FocusBoxUtils;
+import ro.utcn.foodapp.model.OcrResult;
 
 
 /**
@@ -190,6 +191,25 @@ public class BitmapTools {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static Bitmap getAnnotatedBitmap(OcrResult ocrResult) {
+
+        Bitmap bitmap = ocrResult.getBitmap();
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+
+        // Draw bounding boxes around each word
+        for (int i = 0; i < ocrResult.getWordBoundingBoxes().size(); i++) {
+            paint.setAlpha(0xFF);
+            paint.setColor(0xFF00CCFF);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(2);
+            Rect r = ocrResult.getWordBoundingBoxes().get(i);
+            canvas.drawRect(r, paint);
+
+        }
+        return bitmap;
     }
 
     public static enum ScalingLogic {

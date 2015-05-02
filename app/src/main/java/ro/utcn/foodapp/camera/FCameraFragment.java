@@ -760,7 +760,7 @@ public class FCameraFragment extends com.commonsware.cwac.camera.CameraFragment 
                 singleShotProcessing = false;
                 // TODO crop the image: get only the image within the camera box
 
-                //Bitmap bmp = BitmapUtils.cropImage(getActivity().getApplicationContext(), image, cameraBoxView.getBox());
+                //Bitmap bmp = BitmapUtils.cropImage(getActivity().getApplicationContext(), image, cameraBoxView.getFramingRect());
 
                 super.saveImage(pictureTransaction, image);
                 Intent displayPhotoIntent = new Intent(getActivity(), PreviewPhotoActivity.class);
