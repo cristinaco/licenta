@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -39,6 +41,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
     private CameraEngine cameraEngine;
     private CaptureActivityHandler handler;
     private SurfaceHolder surfaceHolder;
+    private MaterialDialog ocrProgressDialog;
     private boolean hasSurface;
 
     @Override
@@ -50,7 +53,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         shutterButton = (ShutterButton) findViewById(R.id.shutter_button);
         focusBox = (FocusBoxView) findViewById(R.id.focus_box);
 
-        cameraEngine = CameraEngine.getInstance(getApplicationContext());
+        cameraEngine = CameraEngine.getInstance(CaptureActivity.this);
         focusBox.setCameraEngine(cameraEngine);
         setListeners();
 
@@ -223,6 +226,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
             toast.show();
             return false;
         }
+        // TODO show the recognized text and also the original image
         Toast toast = Toast.makeText(this, "OCR succeed" + ocrResult.getText(), Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.TOP, 0, 0);
         toast.show();
@@ -387,4 +391,19 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
     }
 
 
+    public void displayOcrProgressDialog() {
+        ocrProgressDialog = new MaterialDialog.Builder(CaptureActivity.this)
+                .content(R.string.wait_while_performing_ocr)
+                .progress(true, 0)
+                .cancelable(false)
+                .show();
+    }
+
+    public MaterialDialog getOcrProgressDialog() {
+        return ocrProgressDialog;
+    }
+
+    public void setShutterBtnClickable(boolean clickable) {
+        shutterButton.setClickable(clickable);
+    }
 }

@@ -5,8 +5,8 @@ import android.os.Message;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
-import ro.utcn.foodapp.presentation.activities.CaptureActivity;
 import ro.utcn.foodapp.engenoid.tesseract.Core.ocr.OcrRecognizeAsyncTask;
+import ro.utcn.foodapp.presentation.activities.CaptureActivity;
 
 /**
  * Class to send bitmap data for OCR.
@@ -24,10 +24,9 @@ public class DecodeHandler extends Handler {
 
     @Override
     public void handleMessage(Message message) {
-
         ocrDecode((byte[]) message.obj, message.arg1, message.arg2);
-
     }
+
     /**
      * Launch an AsyncTask to perform an OCR decode for single-shot mode.
      *
@@ -36,10 +35,13 @@ public class DecodeHandler extends Handler {
      * @param height Image height
      */
     private void ocrDecode(byte[] data, int width, int height) {
-        //beepManager.playBeepSoundAndVibrate();
-       // activity.displayProgressDialog();
-
         // Launch OCR asynchronously, so we get the dialog box displayed immediately
         new OcrRecognizeAsyncTask(captureActivity, tessBaseAPI, data, width, height).execute();
+        //beepManager.playBeepSoundAndVibrate();
+        captureActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                captureActivity.displayOcrProgressDialog();
+            }
+        });
     }
 }

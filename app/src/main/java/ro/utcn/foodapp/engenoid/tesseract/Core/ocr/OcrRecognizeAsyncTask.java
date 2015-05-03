@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
@@ -18,8 +17,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import ro.utcn.foodapp.R;
-import ro.utcn.foodapp.presentation.activities.CaptureActivity;
+import ro.utcn.foodapp.engenoid.tesseract.Core.Dialogs.ImageDialog;
 import ro.utcn.foodapp.model.OcrResult;
+import ro.utcn.foodapp.presentation.activities.CaptureActivity;
+import ro.utcn.foodapp.utils.BitmapTools;
 import ro.utcn.foodapp.utils.Constants;
 
 /**
@@ -28,9 +29,9 @@ import ro.utcn.foodapp.utils.Constants;
 public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
     private TessBaseAPI tessBaseAPI;
     private String language;
+    private Bitmap bmp;
     private CaptureActivity captureActivity;
     private String recognizedText;
-    private MaterialDialog progressDialog;
     private byte[] data;
     private int bitmapWidth;
     private int bitmapHeight;
@@ -43,18 +44,6 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
         this.bitmapHeight = height;
         this.language = Constants.OCR_TRAINED_DATA_LANGUAGE;
     }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-//        progressDialog = new MaterialDialog.Builder(captureActivity)
-//                .content(R.string.wait_while_performing_ocr)
-//                .progress(true, 0)
-//                .cancelable(false)
-//                .show();
-
-    }
-
 
     @Override
     protected Boolean doInBackground(Void... params) {
@@ -80,17 +69,15 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
                 e.printStackTrace();
             }
         }
-        tessBaseAPI = new TessBaseAPI();
         tessBaseAPI.setDebug(true);
-
         // Init the tesseract engine with the path of traineddata and the used language
         tessBaseAPI.init(destinationPath, language);
         // tessBaseAPI.setImage(bitmap);
-        Bitmap bmp = captureActivity.getCameraEngine().buildLuminanceSource(data, bitmapWidth, bitmapHeight).renderCroppedGreyscaleBitmap();
+        bmp = captureActivity.getCameraEngine().buildLuminanceSource(data, bitmapWidth, bitmapHeight).renderCroppedGreyscaleBitmap();
         tessBaseAPI.setImage(bmp);
         // Get the recognized text from image
         recognizedText = tessBaseAPI.getUTF8Text();
-        // Check for failure to recognize text
+        // Check for failure
         if (recognizedText == null || recognizedText.equals("")) {
             return false;
         }
@@ -104,7 +91,7 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
         Log.d("Result", recognizedText);
         OcrResult ocrResult = new OcrResult();
         ocrResult.setText(recognizedText);
-        //ocrResult.setBitmap(bitmap);
+        ocrResult.setBitmap(bmp);
         ocrResult.setWordBoundingBoxes(tessBaseAPI.getWords().getBoxRects());
         tessBaseAPI.end();
 
@@ -116,7 +103,7 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
 //                .addBitmap(BitmapTools.getAnnotatedBitmap(ocrResult))
 //                .addTitle(recognizedText)
 //                .show(captureActivity.getFragmentManager(), "TAG");
-//        captureActivity.enableCameraButtons();
+        captureActivity.enableCameraButtons();
 
 
         Handler handler = captureActivity.getHandler();
@@ -129,7 +116,7 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
                 Message message = Message.obtain(handler, R.id.ocr_decode_failed, ocrResult);
                 message.sendToTarget();
             }
-            //activity.getProgressDialog().dismiss();
+            captureActivity.getOcrProgressDialog().dismiss();
         }
         if (tessBaseAPI != null) {
             tessBaseAPI.clear();
