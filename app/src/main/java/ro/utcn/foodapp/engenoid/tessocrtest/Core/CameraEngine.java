@@ -23,7 +23,7 @@ import ro.utcn.foodapp.ocr.PlanarYUVLuminanceSource;
  * Created by Coni on 25/05/2015.
  */
 public class CameraEngine {
-    static final String TAG = "DBG_" + CameraUtils.class.getName();
+    static final String TAG = "DBG_" + CameraEngine.class.getName();
     private static final int MIN_FRAME_WIDTH = 50; // originally 240
     private static final int MIN_FRAME_HEIGHT = 20; // originally 240
     private static final int MAX_FRAME_WIDTH = 800; // originally 480
@@ -31,10 +31,10 @@ public class CameraEngine {
     private static final int MIN_PREVIEW_PIXELS = 470 * 320; // normal screen
     private static final int MAX_PREVIEW_PIXELS = 800 * 600; // more than large/HD screen
     private static CameraEngine cameraEngine;
-    private Context context;
-    private AutoFocusManager autoFocusManager;
     // Preview frames are delivered here, which we pass on to the registered handler. Make sure to clear the handler so it will only receive one message.
     private static PreviewCallback previewCallback;
+    private Context context;
+    private AutoFocusManager autoFocusManager;
     private Camera camera;
     private boolean on;
     private boolean initialized;
@@ -56,6 +56,15 @@ public class CameraEngine {
         cameraEngine = new CameraEngine(context);
         previewCallback = new PreviewCallback(cameraEngine);
         return cameraEngine;
+    }
+
+    public static Camera getCamera() {
+        try {
+            return Camera.open();
+        } catch (Exception e) {
+            Log.e(TAG, "Cannot getCamera()");
+            return null;
+        }
     }
 
     public boolean isOn() {
