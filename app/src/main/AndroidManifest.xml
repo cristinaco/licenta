@@ -29,18 +29,12 @@
         </activity>
 
         <!-- Camera -->
-        <activity
-            android:name=".camera.CameraActivity"
-            android:label="@string/title_activity_defect_radar_camera"
-            android:screenOrientation="landscape"></activity>
-        <activity
-            android:name=".camera.PreviewPhotoActivity"
-            android:label="@string/title_activity_display"></activity>
+
         <activity
             android:name=".presentation.activities.AddProductActivity"
             android:label="@string/title_activity_add_product"></activity>
         <activity
-            android:name=".engenoid.tessocrtest.CaptureActivity"
+            android:name=".presentation.activities.CaptureActivity"
             android:label="@string/title_activity_add_product"
             android:screenOrientation="landscape"></activity>
     </application>

@@ -1,4 +1,4 @@
-package ro.utcn.foodapp.engenoid.tessocrtest;
+package ro.utcn.foodapp.presentation.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -18,10 +18,10 @@ import java.io.File;
 import java.io.IOException;
 
 import ro.utcn.foodapp.R;
-import ro.utcn.foodapp.engenoid.tessocrtest.Core.CameraEngine;
-import ro.utcn.foodapp.engenoid.tessocrtest.Core.CaptureActivityHandler;
-import ro.utcn.foodapp.engenoid.tessocrtest.Core.ExtraViews.FocusBoxView;
-import ro.utcn.foodapp.engenoid.tessocrtest.Core.ShutterButton;
+import ro.utcn.foodapp.engenoid.tesseract.Core.CameraEngine;
+import ro.utcn.foodapp.engenoid.tesseract.Core.CaptureActivityHandler;
+import ro.utcn.foodapp.engenoid.tesseract.Core.customViews.FocusBoxView;
+import ro.utcn.foodapp.engenoid.tesseract.Core.customViews.ShutterButton;
 import ro.utcn.foodapp.model.OcrResult;
 
 

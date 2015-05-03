@@ -1,4 +1,4 @@
-package ro.utcn.foodapp.engenoid.tessocrtest.Core.Imaging;
+package ro.utcn.foodapp.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import ro.utcn.foodapp.engenoid.tessocrtest.Core.ExtraViews.FocusBoxUtils;
 import ro.utcn.foodapp.model.OcrResult;
 
 

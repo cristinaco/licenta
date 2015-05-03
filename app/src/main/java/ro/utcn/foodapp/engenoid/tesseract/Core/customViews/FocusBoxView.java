@@ -1,4 +1,4 @@
-package ro.utcn.foodapp.engenoid.tessocrtest.Core.ExtraViews;
+package ro.utcn.foodapp.engenoid.tesseract.Core.customViews;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import ro.utcn.foodapp.R;
-import ro.utcn.foodapp.engenoid.tessocrtest.Core.CameraEngine;
+import ro.utcn.foodapp.engenoid.tesseract.Core.CameraEngine;
 
 /**
  * Created by Coni on 25/04/2015.

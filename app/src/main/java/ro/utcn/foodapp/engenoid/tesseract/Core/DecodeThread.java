@@ -1,11 +1,11 @@
-package ro.utcn.foodapp.engenoid.tessocrtest.Core;
+package ro.utcn.foodapp.engenoid.tesseract.Core;
 
 import android.os.Handler;
 import android.os.Looper;
 
 import java.util.concurrent.CountDownLatch;
 
-import ro.utcn.foodapp.engenoid.tessocrtest.CaptureActivity;
+import ro.utcn.foodapp.presentation.activities.CaptureActivity;
 
 /**
  * This thread does all the heavy lifting of decoding the images.

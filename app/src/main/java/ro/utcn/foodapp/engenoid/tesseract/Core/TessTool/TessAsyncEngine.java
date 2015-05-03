@@ -1,12 +1,12 @@
-package ro.utcn.foodapp.engenoid.tessocrtest.Core.TessTool;
+package ro.utcn.foodapp.engenoid.tesseract.Core.TessTool;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import ro.utcn.foodapp.engenoid.tessocrtest.Core.Dialogs.ImageDialog;
-import ro.utcn.foodapp.engenoid.tessocrtest.Core.Imaging.BitmapTools;
+import ro.utcn.foodapp.engenoid.tesseract.Core.Dialogs.ImageDialog;
+import ro.utcn.foodapp.utils.BitmapTools;
 
 /**
  * Created by Coni on 25/04/2015.

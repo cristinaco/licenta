@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.UUID;
 
 import ro.utcn.foodapp.R;
-import ro.utcn.foodapp.engenoid.tessocrtest.*;
 import ro.utcn.foodapp.model.Product;
 import ro.utcn.foodapp.utils.FileUtil;
 
@@ -89,8 +88,8 @@ public class AddProductActivity extends ActionBarActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == TAKE_PICTURE){
-            if(resultCode == RESULT_OK){
+        if (requestCode == TAKE_PICTURE) {
+            if (resultCode == RESULT_OK) {
                 urls.add(this.tempFilePath.getAbsolutePath());
             }
         }

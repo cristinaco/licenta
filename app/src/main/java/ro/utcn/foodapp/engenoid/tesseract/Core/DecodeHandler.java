@@ -1,12 +1,12 @@
-package ro.utcn.foodapp.engenoid.tessocrtest.Core;
+package ro.utcn.foodapp.engenoid.tesseract.Core;
 
 import android.os.Handler;
 import android.os.Message;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
-import ro.utcn.foodapp.engenoid.tessocrtest.CaptureActivity;
-import ro.utcn.foodapp.ocr.OcrRecognizeAsyncTask;
+import ro.utcn.foodapp.presentation.activities.CaptureActivity;
+import ro.utcn.foodapp.engenoid.tesseract.Core.ocr.OcrRecognizeAsyncTask;
 
 /**
  * Class to send bitmap data for OCR.

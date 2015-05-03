@@ -1,4 +1,4 @@
-package ro.utcn.foodapp.engenoid.tessocrtest.Core.ExtraViews;
+package ro.utcn.foodapp.utils;
 
 import android.content.Context;
 import android.graphics.Point;

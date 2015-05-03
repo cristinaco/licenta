@@ -1,4 +1,4 @@
-package ro.utcn.foodapp.ocr;
+package ro.utcn.foodapp.engenoid.tesseract.Core.ocr;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -18,9 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import ro.utcn.foodapp.R;
-import ro.utcn.foodapp.engenoid.tessocrtest.CaptureActivity;
-import ro.utcn.foodapp.engenoid.tessocrtest.Core.Dialogs.ImageDialog;
-import ro.utcn.foodapp.engenoid.tessocrtest.Core.Imaging.BitmapTools;
+import ro.utcn.foodapp.presentation.activities.CaptureActivity;
 import ro.utcn.foodapp.model.OcrResult;
 import ro.utcn.foodapp.utils.Constants;
 

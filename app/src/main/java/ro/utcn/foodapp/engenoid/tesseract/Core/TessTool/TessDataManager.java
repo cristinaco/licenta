@@ -1,4 +1,4 @@
-package ro.utcn.foodapp.engenoid.tessocrtest.Core.TessTool;
+package ro.utcn.foodapp.engenoid.tesseract.Core.TessTool;
 
 import android.content.Context;
 import android.util.Log;

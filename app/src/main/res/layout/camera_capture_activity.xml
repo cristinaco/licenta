@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <ro.utcn.foodapp.engenoid.tessocrtest.Core.ExtraViews.FocusBoxView
+    <ro.utcn.foodapp.engenoid.tesseract.Core.customViews.FocusBoxView
         android:id="@+id/focus_box"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -21,7 +21,7 @@
         android:layout_margin="10dip"
         android:gravity="center_vertical">
 
-        <ro.utcn.foodapp.engenoid.tessocrtest.Core.ShutterButton
+        <ro.utcn.foodapp.engenoid.tesseract.Core.customViews.ShutterButton
             android:id="@+id/shutter_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

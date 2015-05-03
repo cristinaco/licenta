@@ -1,4 +1,4 @@
-package ro.utcn.foodapp.engenoid.tessocrtest.Core;
+package ro.utcn.foodapp.engenoid.tesseract.Core;
 
 import android.content.Context;
 import android.hardware.Camera;

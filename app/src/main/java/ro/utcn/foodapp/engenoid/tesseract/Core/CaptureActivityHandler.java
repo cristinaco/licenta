@@ -1,4 +1,4 @@
-package ro.utcn.foodapp.engenoid.tessocrtest.Core;
+package ro.utcn.foodapp.engenoid.tesseract.Core;
 
 import android.os.Handler;
 import android.os.Message;
@@ -7,7 +7,7 @@ import android.view.Gravity;
 import android.widget.Toast;
 
 import ro.utcn.foodapp.R;
-import ro.utcn.foodapp.engenoid.tessocrtest.CaptureActivity;
+import ro.utcn.foodapp.presentation.activities.CaptureActivity;
 import ro.utcn.foodapp.model.OcrResult;
 
 /**

@@ -1,4 +1,4 @@
-package ro.utcn.foodapp.engenoid.tessocrtest.Core.Dialogs;
+package ro.utcn.foodapp.engenoid.tesseract.Core.Dialogs;
 
 import android.app.DialogFragment;
 import android.content.DialogInterface;

@@ -1,4 +1,4 @@
-package ro.utcn.foodapp.engenoid.tessocrtest.Core;
+package ro.utcn.foodapp.engenoid.tesseract.Core;
 
 import android.content.Context;
 import android.graphics.Point;
@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import ro.utcn.foodapp.ocr.PlanarYUVLuminanceSource;
+import ro.utcn.foodapp.engenoid.tesseract.Core.ocr.PlanarYUVLuminanceSource;
 
 /**
  * Created by Coni on 25/05/2015.
