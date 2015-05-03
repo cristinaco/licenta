@@ -78,4 +78,8 @@ public class FocusBoxView extends View {
     public void setCameraEngine(CameraEngine cameraEngine) {
         this.cameraEngine = cameraEngine;
     }
+
+    public void redraw() {
+        invalidate();
+    }
 }

@@ -2,28 +2,30 @@ package ro.utcn.foodapp.engenoid.tessocrtest;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageButton;
+import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 
 import ro.utcn.foodapp.R;
 import ro.utcn.foodapp.engenoid.tessocrtest.Core.CameraEngine;
+import ro.utcn.foodapp.engenoid.tessocrtest.Core.CaptureActivityHandler;
 import ro.utcn.foodapp.engenoid.tessocrtest.Core.ExtraViews.FocusBoxView;
-import ro.utcn.foodapp.ocr.OcrRecognizeAsyncTask;
+import ro.utcn.foodapp.engenoid.tessocrtest.Core.ShutterButton;
+import ro.utcn.foodapp.model.OcrResult;
 
 
-public class CaptureActivity extends Activity implements SurfaceHolder.Callback, View.OnClickListener,
-        Camera.PictureCallback, Camera.ShutterCallback {
+public class CaptureActivity extends Activity implements SurfaceHolder.Callback, ShutterButton.OnShutterButtonListener {
 
     public static final String TEMP_FILE_PATH = "TEMP_FILE_PATH";
     public static final String TEMP_DIR_PATH = "TEMP_DIR_PATH";
@@ -31,15 +33,26 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
     public static File tempDir;
     public static File tempFilePath;
 
-    private ImageButton shutterButton;
+    private ShutterButton shutterButton;
     private FocusBoxView focusBox;
-    private SurfaceView cameraFrame;
+    private SurfaceView surfaceView;
     private CameraEngine cameraEngine;
+    private CaptureActivityHandler handler;
+    private SurfaceHolder surfaceHolder;
+    private boolean hasSurface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.camera_capture_activity);
+        surfaceView = (SurfaceView) findViewById(R.id.camera_surface_view);
+        shutterButton = (ShutterButton) findViewById(R.id.shutter_button);
+        focusBox = (FocusBoxView) findViewById(R.id.focus_box);
+
+        cameraEngine = CameraEngine.getInstance(getApplicationContext());
+        focusBox.setCameraEngine(cameraEngine);
+        setListeners();
 
         Intent intent = getIntent();
         final String fp = intent.getStringExtra(TEMP_FILE_PATH);
@@ -47,12 +60,43 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         final String dp = intent.getStringExtra(TEMP_DIR_PATH);
         this.tempDir = new File(dp);
 
-        cameraEngine = CameraEngine.getInstance(getApplicationContext());
+        handler = null;
+        hasSurface = false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        surfaceHolder = surfaceView.getHolder();
+        if (!hasSurface) {
+            surfaceHolder.addCallback(this);
+            surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        }
+        // TODO shutterButton.setEnabled(true);
+//        if (handler != null) {
+//            handler.resetState();
+//        }
+        if (hasSurface) {
+            // The activity was paused but not stopped, so the surface still exists. Therefore
+            // surfaceCreated() won't be called, so init the camera here.
+            initCamera(surfaceHolder);
+        }
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        initCamera(holder);
+        if (holder == null) {
+            Log.e(TAG, "surfaceCreated gave us a null surface");
+        }
+        // Only initialize the camera if the OCR engine is ready to go.
+        if (!hasSurface) {
+            Log.d(TAG, "surfaceCreated(): calling initCamera()...");
+            initCamera(holder);
+        }
+        hasSurface = true;
     }
 
     /**
@@ -62,11 +106,97 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         if (holder == null) {
             throw new IllegalStateException("No SurfaceHolder provided");
         }
-        if (cameraEngine != null) {
+        if (getCameraEngine() != null) {
             // Open and initialize the camera
-            cameraEngine.openDriver(holder);
-            cameraEngine.startPreview();
+            try {
+                getCameraEngine().openDriver(holder);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //getCameraEngine().startPreview();
+            // Creating the handler starts the preview, which can also throw a RuntimeException.
+            handler = new CaptureActivityHandler(this, cameraEngine);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (handler != null) {
+            handler.quitSynchronously();
+        }
+
+        // Stop using the camera, to avoid conflicting with other camera-based apps
+        getCameraEngine().closeDriver();
+        if (!hasSurface) {
+            SurfaceHolder surfaceHolder = surfaceView.getHolder();
+            surfaceHolder.removeCallback(this);
+        }
+    }
+
+    public void stopHandler() {
+        if (handler != null) {
+            handler.stop();
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_CAMERA) {
+            handler.hardwareShutterButtonClick();
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_FOCUS) {
+            // Only perform autofocus if user is not holding down the button.
+            if (event.getRepeatCount() == 0) {
+                cameraEngine.requestAutoFocus(500L);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+
+//
+//    @Override
+//    public void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//
+//        outState.putString(this.TEMP_FILE_PATH, this.tempFilePath.getAbsolutePath());
+//        outState.putString(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
+//    }
+//
+//    @Override
+//    public void onRestoreInstanceState(Bundle savedInstanceState) {
+//    }
+
+    //    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        // Check which request we're responding to
+////        if (requestCode == SAVE_PHOTO) {
+////            // Make sure the request was successful
+////            if (resultCode == getActivity().RESULT_OK) {
+////                int value = data.getExtras().getInt("save");
+////                if (value == 1) {
+////
+////                    Intent intent = new Intent();
+////                    FCameraFragment.this.getActivity().setResult(Activity.RESULT_OK, intent);
+////                    getActivity().finish();
+////                }
+////            }
+////        }
+//    }
+    @Override
+    public void onShutterButtonClick(ShutterButton b) {
+
+        if (handler != null) {
+            handler.shutterButtonClick();
+
+        }
+    }
+
+    @Override
+    public void onShutterButtonFocus(ShutterButton b, boolean pressed) {
+        requestDelayedAutoFocus();
     }
 
     @Override
@@ -76,35 +206,31 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-
+        hasSurface = false;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        cameraFrame = (SurfaceView) findViewById(R.id.camera_frame);
-        shutterButton = (ImageButton) findViewById(R.id.shutter_button);
-        focusBox = (FocusBoxView) findViewById(R.id.focus_box);
-        focusBox.setCameraEngine(cameraEngine);
-
-        shutterButton.setOnClickListener(this);
-
-        SurfaceHolder surfaceHolder = cameraFrame.getHolder();
-        surfaceHolder.addCallback(this);
-        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
-        cameraFrame.setOnClickListener(this);
-        shutterButton.setEnabled(true);
-
-        setListeners();
+    /**
+     * Displays information relating to the result of OCR.
+     *
+     * @param ocrResult Object representing successful OCR results
+     * @return True if a non-null result was received for OCR
+     */
+    public boolean handleOcrDecode(OcrResult ocrResult) {
+        // Test whether the result is null
+        if (ocrResult.getText() == null || ocrResult.getText().equals("")) {
+            Toast toast = Toast.makeText(this, "OCR failed. Please try again.", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.TOP, 0, 0);
+            toast.show();
+            return false;
+        }
+        Toast toast = Toast.makeText(this, "OCR succeed" + ocrResult.getText(), Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.TOP, 0, 0);
+        toast.show();
+        return true;
     }
 
     private void setListeners() {
-
+        shutterButton.setOnShutterButtonListener(this);
         focusBox.setOnTouchListener(new View.OnTouchListener() {
             int lastX = -1;
             int lastY = -1;
@@ -121,7 +247,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
                         int currentY = (int) event.getY();
 
                         try {
-                            Rect rect = cameraEngine.getFramingRect();
+                            Rect rect = getCameraEngine().getFramingRect();
 
                             final int BUFFER = 50;
                             final int BIG_BUFFER = 60;
@@ -130,35 +256,35 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
                                 if (((currentX >= rect.left - BIG_BUFFER && currentX <= rect.left + BIG_BUFFER) || (lastX >= rect.left - BIG_BUFFER && lastX <= rect.left + BIG_BUFFER))
                                         && ((currentY <= rect.top + BIG_BUFFER && currentY >= rect.top - BIG_BUFFER) || (lastY <= rect.top + BIG_BUFFER && lastY >= rect.top - BIG_BUFFER))) {
                                     // Top left corner: adjust both top and left sides
-                                    cameraEngine.adjustFramingRect(2 * (lastX - currentX), 2 * (lastY - currentY));
+                                    getCameraEngine().adjustFramingRect(2 * (lastX - currentX), 2 * (lastY - currentY));
                                 } else if (((currentX >= rect.right - BIG_BUFFER && currentX <= rect.right + BIG_BUFFER) || (lastX >= rect.right - BIG_BUFFER && lastX <= rect.right + BIG_BUFFER))
                                         && ((currentY <= rect.top + BIG_BUFFER && currentY >= rect.top - BIG_BUFFER) || (lastY <= rect.top + BIG_BUFFER && lastY >= rect.top - BIG_BUFFER))) {
                                     // Top right corner: adjust both top and right sides
-                                    cameraEngine.adjustFramingRect(2 * (currentX - lastX), 2 * (lastY - currentY));
+                                    getCameraEngine().adjustFramingRect(2 * (currentX - lastX), 2 * (lastY - currentY));
                                 } else if (((currentX >= rect.left - BIG_BUFFER && currentX <= rect.left + BIG_BUFFER) || (lastX >= rect.left - BIG_BUFFER && lastX <= rect.left + BIG_BUFFER))
                                         && ((currentY <= rect.bottom + BIG_BUFFER && currentY >= rect.bottom - BIG_BUFFER) || (lastY <= rect.bottom + BIG_BUFFER && lastY >= rect.bottom - BIG_BUFFER))) {
                                     // Bottom left corner: adjust both bottom and left sides
-                                    cameraEngine.adjustFramingRect(2 * (lastX - currentX), 2 * (currentY - lastY));
+                                    getCameraEngine().adjustFramingRect(2 * (lastX - currentX), 2 * (currentY - lastY));
                                 } else if (((currentX >= rect.right - BIG_BUFFER && currentX <= rect.right + BIG_BUFFER) || (lastX >= rect.right - BIG_BUFFER && lastX <= rect.right + BIG_BUFFER))
                                         && ((currentY <= rect.bottom + BIG_BUFFER && currentY >= rect.bottom - BIG_BUFFER) || (lastY <= rect.bottom + BIG_BUFFER && lastY >= rect.bottom - BIG_BUFFER))) {
                                     // Bottom right corner: adjust both bottom and right sides
-                                    cameraEngine.adjustFramingRect(2 * (currentX - lastX), 2 * (currentY - lastY));
+                                    getCameraEngine().adjustFramingRect(2 * (currentX - lastX), 2 * (currentY - lastY));
                                 } else if (((currentX >= rect.left - BUFFER && currentX <= rect.left + BUFFER) || (lastX >= rect.left - BUFFER && lastX <= rect.left + BUFFER))
                                         && ((currentY <= rect.bottom && currentY >= rect.top) || (lastY <= rect.bottom && lastY >= rect.top))) {
                                     // Adjusting left side: event falls within BUFFER pixels of left side, and between top and bottom side limits
-                                    cameraEngine.adjustFramingRect(2 * (lastX - currentX), 0);
+                                    getCameraEngine().adjustFramingRect(2 * (lastX - currentX), 0);
                                 } else if (((currentX >= rect.right - BUFFER && currentX <= rect.right + BUFFER) || (lastX >= rect.right - BUFFER && lastX <= rect.right + BUFFER))
                                         && ((currentY <= rect.bottom && currentY >= rect.top) || (lastY <= rect.bottom && lastY >= rect.top))) {
                                     // Adjusting right side: event falls within BUFFER pixels of right side, and between top and bottom side limits
-                                    cameraEngine.adjustFramingRect(2 * (currentX - lastX), 0);
+                                    getCameraEngine().adjustFramingRect(2 * (currentX - lastX), 0);
                                 } else if (((currentY <= rect.top + BUFFER && currentY >= rect.top - BUFFER) || (lastY <= rect.top + BUFFER && lastY >= rect.top - BUFFER))
                                         && ((currentX <= rect.right && currentX >= rect.left) || (lastX <= rect.right && lastX >= rect.left))) {
                                     // Adjusting top side: event falls within BUFFER pixels of top side, and between left and right side limits
-                                    cameraEngine.adjustFramingRect(0, 2 * (lastY - currentY));
+                                    getCameraEngine().adjustFramingRect(0, 2 * (lastY - currentY));
                                 } else if (((currentY <= rect.bottom + BUFFER && currentY >= rect.bottom - BUFFER) || (lastY <= rect.bottom + BUFFER && lastY >= rect.bottom - BUFFER))
                                         && ((currentX <= rect.right && currentX >= rect.left) || (lastX <= rect.right && lastX >= rect.left))) {
                                     // Adjusting bottom side: event falls within BUFFER pixels of bottom side, and between left and right side limits
-                                    cameraEngine.adjustFramingRect(0, 2 * (currentY - lastY));
+                                    getCameraEngine().adjustFramingRect(0, 2 * (currentY - lastY));
                                 }
                             }
                         } catch (NullPointerException e) {
@@ -178,93 +304,59 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         });
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // Stop using the camera, to avoid conflicting with other camera-based apps
-        cameraEngine.closeDriver();
-
-        SurfaceHolder surfaceHolder = cameraFrame.getHolder();
-        surfaceHolder.removeCallback(this);
+    /**
+     * Requests autofocus after a 350 ms delay. This delay prevents requesting focus when the user
+     * just wants to click the shutter button without focusing. Quick button press/release will
+     * trigger onShutterButtonClick() before the focus kicks in.
+     */
+    private void requestDelayedAutoFocus() {
+        // Wait 350 ms before focusing to avoid interfering with quick button presses when
+        // the user just wants to take a picture without focusing.
+        cameraEngine.requestAutoFocus(350L);
     }
-//
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//
-//        outState.putString(this.TEMP_FILE_PATH, this.tempFilePath.getAbsolutePath());
-//        outState.putString(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
-//    }
-//
-//    @Override
-//    public void onRestoreInstanceState(Bundle savedInstanceState) {
-//    }
 
 //    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        // Check which request we're responding to
-////        if (requestCode == SAVE_PHOTO) {
-////            // Make sure the request was successful
-////            if (resultCode == getActivity().RESULT_OK) {
-////                int value = data.getExtras().getInt("save");
-////                if (value == 1) {
-////
-////                    Intent intent = new Intent();
-////                    FCameraFragment.this.getActivity().setResult(Activity.RESULT_OK, intent);
-////                    getActivity().finish();
-////                }
-////            }
-////        }
+//    public void onClick(View v) {
+//        if (v == shutterButton) {
+//            if (getCameraEngine() != null && getCameraEngine().isOn()) {
+//                getCameraEngine().requestAutoFocus(350L);
+//                //getCameraEngine().takeShot(this, this);
+//                shutterButton.setEnabled(false);
+//                shutterButton.setVisibility(View.INVISIBLE);
+//                focusBox.setVisibility(View.INVISIBLE);
+//            }
+//        }
 //    }
 
-    @Override
-    public void onClick(View v) {
-        if (v == shutterButton) {
-            if (cameraEngine != null && cameraEngine.isOn()) {
-                cameraEngine.requestAutoFocus(350L);
-                cameraEngine.takeShot(this, this, this);
-                shutterButton.setEnabled(false);
-                shutterButton.setVisibility(View.INVISIBLE);
-                focusBox.setVisibility(View.INVISIBLE);
-            }
-        }
-    }
-
-    @Override
-    public void onPictureTaken(byte[] data, Camera camera) {
-
-        Log.d(TAG, "Picture taken");
-
-        if (data == null) {
-            Log.d(TAG, "Got null data");
-            return;
-        }
-
-        //Bitmap bmp = BitmapTools.getFocusedBitmap(this, camera, data, focusBox.getFramingRect());
-        // TODO uncomment this line to save the photo
-        //BitmapTools.savePicture(bmp, this.tempFilePath, this.tempDir);
-
-        //new TessAsyncEngine().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, this, bmp);
-
-        Bitmap bmp = cameraEngine.buildLuminanceSource(data, focusBox.getWidth(), focusBox.getHeight()).renderCroppedGreyscaleBitmap();
-        restartPreview();
-        OcrRecognizeAsyncTask ocrRecognizeAsyncTask = new OcrRecognizeAsyncTask(CaptureActivity.this, bmp);
-        ocrRecognizeAsyncTask.execute();
-
-    }
-
-    @Override
-    public void onShutter() {
-
-    }
+//    @Override
+//    public void onPictureTaken(byte[] data, Camera camera) {
+//
+//        Log.d(TAG, "Picture taken");
+//
+//        if (data == null) {
+//            Log.d(TAG, "Got null data");
+//            return;
+//        }
+//
+//        //Bitmap bmp = BitmapTools.getFocusedBitmap(this, camera, data, focusBox.getFramingRect());
+//        // TODO uncomment this line to save the photo
+//        //BitmapTools.savePicture(bmp, this.tempFilePath, this.tempDir);
+//
+//        //new TessAsyncEngine().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, this, bmp);
+//
+//        Bitmap bmp = getCameraEngine().buildLuminanceSource(data, focusBox.getWidth(), focusBox.getHeight()).renderCroppedGreyscaleBitmap();
+//        restartPreview();
+//        OcrRecognizeAsyncTask ocrRecognizeAsyncTask = new OcrRecognizeAsyncTask(CaptureActivity.this, bmp);
+//        ocrRecognizeAsyncTask.execute();
+//
+//    }
 
     private void restartPreview() {
-        if (cameraEngine != null && cameraEngine.isOn()) {
+        if (getCameraEngine() != null && getCameraEngine().isOn()) {
             //cameraEngine.closeDriver();
-            cameraEngine.stopPreview();
-            //cameraEngine.openDriver(cameraFrame.getHolder());
-            cameraEngine.startPreview();
+            getCameraEngine().stopPreview();
+            //cameraEngine.openDriver(surfaceView.getHolder());
+            getCameraEngine().startPreview();
         }
     }
 
@@ -273,4 +365,26 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         focusBox.setVisibility(View.VISIBLE);
         shutterButton.setVisibility(View.VISIBLE);
     }
+
+    public CameraEngine getCameraEngine() {
+        return cameraEngine;
+    }
+
+    public void setCameraEngine(CameraEngine cameraEngine) {
+        this.cameraEngine = cameraEngine;
+    }
+
+    public CaptureActivityHandler getHandler() {
+        return handler;
+    }
+
+    public void setHandler(CaptureActivityHandler handler) {
+        this.handler = handler;
+    }
+
+    public void drawFocusBoxView() {
+        focusBox.redraw();
+    }
+
+
 }

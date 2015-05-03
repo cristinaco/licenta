@@ -4,6 +4,8 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -25,36 +27,39 @@ import ro.utcn.foodapp.utils.Constants;
 /**
  * Created by coponipi on 17.04.2015.
  */
-public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Void> {
+public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
     private TessBaseAPI tessBaseAPI;
-    private Bitmap bitmap;
     private String language;
     private CaptureActivity captureActivity;
     private String recognizedText;
     private MaterialDialog progressDialog;
+    private byte[] data;
+    private int bitmapWidth;
+    private int bitmapHeight;
 
-    public OcrRecognizeAsyncTask(CaptureActivity captureActivity, Bitmap bitmap) {
+    public OcrRecognizeAsyncTask(CaptureActivity captureActivity, TessBaseAPI tessBaseAPI, byte[] data, int width, int height) {
         this.captureActivity = captureActivity;
-        this.bitmap = bitmap;
+        this.tessBaseAPI = tessBaseAPI;
+        this.data = data;
+        this.bitmapWidth = width;
+        this.bitmapHeight = height;
         this.language = Constants.OCR_TRAINED_DATA_LANGUAGE;
-        tessBaseAPI = new TessBaseAPI();
-
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        progressDialog = new MaterialDialog.Builder(captureActivity)
-                .content(R.string.wait_while_performing_ocr)
-                .progress(true, 0)
-                .cancelable(false)
-                .show();
+//        progressDialog = new MaterialDialog.Builder(captureActivity)
+//                .content(R.string.wait_while_performing_ocr)
+//                .progress(true, 0)
+//                .cancelable(false)
+//                .show();
 
     }
 
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected Boolean doInBackground(Void... params) {
         String destinationPath = Environment.getExternalStorageDirectory() + File.separator + "tesseract" + File.separator;
 
         // If traineddata file does not exists in tesseract/tessdata, copy it from assets to device storage
@@ -82,34 +87,55 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Void> {
 
         // Init the tesseract engine with the path of traineddata and the used language
         tessBaseAPI.init(destinationPath, language);
-        tessBaseAPI.setImage(bitmap);
+        // tessBaseAPI.setImage(bitmap);
+        Bitmap bmp = captureActivity.getCameraEngine().buildLuminanceSource(data, bitmapWidth, bitmapHeight).renderCroppedGreyscaleBitmap();
+        tessBaseAPI.setImage(bmp);
         // Get the recognized text from image
         recognizedText = tessBaseAPI.getUTF8Text();
-        tessBaseAPI.end();
-
-        return null;
+        // Check for failure to recognize text
+        if (recognizedText == null || recognizedText.equals("")) {
+            return false;
+        }
+        return true;
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
+    protected void onPostExecute(Boolean result) {
         //captureActivity.setRecognizedText(recognizedText);
         //captureActivity.displayRecognizedText();
         Log.d("Result", recognizedText);
         OcrResult ocrResult = new OcrResult();
         ocrResult.setText(recognizedText);
-        ocrResult.setBitmap(bitmap);
+        //ocrResult.setBitmap(bitmap);
         ocrResult.setWordBoundingBoxes(tessBaseAPI.getWords().getBoxRects());
         tessBaseAPI.end();
 
-        if (progressDialog != null) {
-            progressDialog.dismiss();
-        }
+//        if (progressDialog != null) {
+//            progressDialog.dismiss();
+//        }
 
-        ImageDialog.New()
-                .addBitmap(BitmapTools.getAnnotatedBitmap(ocrResult))
-                .addTitle(recognizedText)
-                .show(captureActivity.getFragmentManager(), "TAG");
-        captureActivity.enableCameraButtons();
+//        ImageDialog.New()
+//                .addBitmap(BitmapTools.getAnnotatedBitmap(ocrResult))
+//                .addTitle(recognizedText)
+//                .show(captureActivity.getFragmentManager(), "TAG");
+//        captureActivity.enableCameraButtons();
+
+
+        Handler handler = captureActivity.getHandler();
+        if (handler != null) {
+            // Send results for single-shot mode recognition.
+            if (result) {
+                Message message = Message.obtain(handler, R.id.ocr_decode_succeded, ocrResult);
+                message.sendToTarget();
+            } else {
+                Message message = Message.obtain(handler, R.id.ocr_decode_failed, ocrResult);
+                message.sendToTarget();
+            }
+            //activity.getProgressDialog().dismiss();
+        }
+        if (tessBaseAPI != null) {
+            tessBaseAPI.clear();
+        }
     }
 
     private void copyFile(InputStream in, OutputStream out) {

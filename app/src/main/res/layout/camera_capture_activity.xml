@@ -5,7 +5,7 @@
     tools:context=".MainActivity">
 
     <SurfaceView
-        android:id="@+id/camera_frame"
+        android:id="@+id/camera_surface_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -21,10 +21,12 @@
         android:layout_margin="10dip"
         android:gravity="center_vertical">
 
-        <ImageButton
+        <ro.utcn.foodapp.engenoid.tessocrtest.Core.ShutterButton
             android:id="@+id/shutter_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
             android:background="@drawable/ic_camera_alt_white_48dp" />
     </RelativeLayout>
 

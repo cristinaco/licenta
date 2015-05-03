@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Display;
 import android.view.SurfaceHolder;
@@ -29,8 +30,11 @@ public class CameraEngine {
     private static final int MAX_FRAME_HEIGHT = 600; // originally 360
     private static final int MIN_PREVIEW_PIXELS = 470 * 320; // normal screen
     private static final int MAX_PREVIEW_PIXELS = 800 * 600; // more than large/HD screen
+    private static CameraEngine cameraEngine;
     private Context context;
     private AutoFocusManager autoFocusManager;
+    // Preview frames are delivered here, which we pass on to the registered handler. Make sure to clear the handler so it will only receive one message.
+    private static PreviewCallback previewCallback;
     private Camera camera;
     private boolean on;
     private boolean initialized;
@@ -44,49 +48,34 @@ public class CameraEngine {
 
     private CameraEngine(Context context) {
         this.context = context;
+
     }
 
     static public CameraEngine getInstance(Context context) {
         Log.d(TAG, "Creating camera engine");
-        return new CameraEngine(context);
+        cameraEngine = new CameraEngine(context);
+        previewCallback = new PreviewCallback(cameraEngine);
+        return cameraEngine;
     }
 
     public boolean isOn() {
         return on;
     }
 
-    public synchronized void openDriver(SurfaceHolder holder) {
-        this.camera = CameraUtils.getCamera();
-
-        if (this.camera == null) {
-            return;
+    public synchronized void openDriver(SurfaceHolder holder) throws IOException {
+        Camera theCamera = camera;
+        if (theCamera == null) {
+            theCamera = Camera.open();
+            if (theCamera == null) {
+                throw new IOException();
+            }
+            camera = theCamera;
         }
-        try {
-            this.camera.setPreviewDisplay(holder);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        autoFocusManager = new AutoFocusManager(context, camera);
+        camera.setPreviewDisplay(holder);
 
         if (!initialized) {
             initialized = true;
-            Camera.Parameters parameters = camera.getParameters();
-            WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            Display display = manager.getDefaultDisplay();
-            int width = display.getWidth();
-            int height = display.getHeight();
-            // We're landscape-only, and have apparently seen issues with display thinking it's portrait
-            // when waking from sleep. If it's not landscape, assume it's mistaken and reverse them:
-            if (width < height) {
-                Log.i(TAG, "Display reports portrait orientation; assuming this is incorrect");
-                int temp = width;
-                width = height;
-                height = temp;
-            }
-            screenResolution = new Point(width, height);
-            Log.i(TAG, "Screen resolution: " + screenResolution);
-            cameraResolution = findBestPreviewSizeValue(parameters, screenResolution);
-            Log.i(TAG, "Camera resolution: " + cameraResolution);
+            initFromCameraParameters(theCamera);
 
             if (requestedFramingRectWidth > 0 && requestedFramingRectHeight > 0) {
                 adjustFramingRect(requestedFramingRectWidth, requestedFramingRectHeight);
@@ -97,17 +86,84 @@ public class CameraEngine {
         // Landscape
         this.camera.setDisplayOrientation(0);
         setDesiredCameraParameters(this.camera);
-        this.camera.startPreview();
+        //this.camera.startPreview();
 
-        on = true;
+        // on = true;
     }
 
-    public void takeShot(Camera.ShutterCallback shutterCallback,
-                         Camera.PictureCallback rawPictureCallback,
-                         Camera.PictureCallback jpegPictureCallback) {
-        if (isOn()) {
-            camera.takePicture(shutterCallback, rawPictureCallback, jpegPictureCallback);
+    /**
+     * Closes the camera driver if still in use.
+     */
+    public synchronized void closeDriver() {
+        if (camera != null) {
+            camera.release();
+            camera = null;
         }
+        // Make sure to clear these each time we close the camera, so that any scanning rect
+        // requested by intent is forgotten.
+        framingRect = null;
+        framingRectInPreview = null;
+
+    }
+
+    public synchronized void startPreview() {
+        Camera theCamera = camera;
+        if (theCamera != null && !previewing) {
+            theCamera.startPreview();
+            previewing = true;
+            autoFocusManager = new AutoFocusManager(context, camera);
+        }
+    }
+
+    /**
+     * Tells the camera to stop drawing preview frames.
+     */
+    public synchronized void stopPreview() {
+        if (autoFocusManager != null) {
+            autoFocusManager.stop();
+            autoFocusManager = null;
+        }
+        if (camera != null && previewing) {
+            camera.stopPreview();
+            previewing = false;
+            previewCallback.setHandler(null, 0);
+        }
+    }
+
+    /**
+     * A single preview frame will be returned to the handler supplied. The data will arrive as byte[]
+     * in the message.obj field, with width and height encoded as message.arg1 and message.arg2,
+     * respectively.
+     *
+     * @param handler The handler to send the message to.
+     * @param message The what field of the message to be sent.
+     */
+    public synchronized void requestOcrDecode(Handler handler, int message) {
+        Camera theCamera = camera;
+        if (theCamera != null) {
+            previewCallback.setHandler(handler, message);
+            theCamera.setOneShotPreviewCallback(previewCallback);
+        }
+    }
+
+    private void initFromCameraParameters(Camera theCamera) {
+        Camera.Parameters parameters = theCamera.getParameters();
+        WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = manager.getDefaultDisplay();
+        int width = display.getWidth();
+        int height = display.getHeight();
+        // We're landscape-only, and have apparently seen issues with display thinking it's portrait
+        // when waking from sleep. If it's not landscape, assume it's mistaken and reverse them:
+        if (width < height) {
+            Log.i(TAG, "Display reports portrait orientation; assuming this is incorrect");
+            int temp = width;
+            width = height;
+            height = temp;
+        }
+        screenResolution = new Point(width, height);
+        Log.i(TAG, "Screen resolution: " + screenResolution);
+        cameraResolution = findBestPreviewSizeValue(parameters, screenResolution);
+        Log.i(TAG, "Camera resolution: " + cameraResolution);
     }
 
     /**
@@ -137,42 +193,6 @@ public class CameraEngine {
 
         parameters.setPreviewSize(cameraResolution.x, cameraResolution.y);
         camera.setParameters(parameters);
-    }
-
-    public synchronized void startPreview() {
-        Camera theCamera = camera;
-        if (theCamera != null && !previewing) {
-            theCamera.startPreview();
-            previewing = true;
-            autoFocusManager = new AutoFocusManager(context, camera);
-        }
-    }
-
-    /**
-     * Tells the camera to stop drawing preview frames.
-     */
-    public synchronized void stopPreview() {
-        if (autoFocusManager != null) {
-            autoFocusManager.stop();
-            autoFocusManager = null;
-        }
-        if (camera != null && previewing) {
-            camera.stopPreview();
-            previewing = false;
-        }
-    }
-
-    /**
-     * Closes the camera driver if still in use.
-     */
-    public synchronized void closeDriver() {
-        if (camera != null) {
-            camera.release();
-            camera = null;
-        }
-        framingRect = null;
-        framingRectInPreview = null;
-
     }
 
     private Point findBestPreviewSizeValue(Camera.Parameters parameters, Point screenResolution) {
@@ -307,10 +327,6 @@ public class CameraEngine {
         return framingRectInPreview;
     }
 
-    public Rect getFramingRect() {
-        return framingRect;
-    }
-
     public void adjustFramingRect(int deltaWidth, int deltaHeight) {
 
         if (initialized) {
@@ -336,6 +352,9 @@ public class CameraEngine {
         }
     }
 
+    public Rect getFramingRect() {
+        return framingRect;
+    }
 
     /**
      * A factory method to build the appropriate LuminanceSource object based on the format
