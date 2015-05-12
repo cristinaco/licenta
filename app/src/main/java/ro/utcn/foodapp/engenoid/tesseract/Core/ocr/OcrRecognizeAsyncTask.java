@@ -24,6 +24,8 @@ import ro.utcn.foodapp.utils.BitmapTools;
 import ro.utcn.foodapp.utils.Constants;
 
 /**
+ * Task used to perform the character recognition on a given bitmap
+ * </p>
  * Created by coponipi on 17.04.2015.
  */
 public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
@@ -72,7 +74,6 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
         tessBaseAPI.setDebug(true);
         // Init the tesseract engine with the path of traineddata and the used language
         tessBaseAPI.init(destinationPath, language);
-        // tessBaseAPI.setImage(bitmap);
         bmp = captureActivity.getCameraEngine().buildLuminanceSource(data, bitmapWidth, bitmapHeight).renderCroppedGreyscaleBitmap();
         tessBaseAPI.setImage(bmp);
         // Get the recognized text from image
@@ -95,28 +96,23 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
         ocrResult.setWordBoundingBoxes(tessBaseAPI.getWords().getBoxRects());
         tessBaseAPI.end();
 
-//        if (progressDialog != null) {
-//            progressDialog.dismiss();
-//        }
-
-//        ImageDialog.New()
-//                .addBitmap(BitmapTools.getAnnotatedBitmap(ocrResult))
-//                .addTitle(recognizedText)
-//                .show(captureActivity.getFragmentManager(), "TAG");
-        captureActivity.enableCameraButtons();
-
-
         Handler handler = captureActivity.getHandler();
         if (handler != null) {
             // Send results for single-shot mode recognition.
             if (result) {
                 Message message = Message.obtain(handler, R.id.ocr_decode_succeded, ocrResult);
                 message.sendToTarget();
+                BitmapTools.savePicture(bmp, captureActivity.tempFilePath, captureActivity.tempDir);
             } else {
                 Message message = Message.obtain(handler, R.id.ocr_decode_failed, ocrResult);
                 message.sendToTarget();
             }
             captureActivity.getOcrProgressDialog().dismiss();
+//            ImageDialog.New()
+//                    .addBitmap(BitmapTools.getAnnotatedBitmap(ocrResult))
+//                    .addTitle(recognizedText)
+//                    .show(captureActivity.getFragmentManager(), "TAG");
+            captureActivity.startPreviewPhotoActivity(ocrResult);
         }
         if (tessBaseAPI != null) {
             tessBaseAPI.clear();

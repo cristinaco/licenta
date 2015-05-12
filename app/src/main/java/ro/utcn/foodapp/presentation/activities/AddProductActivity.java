@@ -8,11 +8,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
-import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import ro.utcn.foodapp.R;
 import ro.utcn.foodapp.model.Product;
+import ro.utcn.foodapp.utils.Constants;
 import ro.utcn.foodapp.utils.FileUtil;
 
 public class AddProductActivity extends ActionBarActivity {
@@ -31,13 +32,15 @@ public class AddProductActivity extends ActionBarActivity {
 
     private File tempDir;
     private File tempFilePath;
+    private File productNameDir;
+    private File productIngredientsDir;
+    private File productExpirationDateDir;
     private FloatingActionButton takePicture;
-    private MaterialEditText productNameEditText;
-    private MaterialEditText productDescriptionEditText;
-    private TextView productExpDateEditText;
-    private TextView productExpStatusEditText;
-
     private Product newProduct;
+    private EditText productNameEditText;
+    private ImageView productNameCamBtn;
+    private ImageView productIngredientsCamBtn;
+    private ImageView productExpirationDateCamBtn;
     private List<String> urls;
 
     @Override
@@ -46,14 +49,16 @@ public class AddProductActivity extends ActionBarActivity {
         setContentView(R.layout.activity_add_product);
         ActionBar ab = getSupportActionBar();
         ab.setTitle(R.string.title_activity_add_product);
+        setTitle(getResources().getString(R.string.activity_add_product_title));
         takePicture = (FloatingActionButton) findViewById(R.id.activity_add_product_button_take_picture);
-        productNameEditText = (MaterialEditText) findViewById(R.id.activity_add_product_name);
-        productDescriptionEditText = (MaterialEditText) findViewById(R.id.activity_add_product_description);
-        productExpDateEditText = (TextView) findViewById(R.id.activity_add_product_exp_date);
-        productExpStatusEditText = (TextView) findViewById(R.id.activity_add_product_exp_status);
+        productNameEditText = (EditText) findViewById(R.id.activity_add_product_name_edit_text);
+        productNameCamBtn = (ImageView) findViewById(R.id.activity_add_product_name_cam_btn);
+        productIngredientsCamBtn = (ImageView) findViewById(R.id.activity_add_product_ingredients_cam_btn);
+        productExpirationDateCamBtn = (ImageView) findViewById(R.id.activity_add_product_expiration_date_cam_btn);
 
         // TODO Create the directory with the user's username or with the product uid/name
-        this.tempDir = new File(FileUtil.getDrTempDir(this), "username");
+        String productUUID = String.valueOf(UUID.randomUUID());
+        this.tempDir = new File(FileUtil.getDrTempDir(this), productUUID);
         this.tempDir.mkdirs();
 
         newProduct = new Product();
@@ -78,7 +83,7 @@ public class AddProductActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_save) {
+        if (id == R.id.action_save_product_data) {
             saveProduct();
             return true;
         }
@@ -109,6 +114,60 @@ public class AddProductActivity extends ActionBarActivity {
                     tempFilePath = new File(tempDir, String.valueOf(System.currentTimeMillis() + ".jpg"));
                     takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
                     takePictureIntent.putExtra(TEMP_DIR_PATH, tempDir.getAbsolutePath());
+                    tempFilePath.getParentFile().mkdirs();
+
+                    startActivityForResult(takePictureIntent, TAKE_PICTURE);
+                } else {
+                    Toast.makeText(AddProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        productNameCamBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Camera.getNumberOfCameras() > 0) {
+                    final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
+                    productNameDir = new File(tempDir, Constants.PRODUCT_NAME_DIRECTORY);
+                    productNameDir.mkdirs();
+                    tempFilePath = new File(productNameDir, String.valueOf(System.currentTimeMillis() + ".jpg"));
+                    takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
+                    takePictureIntent.putExtra(TEMP_DIR_PATH, productNameDir.getAbsolutePath());
+                    tempFilePath.getParentFile().mkdirs();
+
+                    startActivityForResult(takePictureIntent, TAKE_PICTURE);
+                } else {
+                    Toast.makeText(AddProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        productIngredientsCamBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Camera.getNumberOfCameras() > 0) {
+                    final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
+                    productIngredientsDir = new File(tempDir, Constants.PRODUCT_INGREDIENTS_DIRECTORY);
+                    productIngredientsDir.mkdirs();
+                    tempFilePath = new File(productIngredientsDir, String.valueOf(System.currentTimeMillis() + ".jpg"));
+                    takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
+                    takePictureIntent.putExtra(TEMP_DIR_PATH, productIngredientsDir.getAbsolutePath());
+                    tempFilePath.getParentFile().mkdirs();
+
+                    startActivityForResult(takePictureIntent, TAKE_PICTURE);
+                } else {
+                    Toast.makeText(AddProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        productExpirationDateCamBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Camera.getNumberOfCameras() > 0) {
+                    final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
+                    productExpirationDateDir = new File(tempDir, Constants.PRODUCT_EXPIRATION_DATE_DIRECTORY);
+                    productExpirationDateDir.mkdirs();
+                    tempFilePath = new File(productExpirationDateDir, String.valueOf(System.currentTimeMillis() + ".jpg"));
+                    takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
+                    takePictureIntent.putExtra(TEMP_DIR_PATH, productExpirationDateDir.getAbsolutePath());
                     tempFilePath.getParentFile().mkdirs();
 
                     startActivityForResult(takePictureIntent, TAKE_PICTURE);

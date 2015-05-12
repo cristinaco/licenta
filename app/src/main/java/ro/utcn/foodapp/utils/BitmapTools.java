@@ -14,6 +14,7 @@ import android.os.Environment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import ro.utcn.foodapp.model.OcrResult;
 
@@ -192,19 +193,18 @@ public class BitmapTools {
         }
     }
 
-    public static Bitmap getAnnotatedBitmap(OcrResult ocrResult) {
+    public static Bitmap getAnnotatedBitmap(Bitmap bitmap,List<Rect> wordBoundingBoxes) {
 
-        Bitmap bitmap = ocrResult.getBitmap();
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
 
         // Draw bounding boxes around each word
-        for (int i = 0; i < ocrResult.getWordBoundingBoxes().size(); i++) {
+        for (int i = 0; i < wordBoundingBoxes.size(); i++) {
             paint.setAlpha(0xFF);
             paint.setColor(0xFF00CCFF);
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(2);
-            Rect r = ocrResult.getWordBoundingBoxes().get(i);
+            Rect r = wordBoundingBoxes.get(i);
             canvas.drawRect(r, paint);
 
         }

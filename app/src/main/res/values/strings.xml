@@ -35,5 +35,12 @@
     <string name="title_activity_capture">CaptureActivity</string>
 
     <string name="image_dialog_description">Image Preview</string>
+    <string name="title_activity_preview_photo">PreviewPhotoActivity</string>
+    <string name="action_save_changes">Save</string>
+    <string name="action_save_ocr_result">Save</string>
+    <string name="action_edit_ocr_result">Edit</string>
+    <string name="action_discard_ocr_result">Cancel</string>
+    <string name="product_ingredients">Ingredients</string>
+    <string name="activity_add_product_title">Add product</string>
 
 </resources>

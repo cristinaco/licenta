@@ -1,0 +1,42 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_text_white"
+    android:orientation="vertical"
+    tools:context="ro.utcn.foodapp.presentation.activities.PreviewPhotoActivity">
+
+    <ImageView
+        android:id="@+id/camera_display_photo_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dip"
+        android:layout_weight="1" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dip"
+        android:layout_toRightOf="@id/camera_display_photo_container"
+        android:layout_weight="0.5">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top">
+
+
+            <android.support.v7.internal.widget.TintEditText
+                android:id="@+id/activity_preview_photo_recognized_text_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="Android is Awesome"
+                android:textColor="@color/material_blue_grey_900" />
+        </RelativeLayout>
+    </ScrollView>
+
+
+</LinearLayout>
+
+

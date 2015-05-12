@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ro.utcn.foodapp.presentation.activities.PreviewPhotoActivity">
+    <item
+        android:id="@+id/action_save_ocr_result"
+        android:orderInCategory="100"
+        android:title="@string/action_save_ocr_result"
+        android:icon="@drawable/ic_action_save"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_edit_ocr_result"
+        android:orderInCategory="100"
+        android:title="@string/action_edit_ocr_result"
+        android:icon="@drawable/ic_action_edit"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_discard_ocr_result"
+        android:orderInCategory="100"
+        android:title="@string/action_discard_ocr_result"
+        android:icon="@drawable/ic_action_discard"
+        app:showAsAction="always"/>
+</menu>

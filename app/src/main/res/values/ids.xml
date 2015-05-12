@@ -4,4 +4,5 @@
     <item name="ocr_decode_failed" type="id">ocr_decode_failed</item>
     <item name="ocr_decode" type="id">ocr_decode</item>
     <item name="restart_preview" type="id">restart_preview</item>
+    <item name="action_save" type="id">save_product</item>
 </resources>

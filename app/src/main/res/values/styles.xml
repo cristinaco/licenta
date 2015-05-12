@@ -15,7 +15,19 @@
         <item name="spinBars">true</item>
     </style>
 
+    <style name="AppTheme.CardView" parent="CardView">
+        <item name="android:layout_margin">@dimen/spacingCard</item>
+    </style>
 
+
+    <style name="Avatar">
+        <item name="android:layout_width">@dimen/sizeAvatar</item>
+        <item name="android:layout_height">@dimen/sizeAvatar</item>
+    </style>
+
+    <style name="Avatar.WithText" parent="Avatar">
+        <item name="android:layout_marginRight">@dimen/spacingBasicDouble</item>
+    </style>
     <!--<style name="CircularProgressDrawableStyle" parent="Material.Drawable.CircularProgress"/>-->
 
 </resources>

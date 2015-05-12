@@ -1,37 +1,151 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    android:orientation="vertical"
     android:background="@color/app_text_white"
+    android:orientation="vertical"
     tools:context="ro.utcn.foodapp.presentation.activities.AddProductActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_margin="10dip"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:textSize="18sp"
-            android:textColorHint="@color/material_blue_grey_900"
-            android:hint="@string/activity_add_product_image" />
-
-        <RelativeLayout
+        <android.support.v7.widget.CardView
+            style="@style/AppTheme.CardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="right">
+            android:clickable="true"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/activity_add_product_name_cam_btn"
+                    style="@style/Avatar.WithText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/ic_action_camera_black" />
+
+                <EditText
+                    android:id="@+id/activity_add_product_name_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginTop="5dp"
+                    android:clickable="true"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:hint="@string/product_name"
+                    android:inputType="textNoSuggestions"
+                    android:textColorHint="@color/ripple" />
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            style="@style/AppTheme.CardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/activity_add_product_ingredients_cam_btn"
+                    style="@style/Avatar.WithText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/ic_action_camera_black" />
+
+                <EditText
+                    android:id="@+id/activity_add_product_ingredients_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginTop="5dp"
+                    android:clickable="true"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:hint="@string/product_ingredients"
+                    android:inputType="textNoSuggestions"
+                    android:textColorHint="@color/ripple" />
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            style="@style/AppTheme.CardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/activity_add_product_expiration_date_cam_btn"
+                    style="@style/Avatar.WithText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/ic_action_camera_black" />
+
+                <EditText
+                    android:id="@+id/activity_add_product_expiration_date_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginTop="5dp"
+                    android:clickable="true"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:hint="@string/product_expiration_date"
+                    android:inputType="textNoSuggestions"
+                    android:textColorHint="@color/ripple" />
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="bottom">
 
             <com.melnykov.fab.FloatingActionButton
                 android:id="@+id/activity_add_product_button_take_picture"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="right"
                 android:layout_margin="16dp"
                 android:src="@drawable/ic_action_camera"
@@ -40,52 +154,4 @@
                 fab:fab_colorRipple="@color/ripple" />
         </RelativeLayout>
     </LinearLayout>
-
-
-    <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/activity_add_product_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dip"
-        android:hint="@string/product_name"
-        android:inputType="textNoSuggestions"
-        android:textCursorDrawable="@drawable/text_cursor_cyan"
-        android:textSize="20sp"
-        app:met_baseColor="@color/material_blue_grey_900"
-        app:met_floatingLabel="highlight"
-        app:met_primaryColor="@color/ripple"
-        app:met_singleLineEllipsis="true" />
-
-    <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/activity_add_product_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dip"
-        android:hint="@string/product_description"
-        android:inputType="textNoSuggestions"
-        android:textCursorDrawable="@drawable/text_cursor_cyan"
-        android:textSize="20sp"
-        app:met_baseColor="@color/material_blue_grey_900"
-        app:met_floatingLabel="highlight"
-        app:met_primaryColor="@color/ripple"
-        app:met_singleLineEllipsis="true" />
-    <TextView
-        android:id="@+id/activity_add_product_exp_date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dip"
-        android:layout_gravity="center_vertical"
-        android:textSize="18sp"
-        android:textColorHint="@color/material_blue_grey_900"
-        android:hint="@string/product_expiration_date"/>
-    <TextView
-        android:id="@+id/activity_add_product_exp_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dip"
-        android:layout_gravity="center_vertical"
-        android:textSize="18sp"
-        android:textColorHint="@color/material_blue_grey_900"
-        android:hint="@string/product_expiration_status"/>
-
 </LinearLayout>

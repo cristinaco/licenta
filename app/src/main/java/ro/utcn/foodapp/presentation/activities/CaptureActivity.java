@@ -25,6 +25,7 @@ import ro.utcn.foodapp.engenoid.tesseract.Core.CaptureActivityHandler;
 import ro.utcn.foodapp.engenoid.tesseract.Core.customViews.FocusBoxView;
 import ro.utcn.foodapp.engenoid.tesseract.Core.customViews.ShutterButton;
 import ro.utcn.foodapp.model.OcrResult;
+import ro.utcn.foodapp.utils.Constants;
 
 
 public class CaptureActivity extends Activity implements SurfaceHolder.Callback, ShutterButton.OnShutterButtonListener {
@@ -212,6 +213,16 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         hasSurface = false;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (ocrProgressDialog != null) {
+            ocrProgressDialog.dismiss();
+            ocrProgressDialog = null;
+        }
+
+    }
+
     /**
      * Displays information relating to the result of OCR.
      *
@@ -227,7 +238,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
             return false;
         }
         // TODO show the recognized text and also the original image
-        Toast toast = Toast.makeText(this, "OCR succeed" + ocrResult.getText(), Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(this, "OCR succeed", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.TOP, 0, 0);
         toast.show();
         return true;
@@ -344,7 +355,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
 //
 //        //Bitmap bmp = BitmapTools.getFocusedBitmap(this, camera, data, focusBox.getFramingRect());
 //        // TODO uncomment this line to save the photo
-//        //BitmapTools.savePicture(bmp, this.tempFilePath, this.tempDir);
+//        BitmapTools.savePicture(bmp, this.tempFilePath, this.tempDir);
 //
 //        //new TessAsyncEngine().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, this, bmp);
 //
@@ -364,26 +375,12 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         }
     }
 
-    public void enableCameraButtons() {
-        shutterButton.setEnabled(true);
-        focusBox.setVisibility(View.VISIBLE);
-        shutterButton.setVisibility(View.VISIBLE);
-    }
-
     public CameraEngine getCameraEngine() {
         return cameraEngine;
     }
 
-    public void setCameraEngine(CameraEngine cameraEngine) {
-        this.cameraEngine = cameraEngine;
-    }
-
     public CaptureActivityHandler getHandler() {
         return handler;
-    }
-
-    public void setHandler(CaptureActivityHandler handler) {
-        this.handler = handler;
     }
 
     public void drawFocusBoxView() {
@@ -405,5 +402,16 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
 
     public void setShutterBtnClickable(boolean clickable) {
         shutterButton.setClickable(clickable);
+    }
+
+    public void startPreviewPhotoActivity(OcrResult ocrResult) {
+        Intent displayPhotoIntent = new Intent(this, PreviewPhotoActivity.class);
+        displayPhotoIntent.putExtra(this.TEMP_FILE_PATH, this.tempFilePath.getAbsolutePath());
+        displayPhotoIntent.putExtra(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
+        displayPhotoIntent.putExtra(Constants.OCR_RESULT_KEY, ocrResult.getText());
+        displayPhotoIntent.putExtra(Constants.OCR_WORD_BOUNDING_BOXES_KEY, (java.io.Serializable) ocrResult.getWordBoundingBoxes());
+
+        this.startActivityForResult(displayPhotoIntent, Constants.SAVE_PHOTO);
+
     }
 }

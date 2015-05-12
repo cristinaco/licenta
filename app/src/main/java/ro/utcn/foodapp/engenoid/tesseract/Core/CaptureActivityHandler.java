@@ -59,7 +59,7 @@ public class CaptureActivityHandler extends Handler {
      * Start the preview, but don't try to OCR anything until the user presses the shutter button.
      */
     private void restartOcrPreview() {
-        // Display the shutter and torch buttons
+        // Display the shutter buttons
 
         if (state == State.SUCCESS) {
             state = State.PREVIEW;
