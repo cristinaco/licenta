@@ -3,7 +3,6 @@ package ro.utcn.foodapp.presentation.activities;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +15,9 @@ import com.melnykov.fab.FloatingActionButton;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import ro.utcn.foodapp.R;
@@ -36,33 +37,40 @@ public class AddProductActivity extends ActionBarActivity {
     private File productIngredientsDir;
     private File productExpirationDateDir;
     private FloatingActionButton takePicture;
-    private Product newProduct;
     private EditText productNameEditText;
+    private EditText productIngredientsEditText;
+    private EditText productExpirationDateEditText;
     private ImageView productNameCamBtn;
     private ImageView productIngredientsCamBtn;
     private ImageView productExpirationDateCamBtn;
+    private Product newProduct;
+    private String productUUID = null;
+    private String ocrForAction = null;
+    private Map<String, String> productPhotoPaths;
     private List<String> urls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_product);
-        ActionBar ab = getSupportActionBar();
-        ab.setTitle(R.string.title_activity_add_product);
         setTitle(getResources().getString(R.string.activity_add_product_title));
+
         takePicture = (FloatingActionButton) findViewById(R.id.activity_add_product_button_take_picture);
         productNameEditText = (EditText) findViewById(R.id.activity_add_product_name_edit_text);
+        productIngredientsEditText = (EditText) findViewById(R.id.activity_add_product_ingredients_edit_text);
+        productExpirationDateEditText = (EditText) findViewById(R.id.activity_add_product_expiration_date_edit_text);
         productNameCamBtn = (ImageView) findViewById(R.id.activity_add_product_name_cam_btn);
         productIngredientsCamBtn = (ImageView) findViewById(R.id.activity_add_product_ingredients_cam_btn);
         productExpirationDateCamBtn = (ImageView) findViewById(R.id.activity_add_product_expiration_date_cam_btn);
 
         // TODO Create the directory with the user's username or with the product uid/name
-        String productUUID = String.valueOf(UUID.randomUUID());
+        productUUID = String.valueOf(UUID.randomUUID());
         this.tempDir = new File(FileUtil.getDrTempDir(this), productUUID);
         this.tempDir.mkdirs();
 
         newProduct = new Product();
-        newProduct.setUid(String.valueOf(UUID.randomUUID()));
+        newProduct.setUid(productUUID);
+        productPhotoPaths = new HashMap<>();
         urls = new ArrayList<>();
         setListeners();
     }
@@ -95,9 +103,34 @@ public class AddProductActivity extends ActionBarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == TAKE_PICTURE) {
             if (resultCode == RESULT_OK) {
-                urls.add(this.tempFilePath.getAbsolutePath());
+                int value = data.getExtras().getInt("save");
+                if (value == 1) {
+                    if (ocrForAction.equals("name")) {
+                        saveProductName(data);
+                    } else if (ocrForAction.equals("ingredients")) {
+                        saveProductIngredients(data);
+                    } else if (ocrForAction.equals("expirationDate")) {
+                        saveProductExpirationDate(data);
+                    }
+                }
             }
         }
+    }
+
+    private void saveProductName(Intent data) {
+        newProduct.setName(data.getStringExtra(Constants.OCR_RESULT_TEXT_KEY));
+        productPhotoPaths.put(Constants.PRODUCT_NAME_PHOTO_PATH_KEY, data.getStringExtra(this.tempFilePath.getAbsolutePath()));
+        productNameEditText.setText(newProduct.getName());
+    }
+
+    private void saveProductIngredients(Intent data) {
+        newProduct.setIngredients(data.getStringExtra(Constants.OCR_RESULT_TEXT_KEY));
+        productPhotoPaths.put(Constants.PRODUCT_INGREDIENTS_PHOTO_PATH_KEY, data.getStringExtra(this.tempFilePath.getAbsolutePath()));
+        productIngredientsEditText.setText(newProduct.getIngredients());
+    }
+
+    private void saveProductExpirationDate(Intent data) {
+
     }
 
     private void saveProduct() {
@@ -106,30 +139,31 @@ public class AddProductActivity extends ActionBarActivity {
     }
 
     private void setListeners() {
-        takePicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Camera.getNumberOfCameras() > 0) {
-                    final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
-                    tempFilePath = new File(tempDir, String.valueOf(System.currentTimeMillis() + ".jpg"));
-                    takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
-                    takePictureIntent.putExtra(TEMP_DIR_PATH, tempDir.getAbsolutePath());
-                    tempFilePath.getParentFile().mkdirs();
-
-                    startActivityForResult(takePictureIntent, TAKE_PICTURE);
-                } else {
-                    Toast.makeText(AddProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+//        takePicture.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (Camera.getNumberOfCameras() > 0) {
+//                    final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
+//                    tempFilePath = new File(tempDir, String.valueOf(System.currentTimeMillis() + ".jpg"));
+//                    takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
+//                    takePictureIntent.putExtra(TEMP_DIR_PATH, tempDir.getAbsolutePath());
+//                    tempFilePath.getParentFile().mkdirs();
+//
+//                    startActivityForResult(takePictureIntent, TAKE_PICTURE);
+//                } else {
+//                    Toast.makeText(AddProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
+//                }
+//            }
+//        });
         productNameCamBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (Camera.getNumberOfCameras() > 0) {
+                    ocrForAction = "name";
                     final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
                     productNameDir = new File(tempDir, Constants.PRODUCT_NAME_DIRECTORY);
                     productNameDir.mkdirs();
-                    tempFilePath = new File(productNameDir, String.valueOf(System.currentTimeMillis() + ".jpg"));
+                    tempFilePath = new File(productNameDir, String.valueOf(System.currentTimeMillis() + ocrForAction + ".jpg"));
                     takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
                     takePictureIntent.putExtra(TEMP_DIR_PATH, productNameDir.getAbsolutePath());
                     tempFilePath.getParentFile().mkdirs();
@@ -144,10 +178,11 @@ public class AddProductActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 if (Camera.getNumberOfCameras() > 0) {
+                    ocrForAction = "ingredients";
                     final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
                     productIngredientsDir = new File(tempDir, Constants.PRODUCT_INGREDIENTS_DIRECTORY);
                     productIngredientsDir.mkdirs();
-                    tempFilePath = new File(productIngredientsDir, String.valueOf(System.currentTimeMillis() + ".jpg"));
+                    tempFilePath = new File(productIngredientsDir, String.valueOf(System.currentTimeMillis() + ocrForAction + ".jpg"));
                     takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
                     takePictureIntent.putExtra(TEMP_DIR_PATH, productIngredientsDir.getAbsolutePath());
                     tempFilePath.getParentFile().mkdirs();
@@ -162,10 +197,11 @@ public class AddProductActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 if (Camera.getNumberOfCameras() > 0) {
+                    ocrForAction = "expirationDate";
                     final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
                     productExpirationDateDir = new File(tempDir, Constants.PRODUCT_EXPIRATION_DATE_DIRECTORY);
                     productExpirationDateDir.mkdirs();
-                    tempFilePath = new File(productExpirationDateDir, String.valueOf(System.currentTimeMillis() + ".jpg"));
+                    tempFilePath = new File(productExpirationDateDir, String.valueOf(System.currentTimeMillis() + ocrForAction + ".jpg"));
                     takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
                     takePictureIntent.putExtra(TEMP_DIR_PATH, productExpirationDateDir.getAbsolutePath());
                     tempFilePath.getParentFile().mkdirs();

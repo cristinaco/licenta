@@ -50,7 +50,8 @@
                     android:focusableInTouchMode="false"
                     android:hint="@string/product_name"
                     android:inputType="textNoSuggestions"
-                    android:textColorHint="@color/ripple" />
+                    android:textColorHint="@color/ripple"
+                    android:textColor="@color/material_blue_grey_950"/>
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
@@ -91,7 +92,8 @@
                     android:focusableInTouchMode="false"
                     android:hint="@string/product_ingredients"
                     android:inputType="textNoSuggestions"
-                    android:textColorHint="@color/ripple" />
+                    android:textColorHint="@color/ripple"
+                    android:textColor="@color/material_blue_grey_950"/>
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
@@ -132,7 +134,8 @@
                     android:focusableInTouchMode="false"
                     android:hint="@string/product_expiration_date"
                     android:inputType="textNoSuggestions"
-                    android:textColorHint="@color/ripple" />
+                    android:textColorHint="@color/ripple"
+                    android:textColor="@color/material_blue_grey_950"/>
 
             </LinearLayout>
         </android.support.v7.widget.CardView>

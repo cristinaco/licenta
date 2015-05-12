@@ -32,6 +32,7 @@ public class PreviewPhotoActivity extends ActionBarActivity {
     private File photoFilePath;
     private File photoDirPath;
     private List<Rect> wordBoundingBoxes;
+    private String recognizedText;
     private OcrResult ocrResult;
 
     @Override
@@ -45,18 +46,24 @@ public class PreviewPhotoActivity extends ActionBarActivity {
         Intent intent = getIntent();
         photoFilePath = new File((intent.getStringExtra(TEMP_FILE_PATH)));
         photoDirPath = new File(intent.getStringExtra(TEMP_DIR_PATH));
-        //ocrResult = (OcrResult) intent.getSerializableExtra(Constants.OCR_RESULT_KEY);
-        String text = intent.getStringExtra(Constants.OCR_RESULT_KEY);
+        //ocrResult = (OcrResult) intent.getSerializableExtra(Constants.OCR_RESULT_OBJECT_KEY);
+        recognizedText = intent.getStringExtra(Constants.OCR_RESULT_TEXT_KEY);
         wordBoundingBoxes = (List<Rect>) intent.getSerializableExtra(Constants.OCR_WORD_BOUNDING_BOXES_KEY);
 
         // Used the Picasso library to display and scale the photo to fit in the image view
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(photoFilePath.getAbsolutePath(), options);
-        Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-        Bitmap annotatedBitmap = BitmapTools.getAnnotatedBitmap(mutableBitmap,wordBoundingBoxes);
-        imageView.setImageBitmap(annotatedBitmap);
-        ocrRecognizedEditText.setText(text);
+
+        if (wordBoundingBoxes != null) {
+            Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+            Bitmap annotatedBitmap = BitmapTools.getAnnotatedBitmap(mutableBitmap, wordBoundingBoxes);
+            imageView.setImageBitmap(annotatedBitmap);
+        } else {
+            imageView.setImageBitmap(bitmap);
+        }
+
+        ocrRecognizedEditText.setText(recognizedText);
     }
 
     @Override
@@ -99,6 +106,8 @@ public class PreviewPhotoActivity extends ActionBarActivity {
     private void saveOcrResult() {
         Intent resultIntent = new Intent();
         resultIntent.putExtra("save", 1);
+        resultIntent.putExtra(Constants.OCR_RESULT_TEXT_KEY, recognizedText);
+        resultIntent.putExtra(this.TEMP_FILE_PATH, photoFilePath);
         setResult(Activity.RESULT_OK, resultIntent);
 
         PreviewPhotoActivity.this.finish();

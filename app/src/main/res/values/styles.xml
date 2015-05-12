@@ -15,7 +15,7 @@
         <item name="spinBars">true</item>
     </style>
 
-    <style name="AppTheme.CardView" parent="CardView">
+    <style name="AppTheme.CardView" parent="CardView.Light">
         <item name="android:layout_margin">@dimen/spacingCard</item>
     </style>
 

@@ -173,22 +173,21 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
 //    public void onRestoreInstanceState(Bundle savedInstanceState) {
 //    }
 
-    //    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        // Check which request we're responding to
-////        if (requestCode == SAVE_PHOTO) {
-////            // Make sure the request was successful
-////            if (resultCode == getActivity().RESULT_OK) {
-////                int value = data.getExtras().getInt("save");
-////                if (value == 1) {
-////
-////                    Intent intent = new Intent();
-////                    FCameraFragment.this.getActivity().setResult(Activity.RESULT_OK, intent);
-////                    getActivity().finish();
-////                }
-////            }
-////        }
-//    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == Constants.SAVE_PHOTO) {
+            // Make sure the request was successful
+            if (resultCode == this.RESULT_OK) {
+                int value = data.getExtras().getInt("save");
+                if (value == 1) {
+                    setResult(Activity.RESULT_OK, data);
+                    this.finish();
+                }
+            }
+        }
+    }
+
     @Override
     public void onShutterButtonClick(ShutterButton b) {
 
@@ -408,8 +407,9 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         Intent displayPhotoIntent = new Intent(this, PreviewPhotoActivity.class);
         displayPhotoIntent.putExtra(this.TEMP_FILE_PATH, this.tempFilePath.getAbsolutePath());
         displayPhotoIntent.putExtra(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
-        displayPhotoIntent.putExtra(Constants.OCR_RESULT_KEY, ocrResult.getText());
+        displayPhotoIntent.putExtra(Constants.OCR_RESULT_TEXT_KEY, ocrResult.getText());
         displayPhotoIntent.putExtra(Constants.OCR_WORD_BOUNDING_BOXES_KEY, (java.io.Serializable) ocrResult.getWordBoundingBoxes());
+        //displayPhotoIntent.putExtra(Constants.OCR_RESULT_OBJECT_KEY, ocrResult);
 
         this.startActivityForResult(displayPhotoIntent, Constants.SAVE_PHOTO);
 

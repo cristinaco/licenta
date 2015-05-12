@@ -9,7 +9,7 @@ import java.util.List;
 public class Product {
     private String uid;
     private String name;
-    private String description;
+    private String ingredients;
     private int piecesNumber;
     private Date expirationDate;
     private String expirationStatus;
@@ -31,13 +31,7 @@ public class Product {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
-    }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public int getPiecesNumber() {
         return piecesNumber;
@@ -69,5 +63,13 @@ public class Product {
 
     public void setUrls(List<String> urls) {
         this.urls = urls;
+    }
+
+    public String getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(String ingredients) {
+        this.ingredients = ingredients;
     }
 }

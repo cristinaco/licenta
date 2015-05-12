@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import ro.utcn.foodapp.R;
-import ro.utcn.foodapp.engenoid.tesseract.Core.Dialogs.ImageDialog;
 import ro.utcn.foodapp.model.OcrResult;
 import ro.utcn.foodapp.presentation.activities.CaptureActivity;
 import ro.utcn.foodapp.utils.BitmapTools;
@@ -92,7 +91,8 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
         Log.d("Result", recognizedText);
         OcrResult ocrResult = new OcrResult();
         ocrResult.setText(recognizedText);
-        ocrResult.setBitmap(bmp);
+        ocrResult.setPhotoFilePath(captureActivity.tempFilePath);
+        ocrResult.setPhotoDirPath(captureActivity.tempDir);
         ocrResult.setWordBoundingBoxes(tessBaseAPI.getWords().getBoxRects());
         tessBaseAPI.end();
 
