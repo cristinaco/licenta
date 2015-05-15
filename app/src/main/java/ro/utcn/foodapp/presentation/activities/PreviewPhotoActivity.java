@@ -1,12 +1,15 @@
 package ro.utcn.foodapp.presentation.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -103,6 +106,35 @@ public class PreviewPhotoActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Data will be lost");
+            builder.setMessage("Do you want to exit?");
+
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    discardOcrResult();
+                    finish();
+                }
+            });
+
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
     private void saveOcrResult() {
         Intent resultIntent = new Intent();
         resultIntent.putExtra("save", 1);
@@ -119,9 +151,9 @@ public class PreviewPhotoActivity extends ActionBarActivity {
 
     private void discardOcrResult() {
         // Delete the photoFilePath from the temporary directory
+        Picasso.with(getApplicationContext()).invalidate(photoFilePath);
         photoFilePath.delete();
         photoDirPath.delete();
-        Picasso.with(getApplicationContext()).invalidate(photoFilePath);
 
         Intent resultIntent = new Intent();
         resultIntent.putExtra("save", 0);

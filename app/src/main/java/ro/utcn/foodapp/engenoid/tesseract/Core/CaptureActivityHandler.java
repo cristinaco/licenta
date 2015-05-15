@@ -65,7 +65,7 @@ public class CaptureActivityHandler extends Handler {
             state = State.PREVIEW;
 
 //            // Draw the viewfinder.
-//            captureActivity.drawViewfinder();
+            captureActivity.drawFocusBoxView();
         }
     }
 

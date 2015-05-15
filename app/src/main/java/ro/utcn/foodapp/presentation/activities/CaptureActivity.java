@@ -43,6 +43,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
     private CaptureActivityHandler handler;
     private SurfaceHolder surfaceHolder;
     private MaterialDialog ocrProgressDialog;
+    private Rect rect;
     private boolean hasSurface;
 
     @Override
@@ -245,6 +246,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
 
     private void setListeners() {
         shutterButton.setOnShutterButtonListener(this);
+
         focusBox.setOnTouchListener(new View.OnTouchListener() {
             int lastX = -1;
             int lastY = -1;
@@ -261,8 +263,8 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
                         int currentY = (int) event.getY();
 
                         try {
-                            Rect rect = getCameraEngine().getFramingRect();
 
+                            rect = getCameraEngine().getFramingRect();
                             final int BUFFER = 50;
                             final int BIG_BUFFER = 60;
                             if (lastX >= 0) {
