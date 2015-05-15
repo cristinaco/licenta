@@ -5,4 +5,6 @@
     <item name="ocr_decode" type="id">ocr_decode</item>
     <item name="restart_preview" type="id">restart_preview</item>
     <item name="action_save" type="id">save_product</item>
+    <item name="activity_add_product_complete_all_fields" type="id">Please complete all fields
+    </item>
 </resources>

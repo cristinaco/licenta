@@ -21,7 +21,7 @@ public class DbHelper extends SQLiteOpenHelper {
                     Product._ID + " INTEGER PRIMARY KEY," +
                     Product.COLUMN_NAME_UID + TEXT_TYPE + COMMA_SEP +
                     Product.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +
-                    Product.COLUMN_NAME_DESCRIPTION + TEXT_TYPE + COMMA_SEP +
+                    Product.COLUMN_NAME_INGREDIENTS + TEXT_TYPE + COMMA_SEP +
                     Product.COLUMN_NAME_PIECES_NUMBER + INTEGER_TYPE + COMMA_SEP +
                     Product.COLUMN_NAME_EXPIRATION_DATE + INTEGER_TYPE + COMMA_SEP +
                     Product.COLUMN_NAME_EXPIRATION_STATUS + TEXT_TYPE + " )";

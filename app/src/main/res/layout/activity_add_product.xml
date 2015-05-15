@@ -35,7 +35,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:src="@drawable/ic_action_camera_black" />
+                    android:src="@drawable/ic_product_name" />
 
                 <EditText
                     android:id="@+id/activity_add_product_name_edit_text"
@@ -50,8 +50,8 @@
                     android:focusableInTouchMode="false"
                     android:hint="@string/product_name"
                     android:inputType="textNoSuggestions"
-                    android:textColorHint="@color/ripple"
-                    android:textColor="@color/material_blue_grey_950"/>
+                    android:textColor="@color/material_blue_grey_950"
+                    android:textColorHint="@color/ripple" />
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
@@ -77,7 +77,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:src="@drawable/ic_action_camera_black" />
+                    android:src="@drawable/ic_ingredients" />
 
                 <EditText
                     android:id="@+id/activity_add_product_ingredients_edit_text"
@@ -92,8 +92,8 @@
                     android:focusableInTouchMode="false"
                     android:hint="@string/product_ingredients"
                     android:inputType="textNoSuggestions"
-                    android:textColorHint="@color/ripple"
-                    android:textColor="@color/material_blue_grey_950"/>
+                    android:textColor="@color/material_blue_grey_950"
+                    android:textColorHint="@color/ripple" />
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
@@ -119,7 +119,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:src="@drawable/ic_action_camera_black" />
+                    android:src="@drawable/ic_timer" />
 
                 <EditText
                     android:id="@+id/activity_add_product_expiration_date_edit_text"
@@ -134,11 +134,54 @@
                     android:focusableInTouchMode="false"
                     android:hint="@string/product_expiration_date"
                     android:inputType="textNoSuggestions"
-                    android:textColorHint="@color/ripple"
-                    android:textColor="@color/material_blue_grey_950"/>
+                    android:textColor="@color/material_blue_grey_950"
+                    android:textColorHint="@color/ripple" />
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            style="@style/AppTheme.CardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/activity_add_product_pieces_number_cam_btn"
+                    style="@style/Avatar.WithText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/ic_numeric" />
+
+                <EditText
+                    android:id="@+id/activity_add_product_pieces_number_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginTop="5dp"
+                    android:clickable="true"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:hint="@string/product_pieces_number"
+                    android:inputType="textNoSuggestions"
+                    android:textColor="@color/material_blue_grey_950"
+                    android:textColorHint="@color/ripple" />
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
 
         <RelativeLayout
             android:layout_width="wrap_content"

@@ -54,11 +54,12 @@ public class PreviewPhotoActivity extends ActionBarActivity {
         wordBoundingBoxes = (List<Rect>) intent.getSerializableExtra(Constants.OCR_WORD_BOUNDING_BOXES_KEY);
 
         // Used the Picasso library to display and scale the photo to fit in the image view
+        // Picasso.with(this).load(photoFilePath).fit().into(imageView);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         Bitmap bitmap = BitmapFactory.decodeFile(photoFilePath.getAbsolutePath(), options);
 
-        if (wordBoundingBoxes != null) {
+        if (wordBoundingBoxes != null && bitmap != null) {
             Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
             Bitmap annotatedBitmap = BitmapTools.getAnnotatedBitmap(mutableBitmap, wordBoundingBoxes);
             imageView.setImageBitmap(annotatedBitmap);
@@ -139,7 +140,6 @@ public class PreviewPhotoActivity extends ActionBarActivity {
         Intent resultIntent = new Intent();
         resultIntent.putExtra("save", 1);
         resultIntent.putExtra(Constants.OCR_RESULT_TEXT_KEY, recognizedText);
-        resultIntent.putExtra(this.TEMP_FILE_PATH, photoFilePath);
         setResult(Activity.RESULT_OK, resultIntent);
 
         PreviewPhotoActivity.this.finish();
@@ -150,10 +150,9 @@ public class PreviewPhotoActivity extends ActionBarActivity {
     }
 
     private void discardOcrResult() {
-        // Delete the photoFilePath from the temporary directory
+//        // Delete the photoFilePath from the temporary directory
         Picasso.with(getApplicationContext()).invalidate(photoFilePath);
-        photoFilePath.delete();
-        photoDirPath.delete();
+//        photoFilePath.delete();
 
         Intent resultIntent = new Intent();
         resultIntent.putExtra("save", 0);

@@ -42,5 +42,7 @@
     <string name="action_discard_ocr_result">Cancel</string>
     <string name="product_ingredients">Ingredients</string>
     <string name="activity_add_product_title">Add product</string>
+    <string name="product_pieces_number">Number of pieces</string>
+    <string name="activity_add_product_complete_all_fields">Please complete all fields</string>
 
 </resources>

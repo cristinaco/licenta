@@ -160,19 +160,22 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-//
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//
-//        outState.putString(this.TEMP_FILE_PATH, this.tempFilePath.getAbsolutePath());
-//        outState.putString(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
-//    }
-//
-//    @Override
-//    public void onRestoreInstanceState(Bundle savedInstanceState) {
-//    }
+        outState.putString(this.TEMP_FILE_PATH, this.tempFilePath.getAbsolutePath());
+        outState.putString(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        tempFilePath = new File(savedInstanceState.getString(this.TEMP_FILE_PATH));
+        tempDir = new File(savedInstanceState.getString(this.TEMP_DIR_PATH));
+
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
