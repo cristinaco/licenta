@@ -14,4 +14,7 @@ public class Constants {
     public static final String OCR_RESULT_OBJECT_KEY = "ocr_result_obj";
     public static final String PRODUCT_NAME_PHOTO_PATH_KEY = "product_name_photo_path_key";
     public static final String PRODUCT_INGREDIENTS_PHOTO_PATH_KEY = "product_ingredients_photo_path_key";
+    public static final String OCR_RESULT_EXPIRATION_DATE_KEY = "product_expiration_date_key";
+    public static final String PRODUCT_EPIRATION_DATE_PHOTO_PATH_KEY = "product_expiration_date_photo_path_key";
+    public static final String UNDERSCORE = "_";
 }

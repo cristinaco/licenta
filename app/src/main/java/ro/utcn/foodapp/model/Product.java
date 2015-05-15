@@ -10,9 +10,9 @@ public class Product {
     private String uid;
     private String name;
     private String ingredients;
-    private int piecesNumber;
     private Date expirationDate;
     private String expirationStatus;
+    private int piecesNumber;
     private List<String> urls;
 
     public String getUid() {
