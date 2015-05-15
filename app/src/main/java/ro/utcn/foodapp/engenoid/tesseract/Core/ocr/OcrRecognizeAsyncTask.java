@@ -78,7 +78,7 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
         // Get the recognized text from image
         recognizedText = tessBaseAPI.getUTF8Text();
         // Check for failure
-        if (recognizedText == null || recognizedText.equals("")) {
+        if (recognizedText == null || recognizedText.equals("") || bmp == null) {
             return false;
         }
         return true;
@@ -103,16 +103,13 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
                 Message message = Message.obtain(handler, R.id.ocr_decode_succeded, ocrResult);
                 message.sendToTarget();
                 BitmapTools.savePicture(bmp, captureActivity.tempFilePath, captureActivity.tempDir);
+                captureActivity.startPreviewPhotoActivity(ocrResult);
             } else {
                 Message message = Message.obtain(handler, R.id.ocr_decode_failed, ocrResult);
                 message.sendToTarget();
             }
             captureActivity.getOcrProgressDialog().dismiss();
-//            ImageDialog.New()
-//                    .addBitmap(BitmapTools.getAnnotatedBitmap(ocrResult))
-//                    .addTitle(recognizedText)
-//                    .show(captureActivity.getFragmentManager(), "TAG");
-            captureActivity.startPreviewPhotoActivity(ocrResult);
+
         }
         if (tessBaseAPI != null) {
             tessBaseAPI.clear();
