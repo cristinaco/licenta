@@ -1,4 +1,4 @@
-package ro.utcn.foodapp.engenoid.tesseract.Core.customViews;
+package ro.utcn.foodapp.presentation.customViews;
 
 import android.content.Context;
 import android.content.res.Resources;

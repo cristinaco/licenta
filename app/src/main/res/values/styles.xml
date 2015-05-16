@@ -28,6 +28,30 @@
     <style name="Avatar.WithText" parent="Avatar">
         <item name="android:layout_marginRight">@dimen/spacingBasicDouble</item>
     </style>
+
+    <style name="ListViewGroupHeader">
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/colorListViewBackgroundDark</item>
+        <item name="android:textSize">@dimen/listViewGroupHeaderTextSize</item>
+    </style>
+
+    <style name="ListViewItem">
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+    </style>
+
+    <style name="ListViewItemHeaderText">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">@dimen/listViewHeaderTextSize</item>
+    </style>
+
+    <style name="ListViewItemText">
+        <item name="android:textColor">@color/colorTextLight</item>
+        <item name="android:textSize">@dimen/listViewTextSize</item>
+    </style>
     <!--<style name="CircularProgressDrawableStyle" parent="Material.Drawable.CircularProgress"/>-->
 
+    <dimen name="listViewGroupHeaderTextSize">18sp</dimen>
+    <dimen name="listViewHeaderTextSize">18sp</dimen>
+    <dimen name="listViewTextSize">16sp</dimen>
 </resources>

@@ -43,5 +43,19 @@
     <color name="focus_box_frame">#ffd6d6d6</color>
     <!-- viewfinder rectangle -->
     <color name="focus_box_mask">#60000000</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="colorTextLight">#999</color>
+    <color name="dividerLight">#ffe4e4e4</color>
     <!-- viewfinder exterior darkened area -->
+
+    <color name="colorPrimary">#242C61</color>
+    <color name="colorPrimaryDark">#101845</color>
+    <color name="colorAccent">#25A8E0</color>
+    <color name="colorText">#555</color>
+    <color name="colorListViewBackground">#fff5f5f5</color>
+    <color name="colorListViewBackgroundDark">#E0E0E0</color>
+    <color name="colorButton">#00BCD4</color>
+    <color name="colorTextInteractive">@color/colorAccent</color>
+    <color name="product_header_background">#9E9E9E</color>
+    <color name="item_product_header_background">#9E9E9E</color>
 </resources>

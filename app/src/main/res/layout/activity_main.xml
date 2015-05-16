@@ -17,4 +17,15 @@
         android:dividerHeight="0dp"
         android:drawSelectorOnTop="true" />
 
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_products"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ro.utcn.foodapp.presentation.customViews.StyledExpandableListView
+            android:id="@+id/main_activity_products_expandable_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 </android.support.v4.widget.DrawerLayout>

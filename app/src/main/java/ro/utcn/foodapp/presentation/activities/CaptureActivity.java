@@ -22,8 +22,8 @@ import java.io.IOException;
 import ro.utcn.foodapp.R;
 import ro.utcn.foodapp.engenoid.tesseract.Core.CameraEngine;
 import ro.utcn.foodapp.engenoid.tesseract.Core.CaptureActivityHandler;
-import ro.utcn.foodapp.engenoid.tesseract.Core.customViews.FocusBoxView;
-import ro.utcn.foodapp.engenoid.tesseract.Core.customViews.ShutterButton;
+import ro.utcn.foodapp.presentation.customViews.FocusBoxView;
+import ro.utcn.foodapp.presentation.customViews.ShutterButton;
 import ro.utcn.foodapp.model.OcrResult;
 import ro.utcn.foodapp.utils.Constants;
 
