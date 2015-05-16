@@ -20,6 +20,7 @@ import com.ikimuhendis.ldrawer.DrawerArrowDrawable;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
@@ -170,7 +171,15 @@ public class MainActivity extends ActionBarActivity {
         List<Product> productsForReg = new ArrayList<>();
         List<Registration> productRegistrations = RegistrationManager.getInstance().getAllRegistrations();
         for (Registration registration : productRegistrations) {
-            listProductRegistrationDate.add(registration.getRegistrationDate());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(registration.getRegistrationDate());
+            calendar.set(Calendar.MILLISECOND, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.HOUR, 0);
+            if(!listProductRegistrationDate.contains(calendar.getTime())){
+                listProductRegistrationDate.add(calendar.getTime());
+            }
             productsForReg.add(ProductManager.getInstance().getProduct(registration.getProductId()));
         }
         productsGroupedByDate = ProductManager.getInstance().groupProductsByRegDate(productRegistrations, productsForReg);

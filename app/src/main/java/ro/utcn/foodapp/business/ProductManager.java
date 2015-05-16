@@ -1,6 +1,7 @@
 package ro.utcn.foodapp.business;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
@@ -36,15 +37,21 @@ public class ProductManager {
 
     public TreeMap<Date, List<Product>> groupProductsByRegDate(List<Registration> listProductRegistrationDate, List<Product> productsForReg) {
         TreeMap<Date, List<Product>> productsGroupedByDate = new TreeMap<>();
+        Calendar calendar = Calendar.getInstance();
         for (Registration registration : listProductRegistrationDate) {
 
+            calendar.setTime(registration.getRegistrationDate());
+            calendar.set(Calendar.MILLISECOND, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.HOUR, 0);
             //products.add(product);
-            if (productsGroupedByDate.containsKey(registration.getRegistrationDate())) {
-                productsGroupedByDate.get(registration.getRegistrationDate()).add(getProductForReg(productsForReg, registration.getProductId()));
+            if (productsGroupedByDate.containsKey(calendar.getTime())) {
+                productsGroupedByDate.get(calendar.getTime()).add(getProductForReg(productsForReg, registration.getProductId()));
             } else {
                 List<Product> products = new ArrayList<>();
                 products.add(getProductForReg(productsForReg, registration.getProductId()));
-                productsGroupedByDate.put(registration.getRegistrationDate(), products);
+                productsGroupedByDate.put(calendar.getTime(), products);
             }
         }
         return productsGroupedByDate;
