@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.ikimuhendis.ldrawer.ActionBarDrawerToggle;
 import com.ikimuhendis.ldrawer.DrawerArrowDrawable;
+import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,7 +25,10 @@ import java.util.List;
 import java.util.TreeMap;
 
 import ro.utcn.foodapp.R;
+import ro.utcn.foodapp.business.ProductManager;
+import ro.utcn.foodapp.business.RegistrationManager;
 import ro.utcn.foodapp.model.Product;
+import ro.utcn.foodapp.model.Registration;
 import ro.utcn.foodapp.presentation.adapters.ProductListAdapter;
 import ro.utcn.foodapp.presentation.customViews.StyledExpandableListView;
 
@@ -33,10 +37,11 @@ public class MainActivity extends ActionBarActivity {
 
     private StyledExpandableListView expandableListView;
     private ProductListAdapter productListAdapter;
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+    private DrawerLayout drawerLayout;
+    private ListView drawerList;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerArrowDrawable drawerArrow;
+    private FloatingActionButton registerProductBtn;
     private List<Date> listProductRegistrationDate;
     private TreeMap<Date, List<Product>> productsGroupedByDate;
     private boolean drawerArrowColor;
@@ -47,13 +52,14 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         expandableListView = (StyledExpandableListView) findViewById(R.id.main_activity_products_expandable_list);
+        registerProductBtn = (FloatingActionButton) findViewById(R.id.main_activity_register_product);
 
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.navdrawer);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerList = (ListView) findViewById(R.id.navdrawer);
 
 
         drawerArrow = new DrawerArrowDrawable(this) {
@@ -62,7 +68,7 @@ public class MainActivity extends ActionBarActivity {
                 return false;
             }
         };
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
                 drawerArrow, R.string.drawer_open,
                 R.string.drawer_close) {
 
@@ -76,9 +82,9 @@ public class MainActivity extends ActionBarActivity {
                 invalidateOptionsMenu();
             }
         };
-        //mDrawerLayout.setDrawerListener(mDrawerToggle);
-        // mDrawerToggle.setDrawerIndicatorEnabled(true);
-        //mDrawerToggle.syncState();
+//        drawerLayout.setDrawerListener(mDrawerToggle);
+//        mDrawerToggle.setDrawerIndicatorEnabled(true);
+//        mDrawerToggle.syncState();
 
 
         String[] values = new String[]{
@@ -88,7 +94,26 @@ public class MainActivity extends ActionBarActivity {
         };
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, android.R.id.text1, values);
-        mDrawerList.setAdapter(adapter);
+        drawerList.setAdapter(adapter);
+
+        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                switch (position) {
+                    case 0:
+                        Intent intent = new Intent(MainActivity.this, AddProductActivity.class);
+                        startActivity(intent);
+//                        mDrawerToggle.setAnimateEnabled(false);
+//                        drawerArrow.setProgress(1f);
+                        break;
+                    case 1:
+//                        mDrawerToggle.setAnimateEnabled(false);
+//                        drawerArrow.setProgress(0f);
+                        break;
+                }
+            }
+        });
 
         productListAdapter = new ProductListAdapter(MainActivity.this);
         expandableListView.setAdapter(productListAdapter);
@@ -114,10 +139,10 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            if (mDrawerLayout.isDrawerOpen(mDrawerList)) {
-                mDrawerLayout.closeDrawer(mDrawerList);
+            if (drawerLayout.isDrawerOpen(drawerList)) {
+                drawerLayout.closeDrawer(drawerList);
             } else {
-                mDrawerLayout.openDrawer(mDrawerList);
+                drawerLayout.openDrawer(drawerList);
             }
         }
         return super.onOptionsItemSelected(item);
@@ -126,7 +151,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        // mDrawerToggle.syncState();
+        mDrawerToggle.syncState();
     }
 
     @Override
@@ -142,22 +167,13 @@ public class MainActivity extends ActionBarActivity {
         listProductRegistrationDate = new ArrayList<>();
         productsGroupedByDate = new TreeMap<>();
 
-        Date date = new Date();
-        listProductRegistrationDate.add(date);
-
-        Product product = new Product();
-        product.setName("test");
-        product.setExpirationDate(new Date());
-        product.setPiecesNumber(500);
-        Product product1 = new Product();
-        product1.setName("Product name");
-        product1.setExpirationDate(new Date());
-        product1.setPiecesNumber(35);
-
-        List<Product> products = new ArrayList<>();
-        products.add(product);
-        products.add(product1);
-        productsGroupedByDate.put(date, products);
+        List<Product> productsForReg = new ArrayList<>();
+        List<Registration> productRegistrations = RegistrationManager.getInstance().getAllRegistrations();
+        for (Registration registration : productRegistrations) {
+            listProductRegistrationDate.add(registration.getRegistrationDate());
+            productsForReg.add(ProductManager.getInstance().getProduct(registration.getProductId()));
+        }
+        productsGroupedByDate = ProductManager.getInstance().groupProductsByRegDate(productRegistrations, productsForReg);
 
         productListAdapter.clearItems();
         productListAdapter.updateHeaderData(listProductRegistrationDate);
@@ -192,22 +208,11 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        registerProductBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                switch (position) {
-                    case 0:
-                        Intent intent = new Intent(MainActivity.this, AddProductActivity.class);
-                        startActivity(intent);
-//                        mDrawerToggle.setAnimateEnabled(false);
-//                        drawerArrow.setProgress(1f);
-                        break;
-                    case 1:
-//                        mDrawerToggle.setAnimateEnabled(false);
-//                        drawerArrow.setProgress(0f);
-                        break;
-                }
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AddProductActivity.class);
+                startActivity(intent);
             }
         });
     }

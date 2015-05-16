@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
  */
 public abstract class Product implements BaseColumns{
     public static final String TABLE_NAME = "products";
-    public static final String COLUMN_NAME_UID = "uid";
+    public static final String COLUMN_NAME_UUID = "uid";
     public static final String COLUMN_NAME_NAME = "name";
     public static final String COLUMN_NAME_INGREDIENTS = "ingredients";
     public static final String COLUMN_NAME_PIECES_NUMBER = "piecesnumber";

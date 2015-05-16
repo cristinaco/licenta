@@ -15,6 +15,7 @@ import com.melnykov.fab.FloatingActionButton;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import ro.utcn.foodapp.R;
+import ro.utcn.foodapp.business.PhotoPathManager;
 import ro.utcn.foodapp.business.ProductManager;
+import ro.utcn.foodapp.business.RegistrationManager;
 import ro.utcn.foodapp.model.Product;
 import ro.utcn.foodapp.utils.Constants;
 import ro.utcn.foodapp.utils.FileUtil;
@@ -42,9 +45,11 @@ public class AddProductActivity extends ActionBarActivity {
     private EditText productNameEditText;
     private EditText productIngredientsEditText;
     private EditText productExpirationDateEditText;
+    private EditText productPiecesNumberEditText;
     private ImageView productNameCamBtn;
     private ImageView productIngredientsCamBtn;
     private ImageView productExpirationDateCamBtn;
+    private ImageView productPiecesNumberCamBtn;
     private Product newProduct;
     private String productUUID = null;
     private String ocrForAction = "";
@@ -61,9 +66,12 @@ public class AddProductActivity extends ActionBarActivity {
         productNameEditText = (EditText) findViewById(R.id.activity_add_product_name_edit_text);
         productIngredientsEditText = (EditText) findViewById(R.id.activity_add_product_ingredients_edit_text);
         productExpirationDateEditText = (EditText) findViewById(R.id.activity_add_product_expiration_date_edit_text);
+        productPiecesNumberEditText = (EditText) findViewById(R.id.activity_add_product_pieces_number_edit_text);
         productNameCamBtn = (ImageView) findViewById(R.id.activity_add_product_name_cam_btn);
         productIngredientsCamBtn = (ImageView) findViewById(R.id.activity_add_product_ingredients_cam_btn);
         productExpirationDateCamBtn = (ImageView) findViewById(R.id.activity_add_product_expiration_date_cam_btn);
+        productPiecesNumberCamBtn = (ImageView) findViewById(R.id.activity_add_product_pieces_number_cam_btn);
+
 
         // TODO Create the directory with the user's username or with the product uid/name
         productUUID = String.valueOf(UUID.randomUUID());
@@ -71,7 +79,7 @@ public class AddProductActivity extends ActionBarActivity {
         this.tempDir.mkdirs();
 
         newProduct = new Product();
-        newProduct.setUid(productUUID);
+        newProduct.setUuid(productUUID);
         productPhotoPaths = new HashMap<>();
         timestamp = String.valueOf(System.currentTimeMillis());
         setListeners();
@@ -178,12 +186,20 @@ public class AddProductActivity extends ActionBarActivity {
 //            ProductManager.getInstance().saveProduct(newProduct);
 //        }
         List<String> urls = new ArrayList<>();
-        for (String url : productPhotoPaths.keySet()) {
-            urls.add(url);
+        for (Map.Entry<String, String> entry : productPhotoPaths.entrySet()) {
+            urls.add(entry.getValue());
         }
+
         newProduct.setUrls(urls);
         newProduct.setExpirationStatus(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED);
-        ProductManager.getInstance().saveProduct(newProduct);
+        newProduct.setPiecesNumber(Integer.parseInt(productPiecesNumberEditText.getText().toString()));
+        long rowId = ProductManager.getInstance().saveProduct(newProduct);
+        Calendar regDate = Calendar.getInstance();
+        regDate.setTime(new Date());
+        RegistrationManager.getInstance().saveRegistration(regDate.getTime(), rowId);
+        for (String url : urls) {
+            PhotoPathManager.getInstance().savePhotoPath(url, rowId);
+        }
 
 
     }

@@ -139,7 +139,7 @@ public class PreviewPhotoActivity extends ActionBarActivity {
     private void saveOcrResult() {
         Intent resultIntent = new Intent();
         resultIntent.putExtra("save", 1);
-        resultIntent.putExtra(Constants.OCR_RESULT_TEXT_KEY, recognizedText);
+        resultIntent.putExtra(Constants.OCR_RESULT_TEXT_KEY, ocrRecognizedEditText.getText().toString());
         setResult(Activity.RESULT_OK, resultIntent);
 
         PreviewPhotoActivity.this.finish();

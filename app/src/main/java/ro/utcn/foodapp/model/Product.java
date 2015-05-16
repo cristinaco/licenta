@@ -7,7 +7,8 @@ import java.util.List;
  * Created by coponipi on 19.04.2015.
  */
 public class Product {
-    private String uid;
+    private int id;
+    private String uuid;
     private String name;
     private String ingredients;
     private Date expirationDate;
@@ -15,12 +16,12 @@ public class Product {
     private int piecesNumber;
     private List<String> urls;
 
-    public String getUid() {
-        return uid;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getName() {
@@ -71,5 +72,13 @@ public class Product {
 
     public void setIngredients(String ingredients) {
         this.ingredients = ingredients;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
