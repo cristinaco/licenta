@@ -55,8 +55,6 @@ public class MainActivity extends ActionBarActivity {
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_products);
 
         ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
-        ab.setHomeButtonEnabled(true);
         ab.setTitle(getResources().getString(R.string.main_activity_title));
 
         productListAdapter = new ProductListAdapter(MainActivity.this);
@@ -101,7 +99,7 @@ public class MainActivity extends ActionBarActivity {
             public void run() {
                 swipeRefreshLayout.setRefreshing(false);
             }
-        }, 5000);
+        }, 4000);
     }
 
 
@@ -109,6 +107,7 @@ public class MainActivity extends ActionBarActivity {
      * This method is called every time UI needs to be updated with products list
      */
     private void updateProductsList() {
+        refresh();
         listProductRegistrationDate = new ArrayList<>();
         productsGroupedByDate = new TreeMap<>();
 
@@ -137,7 +136,6 @@ public class MainActivity extends ActionBarActivity {
         for (int i = 0; i < productListAdapter.getHeaders().size(); ++i) {
             expandableListView.expandGroup(i);
         }
-        swipeRefreshLayout.setRefreshing(false);
     }
 
     private void setListeners() {
