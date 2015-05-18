@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -81,7 +82,8 @@ public class ProductListAdapter extends BaseExpandableListAdapter {
         }
 
         TextView productDateHeader = (TextView) convertView.findViewById(R.id.products_listHeader);
-        productDateHeader.setText(headerDate.getTime().toString());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        productDateHeader.setText(simpleDateFormat.format(headerDate.getTime()));
 
         return convertView;
     }
@@ -103,7 +105,8 @@ public class ProductListAdapter extends BaseExpandableListAdapter {
 
         productTitle.setText(product.getName());
         productNumberOfPieces.setText(String.valueOf(product.getPiecesNumber()));
-        productExpirationDate.setText(expirationDate.getTime().toString());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        productExpirationDate.setText(simpleDateFormat.format(expirationDate.getTime()));
 
         return convertView;
     }

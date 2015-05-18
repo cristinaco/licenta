@@ -3,7 +3,9 @@ package ro.utcn.foodapp.presentation.activities;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -40,12 +42,14 @@ public class MainActivity extends ActionBarActivity {
     private ProductListAdapter productListAdapter;
     private DrawerLayout drawerLayout;
     private ListView drawerList;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerArrowDrawable drawerArrow;
     private FloatingActionButton registerProductBtn;
     private List<Date> listProductRegistrationDate;
     private TreeMap<Date, List<Product>> productsGroupedByDate;
     private boolean drawerArrowColor;
+    private boolean isRefreshing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +58,12 @@ public class MainActivity extends ActionBarActivity {
 
         expandableListView = (StyledExpandableListView) findViewById(R.id.main_activity_products_expandable_list);
         registerProductBtn = (FloatingActionButton) findViewById(R.id.main_activity_register_product);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_products);
 
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
+        ab.setTitle(getResources().getString(R.string.main_activity_title));
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerList = (ListView) findViewById(R.id.navdrawer);
@@ -161,6 +167,16 @@ public class MainActivity extends ActionBarActivity {
         //mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
+    private void refresh() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }, 5000);
+    }
+
+
     /**
      * This method is called every time UI needs to be updated with products list
      */
@@ -177,7 +193,7 @@ public class MainActivity extends ActionBarActivity {
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.HOUR, 0);
-            if(!listProductRegistrationDate.contains(calendar.getTime())){
+            if (!listProductRegistrationDate.contains(calendar.getTime())) {
                 listProductRegistrationDate.add(calendar.getTime());
             }
             productsForReg.add(ProductManager.getInstance().getProduct(registration.getProductId()));
@@ -193,12 +209,17 @@ public class MainActivity extends ActionBarActivity {
         for (int i = 0; i < productListAdapter.getHeaders().size(); ++i) {
             expandableListView.expandGroup(i);
         }
-
-
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     private void setListeners() {
-        // Simple click on a child creates DetailsFragment
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
+            }
+        });
+
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView expandableListView, View view, int groupPosition, int childPosition, long l) {

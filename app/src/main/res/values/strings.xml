@@ -46,5 +46,6 @@
     <string name="activity_add_product_complete_all_fields">Please complete all fields</string>
     <string name="item_product_pieces_number">Number of pieces:</string>
     <string name="item_product_expiration_date">Expiration date:</string>
+    <string name="main_activity_title">Registered products</string>
 
 </resources>

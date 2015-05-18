@@ -1,9 +1,12 @@
 package ro.utcn.foodapp.presentation.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,9 +14,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.melnykov.fab.FloatingActionButton;
-
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,7 +43,6 @@ public class AddProductActivity extends ActionBarActivity {
     private File productNameDir;
     private File productIngredientsDir;
     private File productExpirationDateDir;
-    private FloatingActionButton takePicture;
     private EditText productNameEditText;
     private EditText productIngredientsEditText;
     private EditText productExpirationDateEditText;
@@ -56,13 +57,16 @@ public class AddProductActivity extends ActionBarActivity {
     private String timestamp;
     private Map<String, String> productPhotoPaths;
 
+    public static boolean isNumeric(String str) {
+        return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_product);
         setTitle(getResources().getString(R.string.activity_add_product_title));
 
-        takePicture = (FloatingActionButton) findViewById(R.id.activity_add_product_button_take_picture);
         productNameEditText = (EditText) findViewById(R.id.activity_add_product_name_edit_text);
         productIngredientsEditText = (EditText) findViewById(R.id.activity_add_product_ingredients_edit_text);
         productExpirationDateEditText = (EditText) findViewById(R.id.activity_add_product_expiration_date_edit_text);
@@ -101,6 +105,12 @@ public class AddProductActivity extends ActionBarActivity {
         outState.putString("ocrForAction", ocrForAction);
         outState.putString(this.TEMP_FILE_PATH, this.tempFilePath.getAbsolutePath());
         outState.putString(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
+        outState.putString("productName", newProduct.getName());
+        outState.putString("productIngredients", newProduct.getIngredients());
+        if (newProduct.getExpirationDate() != null) {
+            outState.putLong("productExpirationDate", newProduct.getExpirationDate().getTime());
+        }
+        outState.putLong("productPiecesNumber", newProduct.getPiecesNumber());
     }
 
     @Override
@@ -110,6 +120,10 @@ public class AddProductActivity extends ActionBarActivity {
         ocrForAction = savedInstanceState.getString("ocrForAction");
         tempFilePath = new File(savedInstanceState.getString(this.TEMP_FILE_PATH));
         tempDir = new File(savedInstanceState.getString(this.TEMP_DIR_PATH));
+        newProduct.setName(savedInstanceState.getString("productName"));
+        newProduct.setIngredients(savedInstanceState.getString("productIngredients"));
+        newProduct.setExpirationDate(new Date(savedInstanceState.getLong("productExpirationDate")));
+        newProduct.setPiecesNumber((int) savedInstanceState.getLong("productPiecesNumber"));
     }
 
     @Override
@@ -153,6 +167,38 @@ public class AddProductActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Unsaved data will be lost");
+
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    discardProductData();
+                    finish();
+                }
+            });
+
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void discardProductData() {
+        this.tempDir.delete();
+    }
+
     private void saveProductName(Intent data) {
         newProduct.setName(data.getStringExtra(Constants.OCR_RESULT_TEXT_KEY));
         productPhotoPaths.put(Constants.PRODUCT_NAME_PHOTO_PATH_KEY, data.getStringExtra(this.tempFilePath.getAbsolutePath()));
@@ -169,43 +215,34 @@ public class AddProductActivity extends ActionBarActivity {
         Date date = new Date();
         //newProduct.setExpirationDate(data.getStringExtra(Constants.OCR_RESULT_EXPIRATION_DATE_KEY));
         newProduct.setExpirationDate(date);
+        newProduct.setExpirationStatus(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED);
         productPhotoPaths.put(Constants.PRODUCT_EPIRATION_DATE_PHOTO_PATH_KEY, data.getStringExtra(this.tempFilePath.getAbsolutePath()));
-        productExpirationDateEditText.setText(newProduct.getExpirationDate().toString());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        productExpirationDateEditText.setText(simpleDateFormat.format(newProduct.getExpirationDate()));
     }
 
     private void saveProduct() {
-//        if (newProduct.getName() == null || newProduct.getIngredients() == null || newProduct.getExpirationDate() == null) {
-//            Toast.makeText(this, getResources().getString(R.string.activity_add_product_complete_all_fields), Toast.LENGTH_SHORT).show();
-//        } else {
-//            List<String> urls = new ArrayList<>();
-//            for (String url : productPhotoPaths.keySet()) {
-//                urls.add(url);
-//            }
-//            newProduct.setUrls(urls);
-//            newProduct.setExpirationStatus(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED);
-//            ProductManager.getInstance().saveProduct(newProduct);
-//        }
-        List<String> urls = new ArrayList<>();
-        for (Map.Entry<String, String> entry : productPhotoPaths.entrySet()) {
-            urls.add(entry.getValue());
+        if (newProduct.getName() == null || newProduct.getIngredients() == null || newProduct.getExpirationDate() == null || productPiecesNumberEditText.getText() == null) {
+            Toast.makeText(this, getResources().getString(R.string.activity_add_product_complete_all_fields), Toast.LENGTH_SHORT).show();
+        } else {
+            List<String> urls = new ArrayList<>();
+            for (String url : productPhotoPaths.keySet()) {
+                urls.add(url);
+            }
+            newProduct.setUrls(urls);
+            newProduct.setPiecesNumber(Integer.parseInt(productPiecesNumberEditText.getText().toString()));
+            long rowId = ProductManager.getInstance().saveProduct(newProduct);
+            Calendar regDate = Calendar.getInstance();
+            regDate.setTime(new Date());
+            RegistrationManager.getInstance().saveRegistration(regDate.getTime(), rowId);
+            for (String url : urls) {
+                PhotoPathManager.getInstance().savePhotoPath(url, rowId);
+            }
+            this.finish();
         }
-
-        newProduct.setUrls(urls);
-        newProduct.setExpirationStatus(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED);
-        newProduct.setPiecesNumber(Integer.parseInt(productPiecesNumberEditText.getText().toString()));
-        long rowId = ProductManager.getInstance().saveProduct(newProduct);
-        Calendar regDate = Calendar.getInstance();
-        regDate.setTime(new Date());
-        RegistrationManager.getInstance().saveRegistration(regDate.getTime(), rowId);
-        for (String url : urls) {
-            PhotoPathManager.getInstance().savePhotoPath(url, rowId);
-        }
-
-
     }
 
     private void setListeners() {
-
         productNameCamBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

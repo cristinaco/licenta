@@ -56,9 +56,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="2dp"
+                            android:layout_marginRight="2dip"
                             android:ellipsize="end"
                             android:text="@string/item_product_pieces_number"
-                            android:maxLines="1" />
+                            android:maxLines="1"/>
                         <TextView
                             android:id="@+id/item_product_pieces_number"
                             style="@style/ListViewItemText"
@@ -81,6 +82,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="2dp"
+                            android:layout_marginRight="2dip"
                             android:ellipsize="end"
                             android:text="@string/item_product_expiration_date"
                             android:maxLines="1" />

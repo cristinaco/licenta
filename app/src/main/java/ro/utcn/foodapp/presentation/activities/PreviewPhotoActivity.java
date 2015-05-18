@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
@@ -55,17 +56,19 @@ public class PreviewPhotoActivity extends ActionBarActivity {
 
         // Used the Picasso library to display and scale the photo to fit in the image view
         // Picasso.with(this).load(photoFilePath).fit().into(imageView);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(photoFilePath.getAbsolutePath(), options);
-
-        if (wordBoundingBoxes != null && bitmap != null) {
-            Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-            Bitmap annotatedBitmap = BitmapTools.getAnnotatedBitmap(mutableBitmap, wordBoundingBoxes);
-            imageView.setImageBitmap(annotatedBitmap);
-        } else {
-            imageView.setImageBitmap(bitmap);
-        }
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+//        Bitmap bitmap = BitmapFactory.decodeFile(photoFilePath.getAbsolutePath(), options);
+//
+//        if (wordBoundingBoxes != null && bitmap != null) {
+//            Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+//            Bitmap annotatedBitmap = BitmapTools.getAnnotatedBitmap(mutableBitmap, wordBoundingBoxes);
+//            imageView.setImageBitmap(annotatedBitmap);
+//        } else {
+//            imageView.setImageBitmap(bitmap);
+//        }
+        BitmapWorkerTask bitmapWorkerTask = new BitmapWorkerTask(imageView, photoFilePath, wordBoundingBoxes);
+        bitmapWorkerTask.execute();
 
         ocrRecognizedEditText.setText(recognizedText);
     }
@@ -112,10 +115,9 @@ public class PreviewPhotoActivity extends ActionBarActivity {
 
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Data will be lost");
-            builder.setMessage("Do you want to exit?");
+            builder.setMessage("Unsaved data will be lost");
 
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                     discardOcrResult();
@@ -123,7 +125,7 @@ public class PreviewPhotoActivity extends ActionBarActivity {
                 }
             });
 
-            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
@@ -159,5 +161,38 @@ public class PreviewPhotoActivity extends ActionBarActivity {
         setResult(Activity.RESULT_OK, resultIntent);
 
         PreviewPhotoActivity.this.finish();
+    }
+}
+
+
+class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
+    private ImageView imageView;
+    private File photoFilePath;
+    private List<Rect> wordBoundingBoxes;
+
+    public BitmapWorkerTask(ImageView imageView, File photoFilePath, List<Rect> wordBoundingBoxes) {
+        this.photoFilePath = photoFilePath;
+        this.wordBoundingBoxes = wordBoundingBoxes;
+        this.imageView = imageView;
+    }
+
+    // Decode image in background.
+    @Override
+    protected Bitmap doInBackground(Integer... params) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap bitmap = BitmapFactory.decodeFile(photoFilePath.getAbsolutePath(), options);
+        return bitmap;
+    }
+
+    @Override
+    protected void onPostExecute(Bitmap bitmap) {
+        if (wordBoundingBoxes != null && bitmap != null) {
+            Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+            Bitmap annotatedBitmap = BitmapTools.getAnnotatedBitmap(mutableBitmap, wordBoundingBoxes);
+            imageView.setImageBitmap(annotatedBitmap);
+        } else {
+            imageView.setImageBitmap(bitmap);
+        }
     }
 }

@@ -3,18 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorTextLight">
+    android:background="#E0E0E0">
     <View
         android:id="@+id/products_dividerTop"
         android:layout_width="match_parent"
-        android:layout_height="4dp"
+        android:layout_height="2dp"
         android:background="@drawable/card_bottom_shadow" />
 
     <TextView
         android:id="@+id/products_listHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/app_text_white"
+        android:textColor="@color/result_view"
         android:layout_marginLeft="@dimen/spacingTextDouble"
         android:layout_marginBottom="@dimen/spacingTextHalf"
         android:layout_marginTop="@dimen/spacingTextDouble"
@@ -24,6 +24,6 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="4dp"
+        android:layout_height="2dp"
         android:background="@drawable/card_top_shadow" />
 </LinearLayout>
