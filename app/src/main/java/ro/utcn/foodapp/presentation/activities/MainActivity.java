@@ -40,16 +40,10 @@ public class MainActivity extends ActionBarActivity {
 
     private StyledExpandableListView expandableListView;
     private ProductListAdapter productListAdapter;
-    private DrawerLayout drawerLayout;
-    private ListView drawerList;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerArrowDrawable drawerArrow;
     private FloatingActionButton registerProductBtn;
     private List<Date> listProductRegistrationDate;
     private TreeMap<Date, List<Product>> productsGroupedByDate;
-    private boolean drawerArrowColor;
-    private boolean isRefreshing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,63 +58,6 @@ public class MainActivity extends ActionBarActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeButtonEnabled(true);
         ab.setTitle(getResources().getString(R.string.main_activity_title));
-
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawerList = (ListView) findViewById(R.id.navdrawer);
-
-
-        drawerArrow = new DrawerArrowDrawable(this) {
-            @Override
-            public boolean isLayoutRtl() {
-                return false;
-            }
-        };
-        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
-                drawerArrow, R.string.drawer_open,
-                R.string.drawer_close) {
-
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                invalidateOptionsMenu();
-            }
-
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();
-            }
-        };
-//        drawerLayout.setDrawerListener(mDrawerToggle);
-//        mDrawerToggle.setDrawerIndicatorEnabled(true);
-//        mDrawerToggle.syncState();
-
-
-        String[] values = new String[]{
-                "Add product",
-                "View products",
-                "Preferences"
-        };
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, values);
-        drawerList.setAdapter(adapter);
-
-        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                switch (position) {
-                    case 0:
-                        Intent intent = new Intent(MainActivity.this, AddProductActivity.class);
-                        startActivity(intent);
-//                        mDrawerToggle.setAnimateEnabled(false);
-//                        drawerArrow.setProgress(1f);
-                        break;
-                    case 1:
-//                        mDrawerToggle.setAnimateEnabled(false);
-//                        drawerArrow.setProgress(0f);
-                        break;
-                }
-            }
-        });
 
         productListAdapter = new ProductListAdapter(MainActivity.this);
         expandableListView.setAdapter(productListAdapter);
@@ -145,26 +82,17 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            if (drawerLayout.isDrawerOpen(drawerList)) {
-                drawerLayout.closeDrawer(drawerList);
-            } else {
-                drawerLayout.openDrawer(drawerList);
-            }
-        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        //mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     private void refresh() {
