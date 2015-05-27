@@ -17,6 +17,7 @@ import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.nonfreejnidemo.NonFreeJniLib;
 import com.ikimuhendis.ldrawer.ActionBarDrawerToggle;
 import com.ikimuhendis.ldrawer.DrawerArrowDrawable;
 import com.melnykov.fab.FloatingActionButton;
@@ -62,6 +63,8 @@ public class MainActivity extends ActionBarActivity {
 
 
         setListeners();
+
+        NonFreeJniLib.runDemo();
     }
 
     @Override
