@@ -15,7 +15,10 @@ import java.util.List;
 import java.util.TreeMap;
 
 import ro.utcn.foodapp.R;
+import ro.utcn.foodapp.access.database.DatabaseManager;
 import ro.utcn.foodapp.model.Product;
+import ro.utcn.foodapp.model.Registration;
+import ro.utcn.foodapp.utils.Constants;
 
 /**
  * Created by coponipi on 16.05.2015.
@@ -24,7 +27,7 @@ public class ProductListAdapter extends BaseExpandableListAdapter {
 
     private Context context;
     private List<Date> listDataHeader;
-    private TreeMap<Date, List<Product>> listDataChild;
+    private TreeMap<Date, List<Registration>> listDataChild;
 
     public ProductListAdapter(Context context) {
         this.context = context;
@@ -90,7 +93,8 @@ public class ProductListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int headerPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        Product product = (Product) getChild(headerPosition, childPosition);
+        Registration registration = (Registration) getChild(headerPosition,childPosition);
+        Product product = DatabaseManager.getInstance().getProduct(registration.getProductId());
         Calendar expirationDate = Calendar.getInstance();
         expirationDate.setTime(product.getExpirationDate());
 
@@ -106,7 +110,11 @@ public class ProductListAdapter extends BaseExpandableListAdapter {
         productTitle.setText(product.getName());
         productNumberOfPieces.setText(String.valueOf(product.getPiecesNumber()));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        productExpirationDate.setText(simpleDateFormat.format(expirationDate.getTime()));
+        productExpirationDate.setText(simpleDateFormat.format(product.getExpirationDate()));
+
+        if(product.getExpirationStatus().equals(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED)){
+            productExpirationDate.setTextColor(context.getResources().getColor(R.color.red));
+        }
 
         return convertView;
     }
@@ -120,7 +128,7 @@ public class ProductListAdapter extends BaseExpandableListAdapter {
         this.listDataHeader = listProductRegistrationDate;
     }
 
-    public void updateAllItems(TreeMap<Date, List<Product>> productsGroupedByDate) {
+    public void updateAllItems(TreeMap<Date, List<Registration>> productsGroupedByDate) {
         this.listDataChild = productsGroupedByDate;
     }
 

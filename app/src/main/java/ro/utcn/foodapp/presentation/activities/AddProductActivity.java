@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,6 +31,7 @@ import ro.utcn.foodapp.business.ProductManager;
 import ro.utcn.foodapp.business.RegistrationManager;
 import ro.utcn.foodapp.model.Product;
 import ro.utcn.foodapp.utils.Constants;
+import ro.utcn.foodapp.utils.DateUtils;
 import ro.utcn.foodapp.utils.FileUtil;
 
 public class AddProductActivity extends ActionBarActivity {
@@ -212,34 +214,65 @@ public class AddProductActivity extends ActionBarActivity {
     }
 
     private void saveProductExpirationDate(Intent data) {
-        Date date = new Date();
-        //newProduct.setExpirationDate(data.getStringExtra(Constants.OCR_RESULT_EXPIRATION_DATE_KEY));
-        newProduct.setExpirationDate(date);
-        newProduct.setExpirationStatus(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED);
-        productPhotoPaths.put(Constants.PRODUCT_EPIRATION_DATE_PHOTO_PATH_KEY, data.getStringExtra(this.tempFilePath.getAbsolutePath()));
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        productExpirationDateEditText.setText(simpleDateFormat.format(newProduct.getExpirationDate()));
+        productExpirationDateEditText.setText(data.getStringExtra(Constants.OCR_RESULT_TEXT_KEY));
     }
 
     private void saveProduct() {
-        if (newProduct.getName() == null || newProduct.getIngredients() == null || newProduct.getExpirationDate() == null || productPiecesNumberEditText.getText() == null) {
+        if (productNameEditText.getText() == null || productIngredientsEditText.getText() == null || productExpirationDateEditText.getText() == null || productPiecesNumberEditText.getText() == null) {
             Toast.makeText(this, getResources().getString(R.string.activity_add_product_complete_all_fields), Toast.LENGTH_SHORT).show();
         } else {
-            List<String> urls = new ArrayList<>();
-            for (String url : productPhotoPaths.keySet()) {
-                urls.add(url);
+            boolean isExpirationDateValid = isExpirationDateValid(productExpirationDateEditText.getText().toString());
+            if (isExpirationDateValid) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+                Date date = new Date();
+                try {
+                    date = simpleDateFormat.parse(productExpirationDateEditText.getText().toString());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+                newProduct.setExpirationDate(calendar.getTime());
+
+                if (newProduct.getExpirationDate().before(new Date())) {
+                    newProduct.setExpirationStatus(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED);
+                } else {
+                    newProduct.setExpirationStatus(Constants.PRODUCT_EXPIRATION_STATUS_VALID);
+                }
+                productPhotoPaths.put(Constants.PRODUCT_EPIRATION_DATE_PHOTO_PATH_KEY, "");
+
+                List<String> urls = new ArrayList<>();
+                for (String url : productPhotoPaths.keySet()) {
+                    urls.add(url);
+                }
+                newProduct.setUrls(urls);
+                newProduct.setPiecesNumber(Integer.parseInt(productPiecesNumberEditText.getText().toString()));
+                long rowId = ProductManager.getInstance().saveProduct(newProduct);
+                Calendar regDate = Calendar.getInstance();
+                regDate.setTime(new Date());
+                RegistrationManager.getInstance().saveRegistration(regDate.getTime(), rowId);
+                for (String url : urls) {
+                    PhotoPathManager.getInstance().savePhotoPath(url, rowId);
+                }
+                this.finish();
+            }else{
+                Toast.makeText(this,"Invalid date format! Take a new photo or edit manually",Toast.LENGTH_LONG).show();
             }
-            newProduct.setUrls(urls);
-            newProduct.setPiecesNumber(Integer.parseInt(productPiecesNumberEditText.getText().toString()));
-            long rowId = ProductManager.getInstance().saveProduct(newProduct);
-            Calendar regDate = Calendar.getInstance();
-            regDate.setTime(new Date());
-            RegistrationManager.getInstance().saveRegistration(regDate.getTime(), rowId);
-            for (String url : urls) {
-                PhotoPathManager.getInstance().savePhotoPath(url, rowId);
-            }
-            this.finish();
+
         }
+    }
+
+    private boolean isExpirationDateValid(String date) {
+        Map<Integer, SimpleDateFormat> dateFormats = DateUtils.getInstance().getDateFormats();
+        for (Map.Entry<Integer, SimpleDateFormat> entry : dateFormats.entrySet()) {
+            try {
+                entry.getValue().parse(date);
+                return true;
+            } catch (ParseException e) {
+                continue;
+            }
+        }
+        return false;
     }
 
     private void setListeners() {

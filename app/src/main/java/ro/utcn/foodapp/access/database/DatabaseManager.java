@@ -130,6 +130,7 @@ public class DatabaseManager {
                 Long regDate = cursor.getLong(cursor.getColumnIndex(Registration.COLUMN_NAME_REGISTRATION_DATE));
                 Date date = new Date();
                 date.setTime(regDate);
+                registration.setId(cursor.getInt(cursor.getColumnIndex(Registration._ID)));
                 registration.setRegistrationDate(date);
                 registration.setProductId(cursor.getInt(cursor.getColumnIndex(Registration.COLUMN_NAME_PRODUCT_ID)));
                 registrations.add(registration);
@@ -197,5 +198,30 @@ public class DatabaseManager {
 
         // Return the list with all bookings
         return product;
+    }
+
+    public void deleteAllProducts() {
+        // Open connection to database
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        // Execute queries
+        db.execSQL("DELETE FROM " + Product.TABLE_NAME);
+
+        //Close connection to database
+        db.close();
+    }
+
+    public void deleteProduct(int id) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.execSQL("DELETE FROM " + Product.TABLE_NAME + " WHERE " + Product._ID + "=" + id);
+        //Close connection to database
+        db.close();
+    }
+
+    public void deleteRegistration(int id) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.execSQL("DELETE FROM " + Registration.TABLE_NAME + " WHERE " + Registration._ID + "=" + id);
+        //Close connection to database
+        db.close();
     }
 }

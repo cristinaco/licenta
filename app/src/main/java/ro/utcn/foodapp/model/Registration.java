@@ -6,6 +6,7 @@ import java.util.Date;
  * Created by coponipi on 16.05.2015.
  */
 public class Registration {
+    private int id;
     private Date registrationDate;
     private int productId;
 
@@ -23,5 +24,13 @@ public class Registration {
 
     public void setProductId(int productId) {
         this.productId = productId;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

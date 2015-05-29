@@ -47,5 +47,8 @@
     <string name="item_product_pieces_number">Number of pieces:</string>
     <string name="item_product_expiration_date">Expiration date:</string>
     <string name="main_activity_title">Registered products</string>
+    <string name="camera_activity_header_message">Hold capture inside the box</string>
+    <string name="action_delete">Delete product</string>
+    <string name="action_edit_product">Edit product</string>
 
 </resources>

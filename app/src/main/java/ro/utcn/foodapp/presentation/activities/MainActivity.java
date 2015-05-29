@@ -4,22 +4,17 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.nonfreejnidemo.NonFreeJniLib;
-import com.ikimuhendis.ldrawer.ActionBarDrawerToggle;
-import com.ikimuhendis.ldrawer.DrawerArrowDrawable;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -43,8 +38,9 @@ public class MainActivity extends ActionBarActivity {
     private ProductListAdapter productListAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private FloatingActionButton registerProductBtn;
-    private List<Date> listProductRegistrationDate;
-    private TreeMap<Date, List<Product>> productsGroupedByDate;
+    private List<Date> registrationsHeaderList;
+    private TreeMap<Date, List<Registration>> registrationsGroupedByDate;
+    private ActionMode actionMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +60,8 @@ public class MainActivity extends ActionBarActivity {
 
         setListeners();
 
-        NonFreeJniLib.runDemo();
+        //ProductManager.getInstance().deleteAllProducts();
+        //NonFreeJNILib.runDemo();
     }
 
     @Override
@@ -111,34 +108,44 @@ public class MainActivity extends ActionBarActivity {
      */
     private void updateProductsList() {
         refresh();
-        listProductRegistrationDate = new ArrayList<>();
-        productsGroupedByDate = new TreeMap<>();
+        registrationsHeaderList = new ArrayList<>();
+        registrationsGroupedByDate = new TreeMap<>();
 
         List<Product> productsForReg = new ArrayList<>();
-        List<Registration> productRegistrations = RegistrationManager.getInstance().getAllRegistrations();
-        for (Registration registration : productRegistrations) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(registration.getRegistrationDate());
-            calendar.set(Calendar.MILLISECOND, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.HOUR, 0);
-            if (!listProductRegistrationDate.contains(calendar.getTime())) {
-                listProductRegistrationDate.add(calendar.getTime());
+        List<Registration> registrations = RegistrationManager.getInstance().getAllRegistrations();
+
+        if (registrations.size() > 0) {
+            for (Registration registration : registrations) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(registration.getRegistrationDate());
+                calendar.set(Calendar.MILLISECOND, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.HOUR, 0);
+                if (!registrationsHeaderList.contains(calendar.getTime())) {
+                    registrationsHeaderList.add(calendar.getTime());
+                }
+                productsForReg.add(ProductManager.getInstance().getProduct(registration.getProductId()));
             }
-            productsForReg.add(ProductManager.getInstance().getProduct(registration.getProductId()));
+            registrationsGroupedByDate = ProductManager.getInstance().groupRegistrationsByDate(registrations);
+
+            productListAdapter.clearItems();
+            productListAdapter.updateHeaderData(registrationsHeaderList);
+            productListAdapter.updateAllItems(registrationsGroupedByDate);
+
+            productListAdapter.notifyDataSetChanged();
+
+            for (int i = 0; i < productListAdapter.getHeaders().size(); ++i) {
+                expandableListView.expandGroup(i);
+            }
+        }else{
+            productListAdapter.clearItems();
+            productListAdapter.updateHeaderData(new ArrayList<Date>());
+            productListAdapter.updateAllItems(new TreeMap<Date, List<Registration>>());
+
+            productListAdapter.notifyDataSetChanged();
         }
-        productsGroupedByDate = ProductManager.getInstance().groupProductsByRegDate(productRegistrations, productsForReg);
 
-        productListAdapter.clearItems();
-        productListAdapter.updateHeaderData(listProductRegistrationDate);
-        productListAdapter.updateAllItems(productsGroupedByDate);
-
-        productListAdapter.notifyDataSetChanged();
-
-        for (int i = 0; i < productListAdapter.getHeaders().size(); ++i) {
-            expandableListView.expandGroup(i);
-        }
     }
 
     private void setListeners() {
@@ -154,8 +161,48 @@ public class MainActivity extends ActionBarActivity {
             public boolean onChildClick(ExpandableListView expandableListView, View view, int groupPosition, int childPosition, long l) {
 
                 //deselectChild();
-
+                final Registration registration = registrationsGroupedByDate.get(registrationsHeaderList.get(groupPosition)).get(childPosition);
                 Toast.makeText(MainActivity.this, "Child clicked", Toast.LENGTH_SHORT).show();
+                view.setSelected(true);
+
+                actionMode = startActionMode(new ActionMode.Callback() {
+                    @Override
+                    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                        mode.setTitle("Selected");
+
+                        MenuInflater inflater = mode.getMenuInflater();
+                        inflater.inflate(R.menu.menu_main, menu);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_delete_product:
+                                deleteRegistration(registration);
+                                actionMode.finish();
+                                return true;
+                            case R.id.action_edit_product:
+                                editRegistration(registration);
+                                actionMode.finish();
+                                return true;
+                            default:
+                                //doneClicked();
+                                return false;
+                        }
+                    }
+
+                    @Override
+                    public void onDestroyActionMode(ActionMode mode) {
+                        //doneClicked();
+                    }
+                });
+
                 return true;
             }
         });
@@ -174,6 +221,17 @@ public class MainActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void editRegistration(Registration registration) {
+
+    }
+
+    private void deleteRegistration(Registration registration) {
+
+        ProductManager.getInstance().deleteProduct(registration.getProductId());
+        ProductManager.getInstance().deleteRegistration(registration.getId());
+        updateProductsList();
     }
 
 }

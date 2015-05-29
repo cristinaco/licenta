@@ -5,7 +5,7 @@ import android.util.Log;
 /**
  * Created by coponipi on 22.05.2015.
  */
-public class NonFreeJniLib {
+public class NonFreeJNILib {
     static
     {
         try

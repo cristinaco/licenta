@@ -57,6 +57,27 @@ public class ProductManager {
         return productsGroupedByDate;
     }
 
+    public TreeMap<Date, List<Registration>> groupRegistrationsByDate(List<Registration> listProductRegistrationDate) {
+        TreeMap<Date, List<Registration>> registrationsGroupedByDate = new TreeMap<>();
+        Calendar calendar = Calendar.getInstance();
+        for (Registration registration : listProductRegistrationDate) {
+
+            calendar.setTime(registration.getRegistrationDate());
+            calendar.set(Calendar.MILLISECOND, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.HOUR, 0);
+            if (registrationsGroupedByDate.containsKey(calendar.getTime())) {
+                registrationsGroupedByDate.get(calendar.getTime()).add(registration);
+            } else {
+                List<Registration> registrations = new ArrayList<>();
+                registrations.add(registration);
+                registrationsGroupedByDate.put(calendar.getTime(), registrations);
+            }
+        }
+        return registrationsGroupedByDate;
+    }
+
     private Product getProductForReg(List<Product> productsForReg, int productId) {
         for (Product product : productsForReg) {
             if (product.getId() == productId) {
@@ -64,5 +85,17 @@ public class ProductManager {
             }
         }
         return null;
+    }
+
+    public void deleteProduct(int uuid) {
+        DatabaseManager.getInstance().deleteProduct(uuid);
+    }
+
+    public void deleteAllProducts() {
+        DatabaseManager.getInstance().deleteAllProducts();
+    }
+
+    public void deleteRegistration(int id) {
+        DatabaseManager.getInstance().deleteRegistration(id);
     }
 }

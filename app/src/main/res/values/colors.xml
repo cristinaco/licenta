@@ -6,6 +6,7 @@
     <color name="orange">#FFEB3B</color>
     <color name="app_text_white">#FAFAFA</color>
     <color name="actionbar_color">#bf360c</color>
+    <color name="red">#F44336</color>
     <color name="drawer_arrow_second_color">#303f9f</color>
     <color name="blue">#303f9f</color>
     <color name="primary_dark">#303f9f</color>

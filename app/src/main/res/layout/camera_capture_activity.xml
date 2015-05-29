@@ -5,6 +5,15 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/camera_activity_header_message"
+        android:layout_gravity="top"
+        android:gravity="center_horizontal"
+        android:textColor="@color/app_text_white"
+        android:textSize="18sp"/>
+
     <SurfaceView
         android:id="@+id/camera_surface_view"
         android:layout_width="match_parent"
@@ -20,6 +29,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="right"
         android:gravity="center_vertical">
+
         <com.andexert.library.RippleView
             android:id="@+id/take_photo_ripple"
             android:layout_width="wrap_content"
@@ -27,14 +37,22 @@
             android:gravity="center"
             android:padding="20dip"
             ripple:rv_centered="true">
-        <ro.utcn.foodapp.presentation.customViews.ShutterButton
-            android:id="@+id/shutter_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="@drawable/ic_camera_alt_white_48dp" />
+
+            <ro.utcn.foodapp.presentation.customViews.ShutterButton
+                android:id="@+id/shutter_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@drawable/ic_camera_alt_white_48dp" />
         </com.andexert.library.RippleView>
     </RelativeLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/camera_activity_header_message"
+        android:layout_gravity="top"
+        android:gravity="center_horizontal"
+        android:textColor="@color/app_text_white" />
 </FrameLayout>

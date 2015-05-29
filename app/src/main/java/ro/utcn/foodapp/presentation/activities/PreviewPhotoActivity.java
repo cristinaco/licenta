@@ -46,6 +46,7 @@ public class PreviewPhotoActivity extends ActionBarActivity {
 
         imageView = (ImageView) findViewById(R.id.camera_display_photo_container);
         ocrRecognizedEditText = (EditText) findViewById(R.id.activity_preview_photo_recognized_text_edit_text);
+        ocrRecognizedEditText.setEnabled(false);
 
         Intent intent = getIntent();
         photoFilePath = new File((intent.getStringExtra(TEMP_FILE_PATH)));
@@ -148,7 +149,8 @@ public class PreviewPhotoActivity extends ActionBarActivity {
     }
 
     private void editOcrResult() {
-
+        ocrRecognizedEditText.setEnabled(true);
+        ocrRecognizedEditText.setFocusable(true);
     }
 
     private void discardOcrResult() {
