@@ -10,8 +10,10 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -30,6 +32,7 @@ import ro.utcn.foodapp.business.PhotoPathManager;
 import ro.utcn.foodapp.business.ProductManager;
 import ro.utcn.foodapp.business.RegistrationManager;
 import ro.utcn.foodapp.model.Product;
+import ro.utcn.foodapp.model.Registration;
 import ro.utcn.foodapp.utils.Constants;
 import ro.utcn.foodapp.utils.DateUtils;
 import ro.utcn.foodapp.utils.FileUtil;
@@ -54,7 +57,8 @@ public class AddProductActivity extends ActionBarActivity {
     private ImageView productExpirationDateCamBtn;
     private ImageView productPiecesNumberCamBtn;
     private Product newProduct;
-    private String productUUID = null;
+    private Registration registration;
+    private String registrationUuid = null;
     private String ocrForAction = "";
     private String timestamp;
     private Map<String, String> productPhotoPaths;
@@ -78,14 +82,23 @@ public class AddProductActivity extends ActionBarActivity {
         productExpirationDateCamBtn = (ImageView) findViewById(R.id.activity_add_product_expiration_date_cam_btn);
         productPiecesNumberCamBtn = (ImageView) findViewById(R.id.activity_add_product_pieces_number_cam_btn);
 
+        productNameEditText.setEnabled(false);
+        productIngredientsEditText.setEnabled(false);
+        productExpirationDateEditText.setEnabled(false);
+
+        ScrollView view = (ScrollView) findViewById(R.id.scrollview);
+        view.setDescendantFocusability(ViewGroup.FOCUS_BEFORE_DESCENDANTS);
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
 
         // TODO Create the directory with the user's username or with the product uid/name
-        productUUID = String.valueOf(UUID.randomUUID());
-        this.tempDir = new File(FileUtil.getDrTempDir(this), productUUID);
+        registrationUuid = String.valueOf(UUID.randomUUID());
+        this.tempDir = new File(FileUtil.getDrTempDir(this), registrationUuid);
         this.tempDir.mkdirs();
 
         newProduct = new Product();
-        newProduct.setUuid(productUUID);
+        registration = new Registration();
+        registration.setUuid(registrationUuid);
         productPhotoPaths = new HashMap<>();
         timestamp = String.valueOf(System.currentTimeMillis());
         setListeners();
@@ -221,18 +234,10 @@ public class AddProductActivity extends ActionBarActivity {
         if (productNameEditText.getText() == null || productIngredientsEditText.getText() == null || productExpirationDateEditText.getText() == null || productPiecesNumberEditText.getText() == null) {
             Toast.makeText(this, getResources().getString(R.string.activity_add_product_complete_all_fields), Toast.LENGTH_SHORT).show();
         } else {
-            boolean isExpirationDateValid = isExpirationDateValid(productExpirationDateEditText.getText().toString());
-            if (isExpirationDateValid) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-                Date date = new Date();
-                try {
-                    date = simpleDateFormat.parse(productExpirationDateEditText.getText().toString());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(date);
-                newProduct.setExpirationDate(calendar.getTime());
+            Date date = isExpirationDateValid(productExpirationDateEditText.getText().toString());
+            if (date != null) {
+
+                newProduct.setExpirationDate(date);
 
                 if (newProduct.getExpirationDate().before(new Date())) {
                     newProduct.setExpirationStatus(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED);
@@ -250,29 +255,30 @@ public class AddProductActivity extends ActionBarActivity {
                 long rowId = ProductManager.getInstance().saveProduct(newProduct);
                 Calendar regDate = Calendar.getInstance();
                 regDate.setTime(new Date());
-                RegistrationManager.getInstance().saveRegistration(regDate.getTime(), rowId);
+                RegistrationManager.getInstance().saveRegistration(registrationUuid, regDate.getTime(), rowId);
                 for (String url : urls) {
                     PhotoPathManager.getInstance().savePhotoPath(url, rowId);
                 }
                 this.finish();
-            }else{
-                Toast.makeText(this,"Invalid date format! Take a new photo or edit manually",Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Invalid date format! Take a new photo or edit it manually", Toast.LENGTH_LONG).show();
+                productExpirationDateEditText.setEnabled(true);
             }
 
         }
     }
 
-    private boolean isExpirationDateValid(String date) {
+    private Date isExpirationDateValid(String stringDate) {
         Map<Integer, SimpleDateFormat> dateFormats = DateUtils.getInstance().getDateFormats();
         for (Map.Entry<Integer, SimpleDateFormat> entry : dateFormats.entrySet()) {
             try {
-                entry.getValue().parse(date);
-                return true;
+                Date date = entry.getValue().parse(stringDate);
+                return date;
             } catch (ParseException e) {
                 continue;
             }
         }
-        return false;
+        return null;
     }
 
     private void setListeners() {

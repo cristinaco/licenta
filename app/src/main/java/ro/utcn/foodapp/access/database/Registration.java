@@ -7,6 +7,7 @@ import android.provider.BaseColumns;
  */
 public class Registration implements BaseColumns {
     public static final String TABLE_NAME = "registration";
+    public static final String COLUMN_NAME_UUID = "uuid";
     public static final String COLUMN_NAME_REGISTRATION_DATE = "date";
     public static final String COLUMN_NAME_PRODUCT_ID = "product_id";
 }

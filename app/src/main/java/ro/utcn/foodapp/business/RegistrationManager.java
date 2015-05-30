@@ -23,8 +23,8 @@ public class RegistrationManager {
         return instance;
     }
 
-    public void saveRegistration(Date date, long productId) {
-        DatabaseManager.getInstance().saveRegistration(date, productId);
+    public void saveRegistration(String productUUID, Date date, long productId) {
+        DatabaseManager.getInstance().saveRegistration(productUUID, date, productId);
     }
 
     public List<Registration> getAllRegistrations() {

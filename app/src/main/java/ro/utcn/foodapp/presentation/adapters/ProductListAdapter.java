@@ -93,7 +93,7 @@ public class ProductListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int headerPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        Registration registration = (Registration) getChild(headerPosition,childPosition);
+        Registration registration = (Registration) getChild(headerPosition, childPosition);
         Product product = DatabaseManager.getInstance().getProduct(registration.getProductId());
         Calendar expirationDate = Calendar.getInstance();
         expirationDate.setTime(product.getExpirationDate());
@@ -112,8 +112,10 @@ public class ProductListAdapter extends BaseExpandableListAdapter {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
         productExpirationDate.setText(simpleDateFormat.format(product.getExpirationDate()));
 
-        if(product.getExpirationStatus().equals(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED)){
+        if (product.getExpirationStatus().equals(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED)) {
             productExpirationDate.setTextColor(context.getResources().getColor(R.color.red));
+        } else {
+            productExpirationDate.setTextColor(context.getResources().getColor(R.color.colorTextLight));
         }
 
         return convertView;

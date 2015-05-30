@@ -8,21 +8,12 @@ import java.util.List;
  */
 public class Product {
     private int id;
-    private String uuid;
     private String name;
     private String ingredients;
     private Date expirationDate;
     private String expirationStatus;
     private int piecesNumber;
     private List<String> urls;
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
 
     public String getName() {
         return name;
@@ -31,7 +22,6 @@ public class Product {
     public void setName(String name) {
         this.name = name;
     }
-
 
 
     public int getPiecesNumber() {

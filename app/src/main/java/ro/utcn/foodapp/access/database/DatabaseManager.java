@@ -37,7 +37,6 @@ public class DatabaseManager {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(Product.COLUMN_NAME_UUID, newProduct.getUuid());
         values.put(Product.COLUMN_NAME_NAME, newProduct.getName());
         values.put(Product.COLUMN_NAME_INGREDIENTS, newProduct.getIngredients());
         values.put(Product.COLUMN_NAME_EXPIRATION_DATE, newProduct.getExpirationDate().getTime());
@@ -58,11 +57,12 @@ public class DatabaseManager {
         return newRowId;
     }
 
-    public long saveRegistration(Date date, long productId) {
+    public long saveRegistration(String productUUID, Date date, long productId) {
         // Open connection to database
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(Registration.COLUMN_NAME_UUID, productUUID);
         values.put(Registration.COLUMN_NAME_REGISTRATION_DATE, date.getTime());
         values.put(Registration.COLUMN_NAME_PRODUCT_ID, productId);
 
@@ -111,6 +111,7 @@ public class DatabaseManager {
         // will be used after this query.
         String[] projection = {
                 Registration._ID,
+                Registration.COLUMN_NAME_UUID,
                 Registration.COLUMN_NAME_REGISTRATION_DATE,
                 Registration.COLUMN_NAME_PRODUCT_ID};
 
@@ -131,6 +132,7 @@ public class DatabaseManager {
                 Date date = new Date();
                 date.setTime(regDate);
                 registration.setId(cursor.getInt(cursor.getColumnIndex(Registration._ID)));
+                registration.setUuid(cursor.getString(cursor.getColumnIndex(Registration.COLUMN_NAME_UUID)));
                 registration.setRegistrationDate(date);
                 registration.setProductId(cursor.getInt(cursor.getColumnIndex(Registration.COLUMN_NAME_PRODUCT_ID)));
                 registrations.add(registration);
@@ -156,7 +158,6 @@ public class DatabaseManager {
         // will be used after this query.
         String[] projection = {
                 Product._ID,
-                Product.COLUMN_NAME_UUID,
                 Product.COLUMN_NAME_NAME,
                 Product.COLUMN_NAME_INGREDIENTS,
                 Product.COLUMN_NAME_EXPIRATION_DATE,
@@ -178,7 +179,6 @@ public class DatabaseManager {
         if (cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
                 product.setId(cursor.getInt(cursor.getColumnIndex(Product._ID)));
-                product.setUuid(cursor.getString(cursor.getColumnIndex(Product.COLUMN_NAME_UUID)));
                 product.setName(cursor.getString(cursor.getColumnIndex(Product.COLUMN_NAME_NAME)));
                 product.setIngredients(cursor.getString(cursor.getColumnIndex(Product.COLUMN_NAME_INGREDIENTS)));
                 product.setPiecesNumber(cursor.getInt(cursor.getColumnIndex(Product.COLUMN_NAME_PIECES_NUMBER)));

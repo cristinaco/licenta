@@ -7,6 +7,7 @@ import java.util.Date;
  */
 public class Registration {
     private int id;
+    private String uuid;
     private Date registrationDate;
     private int productId;
 
@@ -32,5 +33,13 @@ public class Registration {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

@@ -13,7 +13,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
 
@@ -100,6 +99,7 @@ public class MainActivity extends ActionBarActivity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         }, 4000);
+        updateProductsList();
     }
 
 
@@ -107,7 +107,6 @@ public class MainActivity extends ActionBarActivity {
      * This method is called every time UI needs to be updated with products list
      */
     private void updateProductsList() {
-        refresh();
         registrationsHeaderList = new ArrayList<>();
         registrationsGroupedByDate = new TreeMap<>();
 
@@ -138,7 +137,7 @@ public class MainActivity extends ActionBarActivity {
             for (int i = 0; i < productListAdapter.getHeaders().size(); ++i) {
                 expandableListView.expandGroup(i);
             }
-        }else{
+        } else {
             productListAdapter.clearItems();
             productListAdapter.updateHeaderData(new ArrayList<Date>());
             productListAdapter.updateAllItems(new TreeMap<Date, List<Registration>>());
@@ -162,16 +161,15 @@ public class MainActivity extends ActionBarActivity {
 
                 //deselectChild();
                 final Registration registration = registrationsGroupedByDate.get(registrationsHeaderList.get(groupPosition)).get(childPosition);
-                Toast.makeText(MainActivity.this, "Child clicked", Toast.LENGTH_SHORT).show();
                 view.setSelected(true);
 
                 actionMode = startActionMode(new ActionMode.Callback() {
                     @Override
                     public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                        mode.setTitle("Selected");
+                        mode.setTitle("1 Selected");
 
                         MenuInflater inflater = mode.getMenuInflater();
-                        inflater.inflate(R.menu.menu_main, menu);
+                        inflater.inflate(R.menu.menu_action_mode, menu);
                         return true;
                     }
 
@@ -206,13 +204,6 @@ public class MainActivity extends ActionBarActivity {
                 return true;
             }
         });
-        expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
-            @Override
-            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-                Toast.makeText(MainActivity.this, "Header clicked", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
 
         registerProductBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -224,6 +215,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void editRegistration(Registration registration) {
+        Product product = ProductManager.getInstance().getProduct(registration.getProductId());
 
     }
 
