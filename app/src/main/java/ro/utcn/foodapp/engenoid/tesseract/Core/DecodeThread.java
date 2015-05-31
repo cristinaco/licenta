@@ -15,9 +15,11 @@ final class DecodeThread extends Thread {
     private final CaptureActivity activity;
     private final CountDownLatch handlerInitLatch;
     private Handler handler;
+    private boolean performOcr;
 
-    DecodeThread(CaptureActivity activity) {
+    DecodeThread(CaptureActivity activity, boolean performOcr) {
         this.activity = activity;
+        this.performOcr = performOcr;
         handlerInitLatch = new CountDownLatch(1);
     }
 
@@ -33,7 +35,7 @@ final class DecodeThread extends Thread {
     @Override
     public void run() {
         Looper.prepare();
-        handler = new DecodeHandler(activity);
+        handler = new DecodeHandler(activity, performOcr);
         handlerInitLatch.countDown();
         Looper.loop();
     }

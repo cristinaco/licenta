@@ -7,4 +7,6 @@
     <item name="action_save" type="id">save_product</item>
     <item name="activity_add_product_complete_all_fields" type="id">Please complete all fields
     </item>
+    <item name="capture_photo_succeded" type="id">capture_photo_succeded</item>
+    <item name="capture_photo_failed" type="id">capture_photo_failed</item>
 </resources>

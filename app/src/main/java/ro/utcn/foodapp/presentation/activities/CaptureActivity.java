@@ -44,6 +44,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
     private SurfaceHolder surfaceHolder;
     private MaterialDialog ocrProgressDialog;
     private Rect rect;
+    private boolean performOcr;
     private boolean hasSurface;
 
     @Override
@@ -64,6 +65,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         this.tempFilePath = new File(fp);
         final String dp = intent.getStringExtra(TEMP_DIR_PATH);
         this.tempDir = new File(dp);
+        performOcr = intent.getBooleanExtra(String.valueOf(Constants.PERFORM_OCR),false);
 
         handler = null;
         hasSurface = false;
@@ -120,7 +122,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
             }
             //getCameraEngine().startPreview();
             // Creating the handler starts the preview, which can also throw a RuntimeException.
-            handler = new CaptureActivityHandler(this, cameraEngine);
+            handler = new CaptureActivityHandler(this, cameraEngine, performOcr);
         }
     }
 
@@ -239,14 +241,27 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
             toast.setGravity(Gravity.TOP, 0, 0);
             toast.show();
             return false;
+        }else{
+            Intent displayPhotoIntent = new Intent(this, PreviewPhotoActivity.class);
+            displayPhotoIntent.putExtra(this.TEMP_FILE_PATH, this.tempFilePath.getAbsolutePath());
+            displayPhotoIntent.putExtra(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
+            displayPhotoIntent.putExtra(Constants.OCR_RESULT_TEXT_KEY, ocrResult.getText());
+            displayPhotoIntent.putExtra(Constants.OCR_WORD_BOUNDING_BOXES_KEY, (java.io.Serializable) ocrResult.getWordBoundingBoxes());
+            //displayPhotoIntent.putExtra(Constants.OCR_RESULT_OBJECT_KEY, ocrResult);
+
+            this.startActivityForResult(displayPhotoIntent, Constants.SAVE_PHOTO);
         }
-        // TODO show the recognized text and also the original image
-        Toast toast = Toast.makeText(this, "OCR succeed", Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.TOP, 0, 0);
-        toast.show();
         return true;
     }
+    public void handleCapturingPhoto() {
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("save", 1);
+        resultIntent.putExtra(this.TEMP_FILE_PATH, this.tempFilePath.getAbsolutePath());
+        resultIntent.putExtra(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
+        setResult(Activity.RESULT_OK, resultIntent);
 
+        CaptureActivity.this.finish();
+    }
     private void setListeners() {
         shutterButton.setOnShutterButtonListener(this);
 
@@ -334,51 +349,6 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         cameraEngine.requestAutoFocus(350L);
     }
 
-//    @Override
-//    public void onClick(View v) {
-//        if (v == shutterButton) {
-//            if (getCameraEngine() != null && getCameraEngine().isOn()) {
-//                getCameraEngine().requestAutoFocus(350L);
-//                //getCameraEngine().takeShot(this, this);
-//                shutterButton.setEnabled(false);
-//                shutterButton.setVisibility(View.INVISIBLE);
-//                focusBox.setVisibility(View.INVISIBLE);
-//            }
-//        }
-//    }
-
-//    @Override
-//    public void onPictureTaken(byte[] data, Camera camera) {
-//
-//        Log.d(TAG, "Picture taken");
-//
-//        if (data == null) {
-//            Log.d(TAG, "Got null data");
-//            return;
-//        }
-//
-//        //Bitmap bmp = BitmapTools.getFocusedBitmap(this, camera, data, focusBox.getFramingRect());
-//        // TODO uncomment this line to save the photo
-//        BitmapTools.savePicture(bmp, this.tempFilePath, this.tempDir);
-//
-//        //new TessAsyncEngine().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR, this, bmp);
-//
-//        Bitmap bmp = getCameraEngine().buildLuminanceSource(data, focusBox.getWidth(), focusBox.getHeight()).renderCroppedGreyscaleBitmap();
-//        restartPreview();
-//        OcrRecognizeAsyncTask ocrRecognizeAsyncTask = new OcrRecognizeAsyncTask(CaptureActivity.this, bmp);
-//        ocrRecognizeAsyncTask.execute();
-//
-//    }
-
-    private void restartPreview() {
-        if (getCameraEngine() != null && getCameraEngine().isOn()) {
-            //cameraEngine.closeDriver();
-            getCameraEngine().stopPreview();
-            //cameraEngine.openDriver(surfaceView.getHolder());
-            getCameraEngine().startPreview();
-        }
-    }
-
     public CameraEngine getCameraEngine() {
         return cameraEngine;
     }
@@ -419,4 +389,6 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         this.startActivityForResult(displayPhotoIntent, Constants.SAVE_PHOTO);
 
     }
+
+
 }

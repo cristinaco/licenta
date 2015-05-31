@@ -19,14 +19,16 @@ public class CaptureActivityHandler extends Handler {
     private CaptureActivity captureActivity;
     private CameraEngine cameraEngine;
     private DecodeThread decodeThread;
+    private boolean performOcr;
 
-    public CaptureActivityHandler(CaptureActivity captureActivity, CameraEngine cameraEngine) {
+    public CaptureActivityHandler(CaptureActivity captureActivity, CameraEngine cameraEngine, boolean performOcr) {
         this.captureActivity = captureActivity;
         this.cameraEngine = cameraEngine;
+        this.performOcr = performOcr;
 
         // Start ourselves capturing previews (and decoding if using continuous recognition mode).
         cameraEngine.startPreview();
-        decodeThread = new DecodeThread(this.captureActivity);
+        decodeThread = new DecodeThread(this.captureActivity, performOcr);
         decodeThread.start();
 
         state = State.SUCCESS;
@@ -35,7 +37,7 @@ public class CaptureActivityHandler extends Handler {
 
     @Override
     public void handleMessage(Message message) {
-
+        Toast toast;
         switch (message.what) {
             case R.id.restart_preview:
                 restartOcrPreview();
@@ -48,9 +50,21 @@ public class CaptureActivityHandler extends Handler {
             case R.id.ocr_decode_failed:
                 state = State.PREVIEW;
                 captureActivity.setShutterBtnClickable(true);
-                Toast toast = Toast.makeText(captureActivity, "OCR failed. Please try again.", Toast.LENGTH_SHORT);
+                toast = Toast.makeText(captureActivity, "OCR failed. Please try again.", Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.TOP, 0, 0);
                 toast.show();
+                break;
+            case R.id.capture_photo_failed:
+                state = State.PREVIEW;
+                captureActivity.setShutterBtnClickable(true);
+                toast = Toast.makeText(captureActivity, "Capturing photo failed. Please try again.", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.TOP, 0, 0);
+                toast.show();
+                break;
+            case R.id.capture_photo_succeded:
+                state = State.SUCCESS;
+                captureActivity.setShutterBtnClickable(true);
+                captureActivity.handleCapturingPhoto();
                 break;
         }
     }

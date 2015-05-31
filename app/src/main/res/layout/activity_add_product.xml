@@ -1,5 +1,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:materialdesign="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,12 +9,57 @@
     android:orientation="vertical"
     tools:context="ro.utcn.foodapp.presentation.activities.AddProductActivity">
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="10dip"
         android:orientation="vertical">
 
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="@string/photos_to_describe_product"
+           android:textColor="@color/material_blue_grey_900"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal">
+            <ImageView
+                android:id="@+id/photo_depicting_product_1"
+                android:layout_width="90dip"
+                android:layout_height="100dip"
+                android:src="@drawable/photo_placeholder"
+                android:layout_marginRight="10dip"/>
+            <ImageView
+                android:id="@+id/photo_depicting_product_2"
+                android:layout_width="90dip"
+                android:layout_height="100dip"
+                android:src="@drawable/photo_placeholder"
+                android:layout_marginRight="10dip"/>
+            <ImageView
+                android:id="@+id/photo_depicting_product_3"
+                android:layout_width="90dip"
+                android:layout_height="100dip"
+                android:src="@drawable/photo_placeholder"/>
+            </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Check if product already exists"
+                android:textColor="@color/material_blue_grey_900"
+                android:layout_marginRight="10dip"/>
+            <CheckBox
+                android:id="@+id/checkBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
         <android.support.v7.widget.CardView
             style="@style/AppTheme.CardView"
             android:layout_width="match_parent"
@@ -51,7 +97,7 @@
                     android:hint="@string/product_name"
                     android:inputType="textMultiLine"
                     android:textColor="@color/material_blue_grey_950"
-                    android:textColorHint="@color/ripple"/>
+                    android:textColorHint="@color/ripple" />
 
             </LinearLayout>
         </android.support.v7.widget.CardView>

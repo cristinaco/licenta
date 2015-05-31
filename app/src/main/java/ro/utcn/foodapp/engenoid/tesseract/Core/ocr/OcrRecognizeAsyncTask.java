@@ -103,7 +103,7 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
                 Message message = Message.obtain(handler, R.id.ocr_decode_succeded, ocrResult);
                 message.sendToTarget();
                 BitmapTools.savePicture(bmp, captureActivity.tempFilePath, captureActivity.tempDir);
-                captureActivity.startPreviewPhotoActivity(ocrResult);
+                //captureActivity.startPreviewPhotoActivity(ocrResult);
             } else {
                 Message message = Message.obtain(handler, R.id.ocr_decode_failed, ocrResult);
                 message.sendToTarget();

@@ -7,6 +7,7 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 
 import ro.utcn.foodapp.engenoid.tesseract.Core.ocr.OcrRecognizeAsyncTask;
 import ro.utcn.foodapp.presentation.activities.CaptureActivity;
+import ro.utcn.foodapp.utils.CapturePhotoAsyncTask;
 
 /**
  * Class to send bitmap data for OCR.
@@ -15,9 +16,11 @@ import ro.utcn.foodapp.presentation.activities.CaptureActivity;
 public class DecodeHandler extends Handler {
     private CaptureActivity captureActivity;
     private TessBaseAPI tessBaseAPI;
+    private boolean performOcr;
 
-    public DecodeHandler(CaptureActivity activity) {
+    public DecodeHandler(CaptureActivity activity, boolean performOcr) {
         this.captureActivity = activity;
+        this.performOcr = performOcr;
         tessBaseAPI = new TessBaseAPI();
 
     }
@@ -35,13 +38,18 @@ public class DecodeHandler extends Handler {
      * @param height Image height
      */
     private void ocrDecode(byte[] data, int width, int height) {
-        // Launch OCR asynchronously, so we get the dialog box displayed immediately
-        new OcrRecognizeAsyncTask(captureActivity, tessBaseAPI, data, width, height).execute();
-        //beepManager.playBeepSoundAndVibrate();
-        captureActivity.runOnUiThread(new Runnable() {
-            public void run() {
-                captureActivity.displayOcrProgressDialog();
-            }
-        });
+        if (performOcr) {
+            // Launch OCR asynchronously, so we get the dialog box displayed immediately
+            new OcrRecognizeAsyncTask(captureActivity, tessBaseAPI, data, width, height).execute();
+            //beepManager.playBeepSoundAndVibrate();
+            captureActivity.runOnUiThread(new Runnable() {
+                public void run() {
+                    captureActivity.displayOcrProgressDialog();
+                }
+            });
+        } else {
+            new CapturePhotoAsyncTask(captureActivity, data, width, height).execute();
+        }
+
     }
 }
