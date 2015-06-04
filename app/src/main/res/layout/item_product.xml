@@ -44,28 +44,55 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="2dp"
-                        android:ellipsize="end"
                         android:text="Title"
-                        android:maxLines="1" />
+                        android:maxLines="2" />
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:layout_weight="1"
                         android:orientation="horizontal">
-                        <TextView
+                        <ImageView
                             style="@style/ListViewItemText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="2dp"
-                            android:layout_marginRight="2dip"
+                            android:layout_marginRight="5dip"
+                            android:ellipsize="end"
+                            android:text="Ingredients:"
+                            android:maxLines="1"
+                            android:src="@drawable/ic_ingredients"/>
+                        <TextView
+                            android:id="@+id/item_product_ingredients"
+                            style="@style/ListViewItemText"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginBottom="2dp"
+                            android:gravity="center_vertical"
+                            android:text="sdfjg fghrtjt"
+                            android:maxLines="5" />
+                        </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+                        <ImageView
+                            style="@style/ListViewItemText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="2dp"
+                            android:layout_marginRight="5dip"
                             android:ellipsize="end"
                             android:text="@string/item_product_pieces_number"
-                            android:maxLines="1"/>
+                            android:maxLines="1"
+                            android:src="@drawable/ic_numeric"/>
                         <TextView
                             android:id="@+id/item_product_pieces_number"
                             style="@style/ListViewItemText"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_marginBottom="2dp"
+                            android:gravity="center_vertical"
                             android:ellipsize="end"
                             android:text="40"
                             android:maxLines="1" />
@@ -77,21 +104,23 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <TextView
+                        <ImageView
                             style="@style/ListViewItemText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="2dp"
-                            android:layout_marginRight="2dip"
+                            android:layout_marginRight="5dip"
                             android:ellipsize="end"
                             android:text="@string/item_product_expiration_date"
-                            android:maxLines="1" />
+                            android:src="@drawable/ic_timer"/>
                         <TextView
                             android:id="@+id/item_product_expiration_date"
                             style="@style/ListViewItemText"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
                             android:layout_marginBottom="2dp"
+                            android:layout_marginRight="10dip"
                             android:ellipsize="end"
                             android:text="20.05.2017"
                             android:maxLines="1" />

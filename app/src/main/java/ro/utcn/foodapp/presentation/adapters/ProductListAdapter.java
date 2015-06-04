@@ -106,11 +106,13 @@ public class ProductListAdapter extends BaseExpandableListAdapter {
         TextView productTitle = (TextView) convertView.findViewById(R.id.item_product_title);
         TextView productNumberOfPieces = (TextView) convertView.findViewById(R.id.item_product_pieces_number);
         TextView productExpirationDate = (TextView) convertView.findViewById(R.id.item_product_expiration_date);
+        TextView productIngredients = (TextView) convertView.findViewById(R.id.item_product_ingredients);
 
         productTitle.setText(product.getName());
         productNumberOfPieces.setText(String.valueOf(product.getPiecesNumber()));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
         productExpirationDate.setText(simpleDateFormat.format(product.getExpirationDate()));
+        productIngredients.setText(product.getIngredients());
 
         if (product.getExpirationStatus().equals(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED)) {
             productExpirationDate.setTextColor(context.getResources().getColor(R.color.red));

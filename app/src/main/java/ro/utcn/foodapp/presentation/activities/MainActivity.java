@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
 
@@ -37,10 +38,12 @@ public class MainActivity extends ActionBarActivity {
     private ProductListAdapter productListAdapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private FloatingActionButton registerProductBtn;
+    private TextView numberExpiredProductsEditText;
     private List<Date> registrationsHeaderList;
     private TreeMap<Date, List<Registration>> registrationsGroupedByDate;
     private ActionMode actionMode;
     private boolean isInEditMode;
+    private int numberOfExpiredProducts = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,16 +53,15 @@ public class MainActivity extends ActionBarActivity {
         expandableListView = (StyledExpandableListView) findViewById(R.id.main_activity_products_expandable_list);
         registerProductBtn = (FloatingActionButton) findViewById(R.id.main_activity_register_product);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_products);
+        numberExpiredProductsEditText = (TextView) findViewById(R.id.main_activity_no_expired_products);
 
         getSupportActionBar().setTitle(getResources().getString(R.string.main_activity_title));
 
         productListAdapter = new ProductListAdapter(MainActivity.this);
         expandableListView.setAdapter(productListAdapter);
-
+        numberExpiredProductsEditText.setText(String.valueOf(numberOfExpiredProducts));
 
         setListeners();
-
-        //ProductManager.getInstance().deleteAllProducts();
         //NonFreeJNILib.runDemo();
     }
 
@@ -69,6 +71,7 @@ public class MainActivity extends ActionBarActivity {
 
         updateProductsList();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -109,7 +112,7 @@ public class MainActivity extends ActionBarActivity {
     private void updateProductsList() {
         registrationsHeaderList = new ArrayList<>();
         registrationsGroupedByDate = new TreeMap<>();
-
+        numberOfExpiredProducts = 0;
         List<Product> productsForReg = new ArrayList<>();
         List<Registration> registrations = RegistrationManager.getInstance().getAllRegistrations();
 
@@ -124,7 +127,12 @@ public class MainActivity extends ActionBarActivity {
                 if (!registrationsHeaderList.contains(calendar.getTime())) {
                     registrationsHeaderList.add(calendar.getTime());
                 }
-                productsForReg.add(ProductManager.getInstance().getProduct(registration.getProductId()));
+                Product product = ProductManager.getInstance().getProduct(registration.getProductId());
+                productsForReg.add(product);
+                if(product.getExpirationStatus().equals(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED)){
+
+                    numberOfExpiredProducts++;
+                }
             }
             registrationsGroupedByDate = ProductManager.getInstance().groupRegistrationsByDate(registrations);
 
@@ -144,7 +152,7 @@ public class MainActivity extends ActionBarActivity {
 
             productListAdapter.notifyDataSetChanged();
         }
-
+        numberExpiredProductsEditText.setText(String.valueOf(numberOfExpiredProducts));
     }
 
     private void setListeners() {
