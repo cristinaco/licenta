@@ -203,10 +203,10 @@ public class DatabaseManager {
         return product;
     }
 
-    private List<File> getPhotoUrlsForProduct(int productId) {
+    private List<String> getPhotoUrlsForProduct(int productId) {
         // Open connection to database
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        List<File> urls = new ArrayList<>();
+        List<String> urls = new ArrayList<>();
 
         // Projection that specifies which columns from the database
         // will be used after this query.
@@ -229,7 +229,7 @@ public class DatabaseManager {
         // Iterated through records that were found
         if (cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
-                urls.add(new File(cursor.getString(cursor.getColumnIndex(PhotoPath.COLUMN_NAME_PATH))));
+                urls.add(cursor.getString(cursor.getColumnIndex(PhotoPath.COLUMN_NAME_PATH)));
             }
         } else {
             Log.e("DatabaseManager ", "No records found!");

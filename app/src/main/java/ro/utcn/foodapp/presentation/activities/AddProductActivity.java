@@ -64,7 +64,7 @@ public class AddProductActivity extends ActionBarActivity {
     private String registrationUuid = null;
     private String ocrForAction = "";
     private String timestamp;
-    private List<File> urls;
+    private List<String> urls;
     private boolean isInEditMode;
 
     @Override
@@ -109,15 +109,7 @@ public class AddProductActivity extends ActionBarActivity {
             productIngredientsEditText.setText(newProduct.getIngredients());
             productPiecesNumberEditText.setText(String.valueOf(newProduct.getPiecesNumber()));
             productExpirationDateEditText.setText(simpleDateFormat.format(newProduct.getExpirationDate()));
-            for (File url : urls) {
-                if (url.getAbsolutePath().contains("depicting1")) {
-                    Picasso.with(this).load(url).fit().into(productDepicting1);
-                } else if (url.getAbsolutePath().contains("depicting2")) {
-                    Picasso.with(this).load(url).fit().into(productDepicting2);
-                } else if (url.getAbsolutePath().contains("depicting3")) {
-                    Picasso.with(this).load(url).fit().into(productDepicting3);
-                }
-            }
+
 
 
         } else {
@@ -143,7 +135,15 @@ public class AddProductActivity extends ActionBarActivity {
         if (timestamp == null) {
             timestamp = String.valueOf(System.currentTimeMillis());
         }
-
+        for (String url : urls) {
+            if (url.contains("depicting1")) {
+                Picasso.with(this).load(new File(url)).fit().into(productDepicting1);
+            } else if (url.contains("depicting2")) {
+                Picasso.with(this).load(new File(url)).fit().into(productDepicting2);
+            } else if (url.contains("depicting3")) {
+                Picasso.with(this).load(new File(url)).fit().into(productDepicting3);
+            }
+        }
     }
 
     @Override
@@ -161,6 +161,7 @@ public class AddProductActivity extends ActionBarActivity {
             outState.putLong("productExpirationDate", newProduct.getExpirationDate().getTime());
         }
         outState.putLong("productPiecesNumber", newProduct.getPiecesNumber());
+        outState.putStringArrayList("urls", (ArrayList<String>) urls);
     }
 
     @Override
@@ -174,6 +175,7 @@ public class AddProductActivity extends ActionBarActivity {
         newProduct.setIngredients(savedInstanceState.getString("productIngredients"));
         newProduct.setExpirationDate(new Date(savedInstanceState.getLong("productExpirationDate")));
         newProduct.setPiecesNumber((int) savedInstanceState.getLong("productPiecesNumber"));
+        urls = savedInstanceState.getStringArrayList("urls");
     }
 
     @Override
@@ -263,21 +265,21 @@ public class AddProductActivity extends ActionBarActivity {
         Picasso.with(this).invalidate(this.tempFilePath);
         Picasso.with(this).load(this.tempFilePath).fit().into(productDepicting3);
         if(!urls.contains(this.tempFilePath))
-        urls.add(this.tempFilePath);
+        urls.add(this.tempFilePath.getAbsolutePath());
     }
 
     private void savePic2(Intent data) {
         Picasso.with(this).invalidate(this.tempFilePath);
         Picasso.with(this).load(this.tempFilePath).fit().into(productDepicting2);
         if(!urls.contains(this.tempFilePath))
-        urls.add(this.tempFilePath);
+        urls.add(this.tempFilePath.getAbsolutePath());
     }
 
     private void savePic1(Intent data) {
         Picasso.with(this).invalidate(this.tempFilePath);
         Picasso.with(this).load(this.tempFilePath).fit().into(productDepicting1);
         if(!urls.contains(this.tempFilePath))
-        urls.add(this.tempFilePath);
+        urls.add(this.tempFilePath.getAbsolutePath());
     }
 
     private void saveProductName(Intent data) {
@@ -320,8 +322,8 @@ public class AddProductActivity extends ActionBarActivity {
                 } else {
                     long rowId = ProductManager.getInstance().saveProduct(newProduct);
                     RegistrationManager.getInstance().saveRegistration(registrationUuid, regDate.getTime(), rowId);
-                    for (File url : urls) {
-                        PhotoPathManager.getInstance().savePhotoPath(url.getAbsolutePath(), rowId);
+                    for (String url : urls) {
+                        PhotoPathManager.getInstance().savePhotoPath(url, rowId);
                     }
                 }
 

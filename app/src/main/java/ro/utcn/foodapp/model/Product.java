@@ -17,7 +17,7 @@ public class Product implements Serializable{
     private Date expirationDate;
     private String expirationStatus;
     private int piecesNumber;
-    private List<File> urls;
+    private List<String> urls;
 
     public String getName() {
         return name;
@@ -52,11 +52,11 @@ public class Product implements Serializable{
         this.expirationStatus = expirationStatus;
     }
 
-    public List<File> getUrls() {
+    public List<String> getUrls() {
         return urls;
     }
 
-    public void setUrls(List<File> urls) {
+    public void setUrls(List<String> urls) {
         this.urls = urls;
     }
 
