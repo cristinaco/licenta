@@ -51,5 +51,6 @@
     <string name="action_delete">Delete product</string>
     <string name="action_edit_product">Edit product</string>
     <string name="photos_to_describe_product">Pictures depicting product</string>
+    <string name="search">Search</string>
 
 </resources>

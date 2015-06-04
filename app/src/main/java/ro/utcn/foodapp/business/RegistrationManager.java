@@ -1,9 +1,11 @@
 package ro.utcn.foodapp.business;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import ro.utcn.foodapp.access.database.DatabaseManager;
+import ro.utcn.foodapp.model.Product;
 import ro.utcn.foodapp.model.Registration;
 
 /**
@@ -33,5 +35,17 @@ public class RegistrationManager {
 
     public void updateRegistration(String registrationUuid, Date time, int productId) {
         DatabaseManager.getInstance().updateRegistration(registrationUuid, time, productId);
+    }
+
+    public List<Registration> searchRegistrations(String hint) {
+        List<Registration> allRegistrations = getAllRegistrations();
+        List<Registration> filteredRegistrations = new ArrayList<>();
+        for(Registration registration: allRegistrations){
+            Product product = ProductManager.getInstance().getProduct(registration.getProductId());
+            if(product.getName().toLowerCase().contains(hint.toLowerCase()) || product.getIngredients().toLowerCase().contains(hint.toLowerCase())){
+                filteredRegistrations.add(registration);
+            }
+        }
+        return filteredRegistrations;
     }
 }

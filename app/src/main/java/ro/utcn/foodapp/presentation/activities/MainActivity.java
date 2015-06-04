@@ -6,11 +6,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
@@ -39,6 +42,7 @@ public class MainActivity extends ActionBarActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private FloatingActionButton registerProductBtn;
     private TextView numberExpiredProductsEditText;
+    private EditText searchEditText;
     private List<Date> registrationsHeaderList;
     private TreeMap<Date, List<Registration>> registrationsGroupedByDate;
     private ActionMode actionMode;
@@ -54,6 +58,7 @@ public class MainActivity extends ActionBarActivity {
         registerProductBtn = (FloatingActionButton) findViewById(R.id.main_activity_register_product);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_products);
         numberExpiredProductsEditText = (TextView) findViewById(R.id.main_activity_no_expired_products);
+        searchEditText = (EditText) findViewById(R.id.main_activity_search_value);
 
         getSupportActionBar().setTitle(getResources().getString(R.string.main_activity_title));
 
@@ -129,7 +134,7 @@ public class MainActivity extends ActionBarActivity {
                 }
                 Product product = ProductManager.getInstance().getProduct(registration.getProductId());
                 productsForReg.add(product);
-                if(product.getExpirationStatus().equals(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED)){
+                if (product.getExpirationStatus().equals(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED)) {
 
                     numberOfExpiredProducts++;
                 }
@@ -162,7 +167,23 @@ public class MainActivity extends ActionBarActivity {
                 refresh();
             }
         });
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String hint = s.toString();
+                updateProductsList(hint);
+            }
+        });
         expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView expandableListView, View view, int groupPosition, int childPosition, long l) {
@@ -222,6 +243,50 @@ public class MainActivity extends ActionBarActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void updateProductsList(String hint) {
+        registrationsHeaderList = new ArrayList<>();
+        registrationsGroupedByDate = new TreeMap<>();
+        numberOfExpiredProducts = 0;
+        List<Registration> registrations = RegistrationManager.getInstance().searchRegistrations(hint);
+
+        if (registrations.size() > 0) {
+            for (Registration registration : registrations) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(registration.getRegistrationDate());
+                calendar.set(Calendar.MILLISECOND, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.HOUR, 0);
+                if (!registrationsHeaderList.contains(calendar.getTime())) {
+                    registrationsHeaderList.add(calendar.getTime());
+                }
+                Product product = ProductManager.getInstance().getProduct(registration.getProductId());
+                if (product.getExpirationStatus().equals(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED)) {
+                    numberOfExpiredProducts++;
+                }
+
+            }
+            registrationsGroupedByDate = ProductManager.getInstance().groupRegistrationsByDate(registrations);
+
+            productListAdapter.clearItems();
+            productListAdapter.updateHeaderData(registrationsHeaderList);
+            productListAdapter.updateAllItems(registrationsGroupedByDate);
+
+            productListAdapter.notifyDataSetChanged();
+
+            for (int i = 0; i < productListAdapter.getHeaders().size(); ++i) {
+                expandableListView.expandGroup(i);
+            }
+        } else {
+            productListAdapter.clearItems();
+            productListAdapter.updateHeaderData(new ArrayList<Date>());
+            productListAdapter.updateAllItems(new TreeMap<Date, List<Registration>>());
+
+            productListAdapter.notifyDataSetChanged();
+        }
+        numberExpiredProductsEditText.setText(String.valueOf(numberOfExpiredProducts));
     }
 
     private void editRegistration(Registration registration) {
