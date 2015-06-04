@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DbHelper extends SQLiteOpenHelper {
     // String for null columns
     public static final String COLUMN_NAME_NULLABLE = "NULL";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private static final String DATABASE_NAME = "OcrApp.db";
     private static final String TEXT_TYPE = " TEXT";
     private static final String INTEGER_TYPE = " INTEGER";
@@ -38,7 +38,7 @@ public class DbHelper extends SQLiteOpenHelper {
                     Registration._ID + " INTEGER PRIMARY KEY," +
                     Registration.COLUMN_NAME_UUID + TEXT_TYPE + COMMA_SEP +
                     Registration.COLUMN_NAME_REGISTRATION_DATE + INTEGER_TYPE + COMMA_SEP +
-                    PhotoPath.COLUMN_PRODUCT_ID + INTEGER_TYPE + " )";
+                    Registration.COLUMN_NAME_PRODUCT_ID + INTEGER_TYPE + " )";
 
     // Strings for deleting tables
     private static final String SQL_PRODUCTS_DELETE_ENTRIES =

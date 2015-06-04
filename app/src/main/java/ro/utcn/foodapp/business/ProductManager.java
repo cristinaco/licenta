@@ -98,4 +98,8 @@ public class ProductManager {
     public void deleteRegistration(int id) {
         DatabaseManager.getInstance().deleteRegistration(id);
     }
+
+    public void updateProduct(Product product) {
+        DatabaseManager.getInstance().updateProduct(product);
+    }
 }

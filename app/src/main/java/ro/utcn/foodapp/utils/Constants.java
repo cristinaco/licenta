@@ -21,4 +21,6 @@ public class Constants {
     public static final String PRODUCT_EXPIRATION_STATUS_VALID = "valid";
     public static final String PRODUCT_DEPICTING_PHOTOS = "sirf";
     public static final boolean PERFORM_OCR = true;
+    public static final String PRODUCT_IS_IN_EDIT_MODE = "product_is_in_edit_mode";
+    public static final String REGISTRATION = "registration";
 }

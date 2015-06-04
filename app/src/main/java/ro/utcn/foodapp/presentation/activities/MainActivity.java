@@ -5,7 +5,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -29,6 +28,7 @@ import ro.utcn.foodapp.model.Product;
 import ro.utcn.foodapp.model.Registration;
 import ro.utcn.foodapp.presentation.adapters.ProductListAdapter;
 import ro.utcn.foodapp.presentation.customViews.StyledExpandableListView;
+import ro.utcn.foodapp.utils.Constants;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -40,6 +40,7 @@ public class MainActivity extends ActionBarActivity {
     private List<Date> registrationsHeaderList;
     private TreeMap<Date, List<Registration>> registrationsGroupedByDate;
     private ActionMode actionMode;
+    private boolean isInEditMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +51,7 @@ public class MainActivity extends ActionBarActivity {
         registerProductBtn = (FloatingActionButton) findViewById(R.id.main_activity_register_product);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_products);
 
-        ActionBar ab = getSupportActionBar();
-        ab.setTitle(getResources().getString(R.string.main_activity_title));
+        getSupportActionBar().setTitle(getResources().getString(R.string.main_activity_title));
 
         productListAdapter = new ProductListAdapter(MainActivity.this);
         expandableListView.setAdapter(productListAdapter);
@@ -104,7 +104,7 @@ public class MainActivity extends ActionBarActivity {
 
 
     /**
-     * This method is called every time UI needs to be updated with products list
+     * This method is called every time UI needs to be updated with the products list
      */
     private void updateProductsList() {
         registrationsHeaderList = new ArrayList<>();
@@ -208,14 +208,21 @@ public class MainActivity extends ActionBarActivity {
         registerProductBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isInEditMode = false;
                 Intent intent = new Intent(MainActivity.this, AddProductActivity.class);
+                intent.putExtra(Constants.PRODUCT_IS_IN_EDIT_MODE, isInEditMode);
                 startActivity(intent);
             }
         });
     }
 
     private void editRegistration(Registration registration) {
-        Product product = ProductManager.getInstance().getProduct(registration.getProductId());
+        //Registration registration = registrationsGroupedByDate.get(registrationsHeaderList.get(groupPosition)).get(childPosition);
+        isInEditMode = true;
+        Intent intent = new Intent(MainActivity.this, AddProductActivity.class);
+        intent.putExtra(Constants.PRODUCT_IS_IN_EDIT_MODE, isInEditMode);
+        intent.putExtra(Constants.REGISTRATION, registration);
+        startActivity(intent);
 
     }
 

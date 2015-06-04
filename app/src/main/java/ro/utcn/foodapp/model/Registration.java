@@ -1,11 +1,12 @@
 package ro.utcn.foodapp.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by coponipi on 16.05.2015.
  */
-public class Registration {
+public class Registration implements Serializable{
     private int id;
     private String uuid;
     private Date registrationDate;

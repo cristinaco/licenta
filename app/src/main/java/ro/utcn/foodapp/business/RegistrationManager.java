@@ -30,4 +30,8 @@ public class RegistrationManager {
     public List<Registration> getAllRegistrations() {
         return DatabaseManager.getInstance().getAllRegistrations();
     }
+
+    public void updateRegistration(String registrationUuid, Date time, int productId) {
+        DatabaseManager.getInstance().updateRegistration(registrationUuid, time, productId);
+    }
 }

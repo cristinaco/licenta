@@ -24,7 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -62,15 +61,11 @@ public class AddProductActivity extends ActionBarActivity {
     private ImageView productDepicting2;
     private ImageView productDepicting3;
     private Product newProduct;
-    private Registration registration;
     private String registrationUuid = null;
     private String ocrForAction = "";
     private String timestamp;
-    private Map<String, String> productPhotoPaths;
-
-    public static boolean isNumeric(String str) {
-        return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
-    }
+    private List<File> urls;
+    private boolean isInEditMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,17 +93,46 @@ public class AddProductActivity extends ActionBarActivity {
         view.setFocusable(true);
         view.setFocusableInTouchMode(true);
 
-        // TODO Create the directory with the user's username or with the product uid/name
-        registrationUuid = String.valueOf(UUID.randomUUID());
-        this.tempDir = new File(FileUtil.getDrTempDir(this), registrationUuid);
-        this.tempDir.mkdirs();
-        productDepictingPhotosDir = new File(tempDir, Constants.PRODUCT_DEPICTING_PHOTOS);
-        productDepictingPhotosDir.mkdirs();
+        isInEditMode = getIntent().getBooleanExtra(Constants.PRODUCT_IS_IN_EDIT_MODE, false);
+        Registration registration = (Registration) getIntent().getSerializableExtra(Constants.REGISTRATION);
+        if (registration != null) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
-        newProduct = new Product();
-        registration = new Registration();
-        registration.setUuid(registrationUuid);
-        productPhotoPaths = new HashMap<>();
+            registrationUuid = registration.getUuid();
+            newProduct = ProductManager.getInstance().getProduct(registration.getProductId());
+            productDepictingPhotosDir = new File(tempDir, Constants.PRODUCT_DEPICTING_PHOTOS);
+            this.tempDir = new File(FileUtil.getDrTempDir(this), registrationUuid);
+            this.productDepictingPhotosDir = new File(tempDir, Constants.PRODUCT_DEPICTING_PHOTOS);
+            urls = newProduct.getUrls();
+
+            productNameEditText.setText(newProduct.getName());
+            productIngredientsEditText.setText(newProduct.getIngredients());
+            productPiecesNumberEditText.setText(String.valueOf(newProduct.getPiecesNumber()));
+            productExpirationDateEditText.setText(simpleDateFormat.format(newProduct.getExpirationDate()));
+            for (File url : urls) {
+                if (url.getAbsolutePath().contains("depicting1")) {
+                    Picasso.with(this).load(url).fit().into(productDepicting1);
+                } else if (url.getAbsolutePath().contains("depicting2")) {
+                    Picasso.with(this).load(url).fit().into(productDepicting2);
+                } else if (url.getAbsolutePath().contains("depicting3")) {
+                    Picasso.with(this).load(url).fit().into(productDepicting3);
+                }
+            }
+
+
+        } else {
+            registrationUuid = String.valueOf(UUID.randomUUID());
+            this.tempDir = new File(FileUtil.getDrTempDir(this), registrationUuid);
+            this.tempDir.mkdirs();
+            productDepictingPhotosDir = new File(tempDir, Constants.PRODUCT_DEPICTING_PHOTOS);
+            productDepictingPhotosDir.mkdirs();
+
+            newProduct = new Product();
+            registration = new Registration();
+            registration.setUuid(registrationUuid);
+            urls = new ArrayList<>();
+        }
+
         timestamp = String.valueOf(System.currentTimeMillis());
         setListeners();
     }
@@ -127,7 +151,7 @@ public class AddProductActivity extends ActionBarActivity {
         super.onSaveInstanceState(outState);
 
         outState.putString("ocrForAction", ocrForAction);
-        if(this.tempFilePath!=null){
+        if (this.tempFilePath != null) {
             outState.putString(this.TEMP_FILE_PATH, this.tempFilePath.getAbsolutePath());
         }
         outState.putString(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
@@ -238,27 +262,31 @@ public class AddProductActivity extends ActionBarActivity {
     private void savePic3(Intent data) {
         Picasso.with(this).invalidate(this.tempFilePath);
         Picasso.with(this).load(this.tempFilePath).fit().into(productDepicting3);
+        if(!urls.contains(this.tempFilePath))
+        urls.add(this.tempFilePath);
     }
 
     private void savePic2(Intent data) {
         Picasso.with(this).invalidate(this.tempFilePath);
         Picasso.with(this).load(this.tempFilePath).fit().into(productDepicting2);
+        if(!urls.contains(this.tempFilePath))
+        urls.add(this.tempFilePath);
     }
 
     private void savePic1(Intent data) {
         Picasso.with(this).invalidate(this.tempFilePath);
         Picasso.with(this).load(this.tempFilePath).fit().into(productDepicting1);
+        if(!urls.contains(this.tempFilePath))
+        urls.add(this.tempFilePath);
     }
 
     private void saveProductName(Intent data) {
         newProduct.setName(data.getStringExtra(Constants.OCR_RESULT_TEXT_KEY));
-        productPhotoPaths.put(Constants.PRODUCT_NAME_PHOTO_PATH_KEY, data.getStringExtra(this.tempFilePath.getAbsolutePath()));
         productNameEditText.setText(newProduct.getName());
     }
 
     private void saveProductIngredients(Intent data) {
         newProduct.setIngredients(data.getStringExtra(Constants.OCR_RESULT_TEXT_KEY));
-        productPhotoPaths.put(Constants.PRODUCT_INGREDIENTS_PHOTO_PATH_KEY, data.getStringExtra(this.tempFilePath.getAbsolutePath()));
         productIngredientsEditText.setText(newProduct.getIngredients());
     }
 
@@ -267,7 +295,7 @@ public class AddProductActivity extends ActionBarActivity {
     }
 
     private void saveProduct() {
-        if (productNameEditText.getText() == null || productIngredientsEditText.getText() == null || productExpirationDateEditText.getText() == null || productPiecesNumberEditText.getText() == null) {
+        if (productNameEditText.getText() == null || productIngredientsEditText.getText() == null || productExpirationDateEditText.getText() == null || productPiecesNumberEditText.getText() == null || urls.size() < 3) {
             Toast.makeText(this, getResources().getString(R.string.activity_add_product_complete_all_fields), Toast.LENGTH_SHORT).show();
         } else {
             Date date = isExpirationDateValid(productExpirationDateEditText.getText().toString());
@@ -280,21 +308,23 @@ public class AddProductActivity extends ActionBarActivity {
                 } else {
                     newProduct.setExpirationStatus(Constants.PRODUCT_EXPIRATION_STATUS_VALID);
                 }
-                productPhotoPaths.put(Constants.PRODUCT_EXPIRATION_DATE_PHOTO_PATH_KEY, "");
-
-                List<String> urls = new ArrayList<>();
-                for (String url : productPhotoPaths.keySet()) {
-                    urls.add(url);
-                }
                 newProduct.setUrls(urls);
                 newProduct.setPiecesNumber(Integer.parseInt(productPiecesNumberEditText.getText().toString()));
-                long rowId = ProductManager.getInstance().saveProduct(newProduct);
+
                 Calendar regDate = Calendar.getInstance();
                 regDate.setTime(new Date());
-                RegistrationManager.getInstance().saveRegistration(registrationUuid, regDate.getTime(), rowId);
-                for (String url : urls) {
-                    PhotoPathManager.getInstance().savePhotoPath(url, rowId);
+                if (isInEditMode) {
+
+                    ProductManager.getInstance().updateProduct(newProduct);
+                    RegistrationManager.getInstance().updateRegistration(registrationUuid, regDate.getTime(), newProduct.getId());
+                } else {
+                    long rowId = ProductManager.getInstance().saveProduct(newProduct);
+                    RegistrationManager.getInstance().saveRegistration(registrationUuid, regDate.getTime(), rowId);
+                    for (File url : urls) {
+                        PhotoPathManager.getInstance().savePhotoPath(url.getAbsolutePath(), rowId);
+                    }
                 }
+
                 this.finish();
             } else {
                 Toast.makeText(this, "Invalid date format! Take a new photo or edit it manually", Toast.LENGTH_LONG).show();
@@ -384,7 +414,7 @@ public class AddProductActivity extends ActionBarActivity {
                 if (Camera.getNumberOfCameras() > 0) {
                     ocrForAction = "depicting1";
                     final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
-                    tempFilePath = new File(productDepictingPhotosDir, timestamp + Constants.UNDERSCORE + ocrForAction + ".jpg");
+                    tempFilePath = new File(productDepictingPhotosDir, ocrForAction + ".jpg");
                     takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
                     takePictureIntent.putExtra(TEMP_DIR_PATH, productDepictingPhotosDir.getAbsolutePath());
                     takePictureIntent.putExtra(String.valueOf(Constants.PERFORM_OCR), false);
@@ -402,7 +432,7 @@ public class AddProductActivity extends ActionBarActivity {
                 if (Camera.getNumberOfCameras() > 0) {
                     ocrForAction = "depicting2";
                     final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
-                    tempFilePath = new File(productDepictingPhotosDir, timestamp + Constants.UNDERSCORE + ocrForAction + ".jpg");
+                    tempFilePath = new File(productDepictingPhotosDir, ocrForAction + ".jpg");
                     takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
                     takePictureIntent.putExtra(TEMP_DIR_PATH, productDepictingPhotosDir.getAbsolutePath());
                     takePictureIntent.putExtra(String.valueOf(Constants.PERFORM_OCR), false);
@@ -420,7 +450,7 @@ public class AddProductActivity extends ActionBarActivity {
                 if (Camera.getNumberOfCameras() > 0) {
                     ocrForAction = "depicting3";
                     final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
-                    tempFilePath = new File(productDepictingPhotosDir, timestamp + Constants.UNDERSCORE + ocrForAction + ".jpg");
+                    tempFilePath = new File(productDepictingPhotosDir, ocrForAction + ".jpg");
                     takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
                     takePictureIntent.putExtra(TEMP_DIR_PATH, productDepictingPhotosDir.getAbsolutePath());
                     takePictureIntent.putExtra(String.valueOf(Constants.PERFORM_OCR), false);

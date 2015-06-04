@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -52,7 +53,7 @@ public class DatabaseManager {
         if (newRowId == -1) {
             Log.e("INSERT INTO PRODUCT", "Values couldn't be inserted. An error has occurred");
         }
-
+        db.close();
         // Return the row ID
         return newRowId;
     }
@@ -75,7 +76,7 @@ public class DatabaseManager {
         if (newRowId == -1) {
             Log.e("INSERT TO REGISTRATION", "Values couldn't be inserted. An error has occurred");
         }
-
+        db.close();
         // Return the row ID
         return newRowId;
     }
@@ -98,6 +99,7 @@ public class DatabaseManager {
             Log.e("INSERT INTO PATH", "Values couldn't be inserted. An error has occurred");
         }
 
+        db.close();
         // Return the row ID
         return newRowId;
     }
@@ -187,6 +189,7 @@ public class DatabaseManager {
                 Date date = new Date();
                 date.setTime(expDate);
                 product.setExpirationDate(date);
+                product.setUrls(getPhotoUrlsForProduct(product.getId()));
             }
         } else {
             Log.e("DatabaseManager ", "No records found!");
@@ -198,6 +201,44 @@ public class DatabaseManager {
 
         // Return the list with all bookings
         return product;
+    }
+
+    private List<File> getPhotoUrlsForProduct(int productId) {
+        // Open connection to database
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        List<File> urls = new ArrayList<>();
+
+        // Projection that specifies which columns from the database
+        // will be used after this query.
+        String[] projection = {
+                PhotoPath._ID,
+                PhotoPath.COLUMN_NAME_PATH,
+                PhotoPath.COLUMN_PRODUCT_ID};
+
+        String selection = PhotoPath.COLUMN_PRODUCT_ID + " = ?";
+        String[] selectionArgs = {String.valueOf(productId)};
+
+        Cursor cursor = db.query(
+                PhotoPath.TABLE_NAME,                    //the table to query
+                projection,                             //the columns to return
+                selection,                              //the columns for the WHERE clause
+                selectionArgs,                          //the values for the WHERE clause
+                null,                                   //don't group the rows
+                null,                                   //don't filter by row groups
+                null);                                  //the sort order
+        // Iterated through records that were found
+        if (cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                urls.add(new File(cursor.getString(cursor.getColumnIndex(PhotoPath.COLUMN_NAME_PATH))));
+            }
+        } else {
+            Log.e("DatabaseManager ", "No records found!");
+        }
+
+        // Close cursor and connection to database
+        cursor.close();
+        db.close();
+        return urls;
     }
 
     public void deleteAllProducts() {
@@ -222,6 +263,44 @@ public class DatabaseManager {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.execSQL("DELETE FROM " + Registration.TABLE_NAME + " WHERE " + Registration._ID + "=" + id);
         //Close connection to database
+        db.close();
+    }
+
+    public void updateProduct(ro.utcn.foodapp.model.Product product) {
+        // Open connection to database
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Product.COLUMN_NAME_NAME, product.getName());
+        values.put(Product.COLUMN_NAME_INGREDIENTS, product.getIngredients());
+        values.put(Product.COLUMN_NAME_EXPIRATION_DATE, product.getExpirationDate().getTime());
+        values.put(Product.COLUMN_NAME_PIECES_NUMBER, product.getPiecesNumber());
+        values.put(Product.COLUMN_NAME_EXPIRATION_STATUS, product.getExpirationStatus());
+
+        // Insert the new row, returning the primary key value of the new row
+        db.update(
+                Product.TABLE_NAME,
+                values,
+                Product._ID + "=" + product.getId(),
+                null);
+
+        db.close();
+    }
+
+    public void updateRegistration(String registrationUuid, Date date, int productId) {
+        // Open connection to database
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Registration.COLUMN_NAME_REGISTRATION_DATE, date.getTime());
+
+        // Insert the new row, returning the primary key value of the new row
+        db.update(
+                Registration.TABLE_NAME,
+                values,
+                Registration.COLUMN_NAME_UUID + "='" + registrationUuid+"'",
+                null);
+
         db.close();
     }
 }

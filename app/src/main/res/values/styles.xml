@@ -5,14 +5,8 @@
         <item name="actionBarStyle">@style/ActionBar</item>
     </style>
 
-    <style name="ActionBar" parent="Theme.AppCompat">
-        <item name="drawerArrowStyle">@style/AppTheme.DrawerArrowToggle</item>
+    <style name="ActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="background">@color/indigo_primary</item>
-    </style>
-
-    <style name="AppTheme.DrawerArrowToggle" parent="Base.Widget.AppCompat.DrawerArrowToggle">
-        <item name="color">@color/indigo_primary</item>
-        <item name="spinBars">true</item>
     </style>
 
     <style name="AppTheme.CardView" parent="CardView.Light">
