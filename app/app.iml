@@ -99,7 +99,6 @@
     <orderEntry type="library" exported="" name="material-dialogs-0.7.2.3" level="project" />
     <orderEntry type="library" exported="" name="camera-0.6.12" level="project" />
     <orderEntry type="module" module-name="tess-two" exported="" />
-    <orderEntry type="module" module-name="libnonfree-demo" exported="" />
   </component>
 </module>
 
