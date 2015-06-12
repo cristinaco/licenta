@@ -92,7 +92,7 @@
                     android:hint="@string/search"
                     android:inputType="textNoSuggestions"
                     android:textColor="@color/material_blue_grey_950"
-                    android:textColorHint="@color/ripple" />
+                    android:textColorHint="@color/material_blue_grey_950" />
 
             </LinearLayout>
         </android.support.v7.widget.CardView>

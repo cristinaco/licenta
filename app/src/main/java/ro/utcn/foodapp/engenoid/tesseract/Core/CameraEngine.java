@@ -34,7 +34,7 @@ public class CameraEngine {
     // Preview frames are delivered here, which we pass on to the registered handler. Make sure to clear the handler so it will only receive one message.
     private static PreviewCallback previewCallback;
     private Context context;
-    private AutoFocusManager autoFocusManager;
+    private ro.utcn.foodapp.engenoid.tesseract.Core.AutoFocusManager autoFocusManager;
     private Camera camera;
     private boolean on;
     private boolean initialized;

@@ -8,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +19,7 @@ import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
+import com.opencv.surf.SurfBaseJni;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -68,6 +70,9 @@ public class MainActivity extends ActionBarActivity {
 
         setListeners();
         //NonFreeJNILib.runDemo();
+        int matches = SurfBaseJni.computeMatchingPoints("/storage/emulated/0/Android/data/ro.utcn.foodapp/files/images/2154c1a8-2e10-4aaf-b34f-aa09a1871342/sirf/depicting1.jpg",
+                "/storage/emulated/0/Android/data/ro.utcn.foodapp/files/images/2154c1a8-2e10-4aaf-b34f-aa09a1871342/sirf/depicting2.jpg");
+        Log.d("Number of matches", String.valueOf(matches));
     }
 
     @Override

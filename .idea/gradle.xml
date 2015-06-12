@@ -12,6 +12,9 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/libraries" />
             <option value="$PROJECT_DIR$/libraries/tess-two" />
+            <option value="$PROJECT_DIR$/surf" />
+            <option value="$PROJECT_DIR$/surf/Surf" />
+            <option value="$PROJECT_DIR$/surf/Surf/app" />
           </set>
         </option>
       </GradleProjectSettings>
