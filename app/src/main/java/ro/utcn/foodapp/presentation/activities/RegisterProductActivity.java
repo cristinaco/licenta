@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.opencv.surf.SurfBaseJni;
 import com.squareup.picasso.Picasso;
 
@@ -495,6 +496,26 @@ public class RegisterProductActivity extends ActionBarActivity {
     }
     public void computeSurfResult (List<SurfResult> surfResults){
         Log.d("Number of good results:", String.valueOf(surfResults.size()));
-        
+        String[] mStrings = new String[surfResults.size()];
+        for(int i=0; i<surfResults.size(); i++){
+            Registration registration = StockManager.getInstance().getRegistration(surfResults.get(i).getProductUuid());
+            mStrings[i] = StockManager.getInstance().getProduct(registration.getProductId()).getName();
+        }
+        new MaterialDialog.Builder(this)
+                .title("Objects found: " + surfResults.size())
+                .items(mStrings)
+                .cancelable(false)
+                .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
+                    @Override
+                    public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        /**
+                         * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
+                         * returning false here won't allow the newly selected radio button to actually be selected.
+                         **/
+                        return true;
+                    }
+                })
+                .positiveText(R.string.choose)
+                .show();
     }
 }

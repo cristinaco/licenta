@@ -90,9 +90,11 @@ extern "C"{
 			double score = 0;
           for( int i = 0; i < descriptors_object.rows; i++ )
           {
-			  score += matches[i].distance;
-           if( matches[i].distance <= 3*min_dist )
-             { goodMatches++; }
+				score += matches[i].distance;
+				if( matches[i].distance <= 3*min_dist )
+				{ 
+					goodMatches++;
+				}
           }
 		  score/=descriptors_object.rows;
 		 

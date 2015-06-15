@@ -128,4 +128,8 @@ public class StockManager {
     public void savePhotoPath(String url, long productId) {
         DatabaseManager.getInstance().savePhotoPath(url, productId);
     }
+
+    public Registration getRegistration(String uuid) {
+        return DatabaseManager.getInstance().getRegistration(uuid);
+    }
 }

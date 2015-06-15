@@ -303,4 +303,50 @@ public class DatabaseManager {
 
         db.close();
     }
+
+    public ro.utcn.foodapp.model.Registration getRegistration(String uuid) {
+        // Open connection to database
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ro.utcn.foodapp.model.Registration registration = new ro.utcn.foodapp.model.Registration();
+
+        // Projection specifies which columns from the database
+        // will be used after this query.
+        String[] projection = {
+                Registration._ID,
+                Registration.COLUMN_NAME_UUID,
+                Registration.COLUMN_NAME_REGISTRATION_DATE,
+                Registration.COLUMN_NAME_PRODUCT_ID};
+        String selection = Registration.COLUMN_NAME_UUID + " = ?";
+        String[] selectionArgs = {uuid};
+        Cursor cursor = db.query(
+                Registration.TABLE_NAME,                    //the table to query
+                projection,                                 //the columns to return
+                selection,                                       //the columns for the WHERE clause
+                selectionArgs,                                       //the values for the WHERE clause
+                null,                                       //don't group the rows
+                null,                                       //don't filter by row groups
+                null);                                      //the sort order
+
+        // Iterated through records that were found
+        if (cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                Long regDate = cursor.getLong(cursor.getColumnIndex(Registration.COLUMN_NAME_REGISTRATION_DATE));
+                Date date = new Date();
+                date.setTime(regDate);
+                registration.setId(cursor.getInt(cursor.getColumnIndex(Registration._ID)));
+                registration.setUuid(cursor.getString(cursor.getColumnIndex(Registration.COLUMN_NAME_UUID)));
+                registration.setRegistrationDate(date);
+                registration.setProductId(cursor.getInt(cursor.getColumnIndex(Registration.COLUMN_NAME_PRODUCT_ID)));
+            }
+        } else {
+            Log.e("DatabaseManager ", "No records found!");
+        }
+
+        // Close cursor and connection to database
+        cursor.close();
+        db.close();
+
+        // Return the list with all bookings
+        return registration;
+    }
 }
