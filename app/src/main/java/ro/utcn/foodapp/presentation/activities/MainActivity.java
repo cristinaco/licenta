@@ -69,11 +69,6 @@ public class MainActivity extends ActionBarActivity {
         numberExpiredProductsEditText.setText(String.valueOf(numberOfExpiredProducts));
 
         setListeners();
-        //NonFreeJNILib.runDemo();
-        // objectPath, scenePath
-        int matches = SurfBaseJni.computeMatchingPoints("/storage/emulated/0/Android/data/ro.utcn.foodapp/files/images/27217659-6672-43c3-bf8c-c68a229c07bd/sirf/depicting1.jpg",
-                "/storage/emulated/0/Android/data/ro.utcn.foodapp/files/images/27217659-6672-43c3-bf8c-c68a229c07bd/sirf/depicting2.jpg");
-        Log.d("Percentage", String.valueOf(matches));
     }
 
     @Override
@@ -125,7 +120,7 @@ public class MainActivity extends ActionBarActivity {
         registrationsGroupedByDate = new TreeMap<>();
         numberOfExpiredProducts = 0;
         List<Product> productsForReg = new ArrayList<>();
-        List<Registration> registrations = RegistrationManager.getInstance().getAllRegistrations();
+        List<Registration> registrations = StockManager.getInstance().getAllRegistrations();
 
         if (registrations.size() > 0) {
             for (Registration registration : registrations) {
@@ -255,7 +250,7 @@ public class MainActivity extends ActionBarActivity {
         registrationsHeaderList = new ArrayList<>();
         registrationsGroupedByDate = new TreeMap<>();
         numberOfExpiredProducts = 0;
-        List<Registration> registrations = RegistrationManager.getInstance().searchRegistrations(hint);
+        List<Registration> registrations = StockManager.getInstance().searchRegistrations(hint);
 
         if (registrations.size() > 0) {
             for (Registration registration : registrations) {

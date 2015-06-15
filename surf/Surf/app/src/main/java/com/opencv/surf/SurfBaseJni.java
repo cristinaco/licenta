@@ -10,5 +10,5 @@ public class SurfBaseJni {
         System.loadLibrary("nonfree_demo");
     }
 
-    public static native int computeMatchingPoints(String objectImgPath, String sceneImgPath);
+    public static native double computeMatchingPoints(String objectImgPath, String sceneImgPath);
 }

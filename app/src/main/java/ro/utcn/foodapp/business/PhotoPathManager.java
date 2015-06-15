@@ -19,7 +19,5 @@ public class PhotoPathManager {
         return instance;
     }
 
-    public void savePhotoPath(String url, long productId) {
-        DatabaseManager.getInstance().savePhotoPath(url, productId);
-    }
+
 }

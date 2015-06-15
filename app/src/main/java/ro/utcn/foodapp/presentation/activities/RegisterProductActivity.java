@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.opencv.surf.SurfBaseJni;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -29,11 +31,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import ro.utcn.foodapp.R;
-import ro.utcn.foodapp.business.PhotoPathManager;
 import ro.utcn.foodapp.business.StockManager;
-import ro.utcn.foodapp.business.RegistrationManager;
 import ro.utcn.foodapp.model.Product;
 import ro.utcn.foodapp.model.Registration;
+import ro.utcn.foodapp.model.SurfResult;
 import ro.utcn.foodapp.utils.Constants;
 import ro.utcn.foodapp.utils.DateUtils;
 import ro.utcn.foodapp.utils.FileUtil;
@@ -165,7 +166,7 @@ public class RegisterProductActivity extends ActionBarActivity {
         }
         outState.putLong("productPiecesNumber", newProduct.getPiecesNumber());
         outState.putStringArrayList("urls", (ArrayList<String>) urls);
-        outState.putBoolean("isInEditMode",isInEditMode);
+        outState.putBoolean("isInEditMode", isInEditMode);
     }
 
     @Override
@@ -269,22 +270,22 @@ public class RegisterProductActivity extends ActionBarActivity {
     private void savePic3(Intent data) {
         Picasso.with(this).invalidate(this.tempFilePath);
         Picasso.with(this).load(this.tempFilePath).fit().into(productDepicting3);
-        if(!urls.contains(this.tempFilePath))
-        urls.add(this.tempFilePath.getAbsolutePath());
+        if (!urls.contains(this.tempFilePath))
+            urls.add(this.tempFilePath.getAbsolutePath());
     }
 
     private void savePic2(Intent data) {
         Picasso.with(this).invalidate(this.tempFilePath);
         Picasso.with(this).load(this.tempFilePath).fit().into(productDepicting2);
-        if(!urls.contains(this.tempFilePath))
-        urls.add(this.tempFilePath.getAbsolutePath());
+        if (!urls.contains(this.tempFilePath))
+            urls.add(this.tempFilePath.getAbsolutePath());
     }
 
     private void savePic1(Intent data) {
         Picasso.with(this).invalidate(this.tempFilePath);
         Picasso.with(this).load(this.tempFilePath).fit().into(productDepicting1);
-        if(!urls.contains(this.tempFilePath))
-        urls.add(this.tempFilePath.getAbsolutePath());
+        if (!urls.contains(this.tempFilePath))
+            urls.add(this.tempFilePath.getAbsolutePath());
     }
 
     private void saveProductName(Intent data) {
@@ -323,12 +324,12 @@ public class RegisterProductActivity extends ActionBarActivity {
                 if (isInEditMode) {
 
                     StockManager.getInstance().updateProduct(newProduct);
-                    RegistrationManager.getInstance().updateRegistration(registrationUuid, regDate.getTime(), newProduct.getId());
+                    StockManager.getInstance().updateRegistration(registrationUuid, regDate.getTime(), newProduct.getId());
                 } else {
                     long rowId = StockManager.getInstance().saveProduct(newProduct);
-                    RegistrationManager.getInstance().saveRegistration(registrationUuid, regDate.getTime(), rowId);
+                    StockManager.getInstance().saveRegistration(registrationUuid, regDate.getTime(), rowId);
                     for (String url : urls) {
-                        PhotoPathManager.getInstance().savePhotoPath(url, rowId);
+                        StockManager.getInstance().savePhotoPath(url, rowId);
                     }
                 }
 
@@ -359,10 +360,37 @@ public class RegisterProductActivity extends ActionBarActivity {
         searchExistitngProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(urls.size() < 3){
+                if (urls.size() < 2) {
                     Toast.makeText(RegisterProductActivity.this, "Please take all three depicting photos!", Toast.LENGTH_LONG).show();
-                }else{
+                } else {
 
+                    // ar trebui sa am toate uuid-urile inregistrarilor pt a parsa fiecare fisier uuid/sirf/depicting1,2,3
+                    // pt fiecare fisier am 9 rezultate si le pun intr-o lista  doar daca scorul e mai mic decat 0.25
+                    // la final parcurg lista si iau primele 3 cele mai mici valori
+                    List<SurfResult> surfResults = new ArrayList<SurfResult>();
+                    List<Registration> allRegistrations = StockManager.getInstance().getAllRegistrations();
+
+                    for (String objectPath : urls) {
+                        for (Registration registration : allRegistrations) {
+                            // acesta e pathul pt imaginile curente, imaginile obiect
+                            List<String> scenePaths = StockManager.getInstance().getProduct(registration.getProductId()).getUrls();
+
+                            for (String scenePath : scenePaths) {
+                                double score = SurfBaseJni.computeMatchingPoints(objectPath, scenePath);
+                                Log.d("Score:", String.valueOf(score));
+
+                                if (score <= Constants.SURF_MIN_SCORE) {
+                                    SurfResult surfResult = new SurfResult();
+                                    surfResult.setScore(score);
+                                    surfResult.setProductUuid(registration.getUuid());
+                                    surfResult.setMatch(true);
+                                    surfResult.setMatchedPhotoPath(scenePath);
+                                    surfResults.add(surfResult);
+                                }
+                            }
+                        }
+                    }
+                    Log.d("Number of good results:", String.valueOf(surfResults.size()));
                 }
             }
         });

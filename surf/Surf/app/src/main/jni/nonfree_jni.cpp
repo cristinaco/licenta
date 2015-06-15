@@ -33,7 +33,7 @@ using namespace cv;
 using namespace std;
 
 extern "C"{
-      JNIEXPORT int JNICALL
+      JNIEXPORT double JNICALL
       Java_com_opencv_surf_SurfBaseJni_computeMatchingPoints
       (JNIEnv *env, jobject obj, jstring objectImgPath, jstring sceneImgPath)
       {
@@ -95,10 +95,11 @@ extern "C"{
              { goodMatches++; }
           }
 		  score/=descriptors_object.rows;
-		  LOGI("Score:=%f",score);
+		 
 		LOGI("Number of good matches:=%d",goodMatches);
 		  int percentage = 0;
 		  percentage = (goodMatches*100)/descriptors_object.rows;
-            return percentage;
+		   LOGI("Percentage:=%d",percentage);
+            return score;
       }
 }
