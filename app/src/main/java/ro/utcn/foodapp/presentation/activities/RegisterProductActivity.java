@@ -30,7 +30,7 @@ import java.util.UUID;
 
 import ro.utcn.foodapp.R;
 import ro.utcn.foodapp.business.PhotoPathManager;
-import ro.utcn.foodapp.business.ProductManager;
+import ro.utcn.foodapp.business.StockManager;
 import ro.utcn.foodapp.business.RegistrationManager;
 import ro.utcn.foodapp.model.Product;
 import ro.utcn.foodapp.model.Registration;
@@ -38,7 +38,7 @@ import ro.utcn.foodapp.utils.Constants;
 import ro.utcn.foodapp.utils.DateUtils;
 import ro.utcn.foodapp.utils.FileUtil;
 
-public class AddProductActivity extends ActionBarActivity {
+public class RegisterProductActivity extends ActionBarActivity {
 
     public static final int TAKE_PICTURE = 1;
     public static final String TEMP_FILE_PATH = "TEMP_FILE_PATH";
@@ -60,6 +60,7 @@ public class AddProductActivity extends ActionBarActivity {
     private ImageView productDepicting1;
     private ImageView productDepicting2;
     private ImageView productDepicting3;
+    private ImageView searchExistitngProduct;
     private Product newProduct;
     private String registrationUuid = null;
     private String ocrForAction = "";
@@ -83,6 +84,7 @@ public class AddProductActivity extends ActionBarActivity {
         productDepicting1 = (ImageView) findViewById(R.id.photo_depicting_product_1);
         productDepicting2 = (ImageView) findViewById(R.id.photo_depicting_product_2);
         productDepicting3 = (ImageView) findViewById(R.id.photo_depicting_product_3);
+        searchExistitngProduct = (ImageView) findViewById(R.id.activate_surf_search);
 
         productNameEditText.setEnabled(false);
         productIngredientsEditText.setEnabled(false);
@@ -99,7 +101,7 @@ public class AddProductActivity extends ActionBarActivity {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
             registrationUuid = registration.getUuid();
-            newProduct = ProductManager.getInstance().getProduct(registration.getProductId());
+            newProduct = StockManager.getInstance().getProduct(registration.getProductId());
             productDepictingPhotosDir = new File(tempDir, Constants.PRODUCT_DEPICTING_PHOTOS);
             this.tempDir = new File(FileUtil.getDrTempDir(this), registrationUuid);
             this.productDepictingPhotosDir = new File(tempDir, Constants.PRODUCT_DEPICTING_PHOTOS);
@@ -110,6 +112,15 @@ public class AddProductActivity extends ActionBarActivity {
             productPiecesNumberEditText.setText(String.valueOf(newProduct.getPiecesNumber()));
             productExpirationDateEditText.setText(simpleDateFormat.format(newProduct.getExpirationDate()));
 
+            for (String url : urls) {
+                if (url.contains("depicting1")) {
+                    Picasso.with(this).load(new File(url)).fit().into(productDepicting1);
+                } else if (url.contains("depicting2")) {
+                    Picasso.with(this).load(new File(url)).fit().into(productDepicting2);
+                } else if (url.contains("depicting3")) {
+                    Picasso.with(this).load(new File(url)).fit().into(productDepicting3);
+                }
+            }
 
 
         } else {
@@ -135,15 +146,7 @@ public class AddProductActivity extends ActionBarActivity {
         if (timestamp == null) {
             timestamp = String.valueOf(System.currentTimeMillis());
         }
-        for (String url : urls) {
-            if (url.contains("depicting1")) {
-                Picasso.with(this).load(new File(url)).fit().into(productDepicting1);
-            } else if (url.contains("depicting2")) {
-                Picasso.with(this).load(new File(url)).fit().into(productDepicting2);
-            } else if (url.contains("depicting3")) {
-                Picasso.with(this).load(new File(url)).fit().into(productDepicting3);
-            }
-        }
+
     }
 
     @Override
@@ -162,6 +165,7 @@ public class AddProductActivity extends ActionBarActivity {
         }
         outState.putLong("productPiecesNumber", newProduct.getPiecesNumber());
         outState.putStringArrayList("urls", (ArrayList<String>) urls);
+        outState.putBoolean("isInEditMode",isInEditMode);
     }
 
     @Override
@@ -176,6 +180,7 @@ public class AddProductActivity extends ActionBarActivity {
         newProduct.setExpirationDate(new Date(savedInstanceState.getLong("productExpirationDate")));
         newProduct.setPiecesNumber((int) savedInstanceState.getLong("productPiecesNumber"));
         urls = savedInstanceState.getStringArrayList("urls");
+        isInEditMode = savedInstanceState.getBoolean("isInEditMode");
     }
 
     @Override
@@ -317,10 +322,10 @@ public class AddProductActivity extends ActionBarActivity {
                 regDate.setTime(new Date());
                 if (isInEditMode) {
 
-                    ProductManager.getInstance().updateProduct(newProduct);
+                    StockManager.getInstance().updateProduct(newProduct);
                     RegistrationManager.getInstance().updateRegistration(registrationUuid, regDate.getTime(), newProduct.getId());
                 } else {
-                    long rowId = ProductManager.getInstance().saveProduct(newProduct);
+                    long rowId = StockManager.getInstance().saveProduct(newProduct);
                     RegistrationManager.getInstance().saveRegistration(registrationUuid, regDate.getTime(), rowId);
                     for (String url : urls) {
                         PhotoPathManager.getInstance().savePhotoPath(url, rowId);
@@ -350,12 +355,23 @@ public class AddProductActivity extends ActionBarActivity {
     }
 
     private void setListeners() {
+
+        searchExistitngProduct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(urls.size() < 3){
+                    Toast.makeText(RegisterProductActivity.this, "Please take all three depicting photos!", Toast.LENGTH_LONG).show();
+                }else{
+
+                }
+            }
+        });
         productNameCamBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (Camera.getNumberOfCameras() > 0) {
                     ocrForAction = "name";
-                    final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
+                    final Intent takePictureIntent = new Intent(RegisterProductActivity.this, CameraCaptureActivity.class);
                     productNameDir = new File(tempDir, Constants.PRODUCT_NAME_DIRECTORY);
                     productNameDir.mkdirs();
                     tempFilePath = new File(productNameDir, timestamp + Constants.UNDERSCORE + ocrForAction + ".jpg");
@@ -366,7 +382,7 @@ public class AddProductActivity extends ActionBarActivity {
 
                     startActivityForResult(takePictureIntent, TAKE_PICTURE);
                 } else {
-                    Toast.makeText(AddProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -375,7 +391,7 @@ public class AddProductActivity extends ActionBarActivity {
             public void onClick(View v) {
                 if (Camera.getNumberOfCameras() > 0) {
                     ocrForAction = "ingredients";
-                    final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
+                    final Intent takePictureIntent = new Intent(RegisterProductActivity.this, CameraCaptureActivity.class);
                     productIngredientsDir = new File(tempDir, Constants.PRODUCT_INGREDIENTS_DIRECTORY);
                     productIngredientsDir.mkdirs();
                     tempFilePath = new File(productIngredientsDir, timestamp + Constants.UNDERSCORE + ocrForAction + ".jpg");
@@ -386,7 +402,7 @@ public class AddProductActivity extends ActionBarActivity {
 
                     startActivityForResult(takePictureIntent, TAKE_PICTURE);
                 } else {
-                    Toast.makeText(AddProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -395,7 +411,7 @@ public class AddProductActivity extends ActionBarActivity {
             public void onClick(View v) {
                 if (Camera.getNumberOfCameras() > 0) {
                     ocrForAction = "expirationDate";
-                    final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
+                    final Intent takePictureIntent = new Intent(RegisterProductActivity.this, CameraCaptureActivity.class);
                     productExpirationDateDir = new File(tempDir, Constants.PRODUCT_EXPIRATION_DATE_DIRECTORY);
                     productExpirationDateDir.mkdirs();
                     tempFilePath = new File(productExpirationDateDir, timestamp + Constants.UNDERSCORE + ocrForAction + ".jpg");
@@ -406,7 +422,7 @@ public class AddProductActivity extends ActionBarActivity {
 
                     startActivityForResult(takePictureIntent, TAKE_PICTURE);
                 } else {
-                    Toast.makeText(AddProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -415,7 +431,7 @@ public class AddProductActivity extends ActionBarActivity {
             public void onClick(View v) {
                 if (Camera.getNumberOfCameras() > 0) {
                     ocrForAction = "depicting1";
-                    final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
+                    final Intent takePictureIntent = new Intent(RegisterProductActivity.this, CameraCaptureActivity.class);
                     tempFilePath = new File(productDepictingPhotosDir, ocrForAction + ".jpg");
                     takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
                     takePictureIntent.putExtra(TEMP_DIR_PATH, productDepictingPhotosDir.getAbsolutePath());
@@ -424,7 +440,7 @@ public class AddProductActivity extends ActionBarActivity {
 
                     startActivityForResult(takePictureIntent, TAKE_PICTURE);
                 } else {
-                    Toast.makeText(AddProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -433,7 +449,7 @@ public class AddProductActivity extends ActionBarActivity {
             public void onClick(View v) {
                 if (Camera.getNumberOfCameras() > 0) {
                     ocrForAction = "depicting2";
-                    final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
+                    final Intent takePictureIntent = new Intent(RegisterProductActivity.this, CameraCaptureActivity.class);
                     tempFilePath = new File(productDepictingPhotosDir, ocrForAction + ".jpg");
                     takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
                     takePictureIntent.putExtra(TEMP_DIR_PATH, productDepictingPhotosDir.getAbsolutePath());
@@ -442,7 +458,7 @@ public class AddProductActivity extends ActionBarActivity {
 
                     startActivityForResult(takePictureIntent, TAKE_PICTURE);
                 } else {
-                    Toast.makeText(AddProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -451,7 +467,7 @@ public class AddProductActivity extends ActionBarActivity {
             public void onClick(View v) {
                 if (Camera.getNumberOfCameras() > 0) {
                     ocrForAction = "depicting3";
-                    final Intent takePictureIntent = new Intent(AddProductActivity.this, CaptureActivity.class);
+                    final Intent takePictureIntent = new Intent(RegisterProductActivity.this, CameraCaptureActivity.class);
                     tempFilePath = new File(productDepictingPhotosDir, ocrForAction + ".jpg");
                     takePictureIntent.putExtra(TEMP_FILE_PATH, tempFilePath.getAbsolutePath());
                     takePictureIntent.putExtra(TEMP_DIR_PATH, productDepictingPhotosDir.getAbsolutePath());
@@ -460,7 +476,7 @@ public class AddProductActivity extends ActionBarActivity {
 
                     startActivityForResult(takePictureIntent, TAKE_PICTURE);
                 } else {
-                    Toast.makeText(AddProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterProductActivity.this, R.string.no_camera_available, Toast.LENGTH_LONG).show();
                 }
             }
         });

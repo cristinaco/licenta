@@ -21,6 +21,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/nonfree/nonfree.hpp>
+#include <common.h>
 
 /* This is a trivial JNI example where we use a native method
  * to return a new VM String. See the corresponding Java source
@@ -73,24 +74,31 @@ extern "C"{
           matcher.match( descriptors_object, descriptors_scene, matches );
 
           double max_dist = 0; double min_dist = 100;
-
+		LOGI("Scene descriptors size:=%d",descriptors_scene.rows);
           //-- Quick calculation of max and min distances between keypoints
           for( int i = 0; i < descriptors_object.rows; i++ )
           { double dist = matches[i].distance;
             if( dist < min_dist ) min_dist = dist;
             if( dist > max_dist ) max_dist = dist;
           }
-
+			//LOGI("Descriptors object rows:",descriptors_object.rows);
           //-- Draw only "good" matches (i.e. whose distance is less than 3*min_dist )
           std::vector< DMatch > good_matches;
-
           int goodMatches = 0;
+			LOGI("Object descriptors size:=%d",descriptors_object.rows);
+			LOGI("Total matches:=%d",matches.size());
+			double score = 0;
           for( int i = 0; i < descriptors_object.rows; i++ )
           {
+			  score += matches[i].distance;
            if( matches[i].distance <= 3*min_dist )
              { goodMatches++; }
           }
-
-            return goodMatches;
+		  score/=descriptors_object.rows;
+		  LOGI("Score:=%f",score);
+		LOGI("Number of good matches:=%d",goodMatches);
+		  int percentage = 0;
+		  percentage = (goodMatches*100)/descriptors_object.rows;
+            return percentage;
       }
 }

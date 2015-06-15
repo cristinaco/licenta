@@ -7,7 +7,7 @@
     android:focusable="false"
     android:background="@color/app_text_white"
     android:orientation="vertical"
-    tools:context="ro.utcn.foodapp.presentation.activities.AddProductActivity">
+    tools:context="ro.utcn.foodapp.presentation.activities.RegisterProductActivity">
 
 
     <LinearLayout
@@ -52,14 +52,16 @@
             android:orientation="horizontal">
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:text="Check if product already exists"
                 android:textColor="@color/material_blue_grey_900"
-                android:layout_marginRight="10dip"/>
-            <CheckBox
-                android:id="@+id/checkBox"
+                android:layout_marginRight="10dip"
+                android:gravity="center_vertical"/>
+            <ImageView
+                android:id="@+id/activate_surf_search"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_action_search"/>
         </LinearLayout>
         <android.support.v7.widget.CardView
             style="@style/AppTheme.CardView"

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    tools:context="ro.utcn.foodapp.presentation.activities.PreviewPhotoActivity">
+    tools:context="ro.utcn.foodapp.presentation.activities.PreviewOcrResultActivity">
 
     <ImageView
         android:id="@+id/camera_display_photo_container"

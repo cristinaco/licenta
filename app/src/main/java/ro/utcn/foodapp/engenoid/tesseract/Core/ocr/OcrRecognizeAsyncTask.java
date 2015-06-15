@@ -18,7 +18,7 @@ import java.io.OutputStream;
 
 import ro.utcn.foodapp.R;
 import ro.utcn.foodapp.model.OcrResult;
-import ro.utcn.foodapp.presentation.activities.CaptureActivity;
+import ro.utcn.foodapp.presentation.activities.CameraCaptureActivity;
 import ro.utcn.foodapp.utils.BitmapTools;
 import ro.utcn.foodapp.utils.Constants;
 
@@ -31,14 +31,14 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
     private TessBaseAPI tessBaseAPI;
     private String language;
     private Bitmap bmp;
-    private CaptureActivity captureActivity;
+    private CameraCaptureActivity cameraCaptureActivity;
     private String recognizedText;
     private byte[] data;
     private int bitmapWidth;
     private int bitmapHeight;
 
-    public OcrRecognizeAsyncTask(CaptureActivity captureActivity, TessBaseAPI tessBaseAPI, byte[] data, int width, int height) {
-        this.captureActivity = captureActivity;
+    public OcrRecognizeAsyncTask(CameraCaptureActivity cameraCaptureActivity, TessBaseAPI tessBaseAPI, byte[] data, int width, int height) {
+        this.cameraCaptureActivity = cameraCaptureActivity;
         this.tessBaseAPI = tessBaseAPI;
         this.data = data;
         this.bitmapWidth = width;
@@ -52,7 +52,7 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
         // If traineddata file does not exists in tesseract/tessdata, copy it from assets to device storage
         if (!new File(destinationPath + File.separator + "tessdata" + File.separator + "ron.traineddata").exists()) {
-            AssetManager assetManager = captureActivity.getAssets();
+            AssetManager assetManager = cameraCaptureActivity.getAssets();
             InputStream in = null;
             OutputStream out = null;
             try {
@@ -73,7 +73,7 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
         tessBaseAPI.setDebug(true);
         // Init the tesseract engine with the path of traineddata and the used language
         tessBaseAPI.init(destinationPath, language);
-        bmp = captureActivity.getCameraEngine().buildLuminanceSource(data, bitmapWidth, bitmapHeight).renderCroppedGreyscaleBitmap();
+        bmp = cameraCaptureActivity.getCameraEngine().buildLuminanceSource(data, bitmapWidth, bitmapHeight).renderCroppedGreyscaleBitmap();
         tessBaseAPI.setImage(bmp);
         // Get the recognized text from image
         recognizedText = tessBaseAPI.getUTF8Text();
@@ -91,24 +91,24 @@ public class OcrRecognizeAsyncTask extends AsyncTask<Void, Void, Boolean> {
         Log.d("Result", recognizedText);
         OcrResult ocrResult = new OcrResult();
         ocrResult.setText(recognizedText);
-        ocrResult.setPhotoFilePath(captureActivity.tempFilePath);
-        ocrResult.setPhotoDirPath(captureActivity.tempDir);
+        ocrResult.setPhotoFilePath(cameraCaptureActivity.tempFilePath);
+        ocrResult.setPhotoDirPath(cameraCaptureActivity.tempDir);
         ocrResult.setWordBoundingBoxes(tessBaseAPI.getWords().getBoxRects());
         tessBaseAPI.end();
 
-        Handler handler = captureActivity.getHandler();
+        Handler handler = cameraCaptureActivity.getHandler();
         if (handler != null) {
             // Send results for single-shot mode recognition.
             if (result) {
                 Message message = Message.obtain(handler, R.id.ocr_decode_succeded, ocrResult);
                 message.sendToTarget();
-                BitmapTools.savePicture(bmp, captureActivity.tempFilePath, captureActivity.tempDir);
+                BitmapTools.savePicture(bmp, cameraCaptureActivity.tempFilePath, cameraCaptureActivity.tempDir);
                 //captureActivity.startPreviewPhotoActivity(ocrResult);
             } else {
                 Message message = Message.obtain(handler, R.id.ocr_decode_failed, ocrResult);
                 message.sendToTarget();
             }
-            captureActivity.getOcrProgressDialog().dismiss();
+            cameraCaptureActivity.getOcrProgressDialog().dismiss();
 
         }
         if (tessBaseAPI != null) {

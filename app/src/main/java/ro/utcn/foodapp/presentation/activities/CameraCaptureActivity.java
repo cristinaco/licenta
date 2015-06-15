@@ -28,11 +28,11 @@ import ro.utcn.foodapp.model.OcrResult;
 import ro.utcn.foodapp.utils.Constants;
 
 
-public class CaptureActivity extends Activity implements SurfaceHolder.Callback, ShutterButton.OnShutterButtonListener {
+public class CameraCaptureActivity extends Activity implements SurfaceHolder.Callback, ShutterButton.OnShutterButtonListener {
 
     public static final String TEMP_FILE_PATH = "TEMP_FILE_PATH";
     public static final String TEMP_DIR_PATH = "TEMP_DIR_PATH";
-    static final String TAG = "DBG_" + CaptureActivity.class.getName();
+    static final String TAG = "DBG_" + CameraCaptureActivity.class.getName();
     public static File tempDir;
     public static File tempFilePath;
 
@@ -56,7 +56,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         shutterButton = (ShutterButton) findViewById(R.id.shutter_button);
         focusBox = (FocusBoxView) findViewById(R.id.focus_box);
 
-        cameraEngine = CameraEngine.getInstance(CaptureActivity.this);
+        cameraEngine = CameraEngine.getInstance(CameraCaptureActivity.this);
         focusBox.setCameraEngine(cameraEngine);
         setListeners();
 
@@ -242,7 +242,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
             toast.show();
             return false;
         }else{
-            Intent displayPhotoIntent = new Intent(this, PreviewPhotoActivity.class);
+            Intent displayPhotoIntent = new Intent(this, PreviewOcrResultActivity.class);
             displayPhotoIntent.putExtra(this.TEMP_FILE_PATH, this.tempFilePath.getAbsolutePath());
             displayPhotoIntent.putExtra(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
             displayPhotoIntent.putExtra(Constants.OCR_RESULT_TEXT_KEY, ocrResult.getText());
@@ -260,7 +260,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         resultIntent.putExtra(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
         setResult(Activity.RESULT_OK, resultIntent);
 
-        CaptureActivity.this.finish();
+        CameraCaptureActivity.this.finish();
     }
     private void setListeners() {
         shutterButton.setOnShutterButtonListener(this);
@@ -363,7 +363,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
 
 
     public void displayOcrProgressDialog() {
-        ocrProgressDialog = new MaterialDialog.Builder(CaptureActivity.this)
+        ocrProgressDialog = new MaterialDialog.Builder(CameraCaptureActivity.this)
                 .content(R.string.wait_while_performing_ocr)
                 .progress(true, 0)
                 .cancelable(false)
@@ -379,7 +379,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
     }
 
     public void startPreviewPhotoActivity(OcrResult ocrResult) {
-        Intent displayPhotoIntent = new Intent(this, PreviewPhotoActivity.class);
+        Intent displayPhotoIntent = new Intent(this, PreviewOcrResultActivity.class);
         displayPhotoIntent.putExtra(this.TEMP_FILE_PATH, this.tempFilePath.getAbsolutePath());
         displayPhotoIntent.putExtra(this.TEMP_DIR_PATH, this.tempDir.getAbsolutePath());
         displayPhotoIntent.putExtra(Constants.OCR_RESULT_TEXT_KEY, ocrResult.getText());

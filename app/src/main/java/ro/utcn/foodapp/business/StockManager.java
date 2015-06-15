@@ -13,16 +13,16 @@ import ro.utcn.foodapp.model.Registration;
 /**
  * Created by coponipi on 15.05.2015.
  */
-public class ProductManager {
-    private static ProductManager instance;
+public class StockManager {
+    private static StockManager instance;
 
-    private ProductManager() {
+    private StockManager() {
 
     }
 
-    public static ProductManager getInstance() {
+    public static StockManager getInstance() {
         if (instance == null) {
-            instance = new ProductManager();
+            instance = new StockManager();
         }
         return instance;
     }

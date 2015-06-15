@@ -27,7 +27,7 @@ import ro.utcn.foodapp.model.OcrResult;
 import ro.utcn.foodapp.utils.BitmapTools;
 import ro.utcn.foodapp.utils.Constants;
 
-public class PreviewPhotoActivity extends ActionBarActivity {
+public class PreviewOcrResultActivity extends ActionBarActivity {
 
     public static final String TEMP_FILE_PATH = "TEMP_FILE_PATH";
     public static final String TEMP_DIR_PATH = "TEMP_DIR_PATH";
@@ -145,7 +145,7 @@ public class PreviewPhotoActivity extends ActionBarActivity {
         resultIntent.putExtra(Constants.OCR_RESULT_TEXT_KEY, ocrRecognizedEditText.getText().toString());
         setResult(Activity.RESULT_OK, resultIntent);
 
-        PreviewPhotoActivity.this.finish();
+        PreviewOcrResultActivity.this.finish();
     }
 
     private void editOcrResult() {
@@ -162,7 +162,7 @@ public class PreviewPhotoActivity extends ActionBarActivity {
         resultIntent.putExtra("save", 0);
         setResult(Activity.RESULT_OK, resultIntent);
 
-        PreviewPhotoActivity.this.finish();
+        PreviewOcrResultActivity.this.finish();
     }
 }
 

@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import ro.utcn.foodapp.R;
-import ro.utcn.foodapp.business.ProductManager;
+import ro.utcn.foodapp.business.StockManager;
 import ro.utcn.foodapp.business.RegistrationManager;
 import ro.utcn.foodapp.model.Product;
 import ro.utcn.foodapp.model.Registration;
@@ -70,9 +70,10 @@ public class MainActivity extends ActionBarActivity {
 
         setListeners();
         //NonFreeJNILib.runDemo();
-        int matches = SurfBaseJni.computeMatchingPoints("/storage/emulated/0/Android/data/ro.utcn.foodapp/files/images/2154c1a8-2e10-4aaf-b34f-aa09a1871342/sirf/depicting1.jpg",
-                "/storage/emulated/0/Android/data/ro.utcn.foodapp/files/images/2154c1a8-2e10-4aaf-b34f-aa09a1871342/sirf/depicting2.jpg");
-        Log.d("Number of matches", String.valueOf(matches));
+        // objectPath, scenePath
+        int matches = SurfBaseJni.computeMatchingPoints("/storage/emulated/0/Android/data/ro.utcn.foodapp/files/images/27217659-6672-43c3-bf8c-c68a229c07bd/sirf/depicting1.jpg",
+                "/storage/emulated/0/Android/data/ro.utcn.foodapp/files/images/27217659-6672-43c3-bf8c-c68a229c07bd/sirf/depicting2.jpg");
+        Log.d("Percentage", String.valueOf(matches));
     }
 
     @Override
@@ -137,14 +138,14 @@ public class MainActivity extends ActionBarActivity {
                 if (!registrationsHeaderList.contains(calendar.getTime())) {
                     registrationsHeaderList.add(calendar.getTime());
                 }
-                Product product = ProductManager.getInstance().getProduct(registration.getProductId());
+                Product product = StockManager.getInstance().getProduct(registration.getProductId());
                 productsForReg.add(product);
                 if (product.getExpirationStatus().equals(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED)) {
 
                     numberOfExpiredProducts++;
                 }
             }
-            registrationsGroupedByDate = ProductManager.getInstance().groupRegistrationsByDate(registrations);
+            registrationsGroupedByDate = StockManager.getInstance().groupRegistrationsByDate(registrations);
 
             productListAdapter.clearItems();
             productListAdapter.updateHeaderData(registrationsHeaderList);
@@ -243,7 +244,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 isInEditMode = false;
-                Intent intent = new Intent(MainActivity.this, AddProductActivity.class);
+                Intent intent = new Intent(MainActivity.this, RegisterProductActivity.class);
                 intent.putExtra(Constants.PRODUCT_IS_IN_EDIT_MODE, isInEditMode);
                 startActivity(intent);
             }
@@ -267,13 +268,13 @@ public class MainActivity extends ActionBarActivity {
                 if (!registrationsHeaderList.contains(calendar.getTime())) {
                     registrationsHeaderList.add(calendar.getTime());
                 }
-                Product product = ProductManager.getInstance().getProduct(registration.getProductId());
+                Product product = StockManager.getInstance().getProduct(registration.getProductId());
                 if (product.getExpirationStatus().equals(Constants.PRODUCT_EXPIRATION_STATUS_EXPIRED)) {
                     numberOfExpiredProducts++;
                 }
 
             }
-            registrationsGroupedByDate = ProductManager.getInstance().groupRegistrationsByDate(registrations);
+            registrationsGroupedByDate = StockManager.getInstance().groupRegistrationsByDate(registrations);
 
             productListAdapter.clearItems();
             productListAdapter.updateHeaderData(registrationsHeaderList);
@@ -297,7 +298,7 @@ public class MainActivity extends ActionBarActivity {
     private void editRegistration(Registration registration) {
         //Registration registration = registrationsGroupedByDate.get(registrationsHeaderList.get(groupPosition)).get(childPosition);
         isInEditMode = true;
-        Intent intent = new Intent(MainActivity.this, AddProductActivity.class);
+        Intent intent = new Intent(MainActivity.this, RegisterProductActivity.class);
         intent.putExtra(Constants.PRODUCT_IS_IN_EDIT_MODE, isInEditMode);
         intent.putExtra(Constants.REGISTRATION, registration);
         startActivity(intent);
@@ -306,8 +307,8 @@ public class MainActivity extends ActionBarActivity {
 
     private void deleteRegistration(Registration registration) {
 
-        ProductManager.getInstance().deleteProduct(registration.getProductId());
-        ProductManager.getInstance().deleteRegistration(registration.getId());
+        StockManager.getInstance().deleteProduct(registration.getProductId());
+        StockManager.getInstance().deleteRegistration(registration.getId());
         updateProductsList();
     }
 

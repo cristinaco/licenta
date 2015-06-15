@@ -8,7 +8,7 @@ import android.widget.Toast;
 
 import ro.utcn.foodapp.R;
 import ro.utcn.foodapp.model.OcrResult;
-import ro.utcn.foodapp.presentation.activities.CaptureActivity;
+import ro.utcn.foodapp.presentation.activities.CameraCaptureActivity;
 
 /**
  * Created by coponipi on 02.05.2015.
@@ -16,19 +16,19 @@ import ro.utcn.foodapp.presentation.activities.CaptureActivity;
 public class CaptureActivityHandler extends Handler {
     private static final String TAG = CaptureActivityHandler.class.getSimpleName();
     private static State state;
-    private CaptureActivity captureActivity;
+    private CameraCaptureActivity cameraCaptureActivity;
     private CameraEngine cameraEngine;
     private DecodeThread decodeThread;
     private boolean performOcr;
 
-    public CaptureActivityHandler(CaptureActivity captureActivity, CameraEngine cameraEngine, boolean performOcr) {
-        this.captureActivity = captureActivity;
+    public CaptureActivityHandler(CameraCaptureActivity cameraCaptureActivity, CameraEngine cameraEngine, boolean performOcr) {
+        this.cameraCaptureActivity = cameraCaptureActivity;
         this.cameraEngine = cameraEngine;
         this.performOcr = performOcr;
 
         // Start ourselves capturing previews (and decoding if using continuous recognition mode).
         cameraEngine.startPreview();
-        decodeThread = new DecodeThread(this.captureActivity, performOcr);
+        decodeThread = new DecodeThread(this.cameraCaptureActivity, performOcr);
         decodeThread.start();
 
         state = State.SUCCESS;
@@ -44,27 +44,27 @@ public class CaptureActivityHandler extends Handler {
                 break;
             case R.id.ocr_decode_succeded:
                 state = State.SUCCESS;
-                captureActivity.setShutterBtnClickable(true);
-                captureActivity.handleOcrDecode((OcrResult) message.obj);
+                cameraCaptureActivity.setShutterBtnClickable(true);
+                cameraCaptureActivity.handleOcrDecode((OcrResult) message.obj);
                 break;
             case R.id.ocr_decode_failed:
                 state = State.PREVIEW;
-                captureActivity.setShutterBtnClickable(true);
-                toast = Toast.makeText(captureActivity, "OCR failed. Please try again.", Toast.LENGTH_SHORT);
+                cameraCaptureActivity.setShutterBtnClickable(true);
+                toast = Toast.makeText(cameraCaptureActivity, "OCR failed. Please try again.", Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.TOP, 0, 0);
                 toast.show();
                 break;
             case R.id.capture_photo_failed:
                 state = State.PREVIEW;
-                captureActivity.setShutterBtnClickable(true);
-                toast = Toast.makeText(captureActivity, "Capturing photo failed. Please try again.", Toast.LENGTH_SHORT);
+                cameraCaptureActivity.setShutterBtnClickable(true);
+                toast = Toast.makeText(cameraCaptureActivity, "Capturing photo failed. Please try again.", Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.TOP, 0, 0);
                 toast.show();
                 break;
             case R.id.capture_photo_succeded:
                 state = State.SUCCESS;
-                captureActivity.setShutterBtnClickable(true);
-                captureActivity.handleCapturingPhoto();
+                cameraCaptureActivity.setShutterBtnClickable(true);
+                cameraCaptureActivity.handleCapturingPhoto();
                 break;
         }
     }
@@ -79,7 +79,7 @@ public class CaptureActivityHandler extends Handler {
             state = State.PREVIEW;
 
 //            // Draw the viewfinder.
-            captureActivity.drawFocusBoxView();
+            cameraCaptureActivity.drawFocusBoxView();
         }
     }
 
@@ -106,7 +106,7 @@ public class CaptureActivityHandler extends Handler {
      */
     public void shutterButtonClick() {
         // Disable further clicks on this button until OCR request is finished
-        captureActivity.setShutterBtnClickable(false);
+        cameraCaptureActivity.setShutterBtnClickable(false);
         ocrDecode();
     }
 

@@ -53,7 +53,9 @@ obj/local/armeabi-v7a/objs/nonfree_demo/nonfree_jni.o: \
  /cygdrive/d/OpenCV/OpenCV-2.4.10-android-sdk/sdk/native/jni/include/opencv2/calib3d/calib3d.hpp \
  /cygdrive/d/OpenCV/OpenCV-2.4.10-android-sdk/sdk/native/jni/include/opencv2/core/affine.hpp \
  /cygdrive/d/OpenCV/OpenCV-2.4.10-android-sdk/sdk/native/jni/include/opencv2/nonfree/nonfree.hpp \
- /cygdrive/d/OpenCV/OpenCV-2.4.10-android-sdk/sdk/native/jni/include/opencv2/nonfree/features2d.hpp
+ /cygdrive/d/OpenCV/OpenCV-2.4.10-android-sdk/sdk/native/jni/include/opencv2/nonfree/features2d.hpp \
+ jni/common.h \
+ /cygdrive/d/tools/android-ndk/platforms/android-8/arch-arm/usr/include/android/log.h
 
 /cygdrive/d/tools/android-ndk/platforms/android-8/arch-arm/usr/include/string.h:
 
@@ -162,3 +164,7 @@ obj/local/armeabi-v7a/objs/nonfree_demo/nonfree_jni.o: \
 /cygdrive/d/OpenCV/OpenCV-2.4.10-android-sdk/sdk/native/jni/include/opencv2/nonfree/nonfree.hpp:
 
 /cygdrive/d/OpenCV/OpenCV-2.4.10-android-sdk/sdk/native/jni/include/opencv2/nonfree/features2d.hpp:
+
+jni/common.h:
+
+/cygdrive/d/tools/android-ndk/platforms/android-8/arch-arm/usr/include/android/log.h:

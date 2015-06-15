@@ -6,20 +6,20 @@ import android.os.Message;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import ro.utcn.foodapp.engenoid.tesseract.Core.ocr.OcrRecognizeAsyncTask;
-import ro.utcn.foodapp.presentation.activities.CaptureActivity;
-import ro.utcn.foodapp.utils.CapturePhotoAsyncTask;
+import ro.utcn.foodapp.presentation.activities.CameraCaptureActivity;
+import ro.utcn.foodapp.utils.CaptureSimplePhotoAsyncTask;
 
 /**
  * Class to send bitmap data for OCR.
  * Created by coponipi on 02.05.2015.
  */
 public class DecodeHandler extends Handler {
-    private CaptureActivity captureActivity;
+    private CameraCaptureActivity cameraCaptureActivity;
     private TessBaseAPI tessBaseAPI;
     private boolean performOcr;
 
-    public DecodeHandler(CaptureActivity activity, boolean performOcr) {
-        this.captureActivity = activity;
+    public DecodeHandler(CameraCaptureActivity activity, boolean performOcr) {
+        this.cameraCaptureActivity = activity;
         this.performOcr = performOcr;
         tessBaseAPI = new TessBaseAPI();
 
@@ -40,15 +40,15 @@ public class DecodeHandler extends Handler {
     private void ocrDecode(byte[] data, int width, int height) {
         if (performOcr) {
             // Launch OCR asynchronously, so we get the dialog box displayed immediately
-            new OcrRecognizeAsyncTask(captureActivity, tessBaseAPI, data, width, height).execute();
+            new OcrRecognizeAsyncTask(cameraCaptureActivity, tessBaseAPI, data, width, height).execute();
             //beepManager.playBeepSoundAndVibrate();
-            captureActivity.runOnUiThread(new Runnable() {
+            cameraCaptureActivity.runOnUiThread(new Runnable() {
                 public void run() {
-                    captureActivity.displayOcrProgressDialog();
+                    cameraCaptureActivity.displayOcrProgressDialog();
                 }
             });
         } else {
-            new CapturePhotoAsyncTask(captureActivity, data, width, height).execute();
+            new CaptureSimplePhotoAsyncTask(cameraCaptureActivity, data, width, height).execute();
         }
 
     }

@@ -41,7 +41,7 @@ public class RegistrationManager {
         List<Registration> allRegistrations = getAllRegistrations();
         List<Registration> filteredRegistrations = new ArrayList<>();
         for(Registration registration: allRegistrations){
-            Product product = ProductManager.getInstance().getProduct(registration.getProductId());
+            Product product = StockManager.getInstance().getProduct(registration.getProductId());
             if(product.getName().toLowerCase().contains(hint.toLowerCase()) || product.getIngredients().toLowerCase().contains(hint.toLowerCase())){
                 filteredRegistrations.add(registration);
             }

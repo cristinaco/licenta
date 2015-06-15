@@ -33,14 +33,14 @@
         <!-- Camera -->
 
         <activity
-            android:name=".presentation.activities.AddProductActivity"
+            android:name=".presentation.activities.RegisterProductActivity"
             android:label="@string/title_activity_add_product" />
         <activity
-            android:name=".presentation.activities.CaptureActivity"
+            android:name=".presentation.activities.CameraCaptureActivity"
             android:label="@string/title_activity_add_product"
             android:screenOrientation="landscape" />
         <activity
-            android:name=".presentation.activities.PreviewPhotoActivity"
+            android:name=".presentation.activities.PreviewOcrResultActivity"
             android:label="@string/title_activity_preview_photo">
         </activity>
     </application>
