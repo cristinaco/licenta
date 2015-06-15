@@ -52,5 +52,6 @@
     <string name="action_edit_product">Edit product</string>
     <string name="photos_to_describe_product">Pictures depicting product</string>
     <string name="search">Search</string>
+    <string name="wait_while_performing_surf">Please wait while performing object detection...</string>
 
 </resources>

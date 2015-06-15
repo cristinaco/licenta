@@ -8,7 +8,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,7 +18,6 @@ import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.melnykov.fab.FloatingActionButton;
-import com.opencv.surf.SurfBaseJni;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,7 +27,6 @@ import java.util.TreeMap;
 
 import ro.utcn.foodapp.R;
 import ro.utcn.foodapp.business.StockManager;
-import ro.utcn.foodapp.business.RegistrationManager;
 import ro.utcn.foodapp.model.Product;
 import ro.utcn.foodapp.model.Registration;
 import ro.utcn.foodapp.presentation.adapters.ProductListAdapter;

@@ -38,6 +38,7 @@ import ro.utcn.foodapp.model.SurfResult;
 import ro.utcn.foodapp.utils.Constants;
 import ro.utcn.foodapp.utils.DateUtils;
 import ro.utcn.foodapp.utils.FileUtil;
+import ro.utcn.foodapp.utils.SurfProcessingTask;
 
 public class RegisterProductActivity extends ActionBarActivity {
 
@@ -66,7 +67,7 @@ public class RegisterProductActivity extends ActionBarActivity {
     private String registrationUuid = null;
     private String ocrForAction = "";
     private String timestamp;
-    private List<String> urls;
+    private List<String> objectImgPaths;
     private boolean isInEditMode;
 
     @Override
@@ -106,14 +107,14 @@ public class RegisterProductActivity extends ActionBarActivity {
             productDepictingPhotosDir = new File(tempDir, Constants.PRODUCT_DEPICTING_PHOTOS);
             this.tempDir = new File(FileUtil.getDrTempDir(this), registrationUuid);
             this.productDepictingPhotosDir = new File(tempDir, Constants.PRODUCT_DEPICTING_PHOTOS);
-            urls = newProduct.getUrls();
+            objectImgPaths = newProduct.getUrls();
 
             productNameEditText.setText(newProduct.getName());
             productIngredientsEditText.setText(newProduct.getIngredients());
             productPiecesNumberEditText.setText(String.valueOf(newProduct.getPiecesNumber()));
             productExpirationDateEditText.setText(simpleDateFormat.format(newProduct.getExpirationDate()));
 
-            for (String url : urls) {
+            for (String url : objectImgPaths) {
                 if (url.contains("depicting1")) {
                     Picasso.with(this).load(new File(url)).fit().into(productDepicting1);
                 } else if (url.contains("depicting2")) {
@@ -134,7 +135,7 @@ public class RegisterProductActivity extends ActionBarActivity {
             newProduct = new Product();
             registration = new Registration();
             registration.setUuid(registrationUuid);
-            urls = new ArrayList<>();
+            objectImgPaths = new ArrayList<>();
         }
 
         timestamp = String.valueOf(System.currentTimeMillis());
@@ -165,7 +166,7 @@ public class RegisterProductActivity extends ActionBarActivity {
             outState.putLong("productExpirationDate", newProduct.getExpirationDate().getTime());
         }
         outState.putLong("productPiecesNumber", newProduct.getPiecesNumber());
-        outState.putStringArrayList("urls", (ArrayList<String>) urls);
+        outState.putStringArrayList("objectImgPaths", (ArrayList<String>) objectImgPaths);
         outState.putBoolean("isInEditMode", isInEditMode);
     }
 
@@ -180,7 +181,7 @@ public class RegisterProductActivity extends ActionBarActivity {
         newProduct.setIngredients(savedInstanceState.getString("productIngredients"));
         newProduct.setExpirationDate(new Date(savedInstanceState.getLong("productExpirationDate")));
         newProduct.setPiecesNumber((int) savedInstanceState.getLong("productPiecesNumber"));
-        urls = savedInstanceState.getStringArrayList("urls");
+        objectImgPaths = savedInstanceState.getStringArrayList("objectImgPaths");
         isInEditMode = savedInstanceState.getBoolean("isInEditMode");
     }
 
@@ -270,22 +271,22 @@ public class RegisterProductActivity extends ActionBarActivity {
     private void savePic3(Intent data) {
         Picasso.with(this).invalidate(this.tempFilePath);
         Picasso.with(this).load(this.tempFilePath).fit().into(productDepicting3);
-        if (!urls.contains(this.tempFilePath))
-            urls.add(this.tempFilePath.getAbsolutePath());
+        if (!objectImgPaths.contains(this.tempFilePath))
+            objectImgPaths.add(this.tempFilePath.getAbsolutePath());
     }
 
     private void savePic2(Intent data) {
         Picasso.with(this).invalidate(this.tempFilePath);
         Picasso.with(this).load(this.tempFilePath).fit().into(productDepicting2);
-        if (!urls.contains(this.tempFilePath))
-            urls.add(this.tempFilePath.getAbsolutePath());
+        if (!objectImgPaths.contains(this.tempFilePath))
+            objectImgPaths.add(this.tempFilePath.getAbsolutePath());
     }
 
     private void savePic1(Intent data) {
         Picasso.with(this).invalidate(this.tempFilePath);
         Picasso.with(this).load(this.tempFilePath).fit().into(productDepicting1);
-        if (!urls.contains(this.tempFilePath))
-            urls.add(this.tempFilePath.getAbsolutePath());
+        if (!objectImgPaths.contains(this.tempFilePath))
+            objectImgPaths.add(this.tempFilePath.getAbsolutePath());
     }
 
     private void saveProductName(Intent data) {
@@ -303,7 +304,7 @@ public class RegisterProductActivity extends ActionBarActivity {
     }
 
     private void saveProduct() {
-        if (productNameEditText.getText() == null || productIngredientsEditText.getText() == null || productExpirationDateEditText.getText() == null || productPiecesNumberEditText.getText() == null || urls.size() < 3) {
+        if (productNameEditText.getText() == null || productIngredientsEditText.getText() == null || productExpirationDateEditText.getText() == null || productPiecesNumberEditText.getText() == null || objectImgPaths.size() < 3) {
             Toast.makeText(this, getResources().getString(R.string.activity_add_product_complete_all_fields), Toast.LENGTH_SHORT).show();
         } else {
             Date date = isExpirationDateValid(productExpirationDateEditText.getText().toString());
@@ -316,7 +317,7 @@ public class RegisterProductActivity extends ActionBarActivity {
                 } else {
                     newProduct.setExpirationStatus(Constants.PRODUCT_EXPIRATION_STATUS_VALID);
                 }
-                newProduct.setUrls(urls);
+                newProduct.setUrls(objectImgPaths);
                 newProduct.setPiecesNumber(Integer.parseInt(productPiecesNumberEditText.getText().toString()));
 
                 Calendar regDate = Calendar.getInstance();
@@ -328,7 +329,7 @@ public class RegisterProductActivity extends ActionBarActivity {
                 } else {
                     long rowId = StockManager.getInstance().saveProduct(newProduct);
                     StockManager.getInstance().saveRegistration(registrationUuid, regDate.getTime(), rowId);
-                    for (String url : urls) {
+                    for (String url : objectImgPaths) {
                         StockManager.getInstance().savePhotoPath(url, rowId);
                     }
                 }
@@ -360,37 +361,20 @@ public class RegisterProductActivity extends ActionBarActivity {
         searchExistitngProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (urls.size() < 2) {
+                if (objectImgPaths.size() < 2) {
                     Toast.makeText(RegisterProductActivity.this, "Please take all three depicting photos!", Toast.LENGTH_LONG).show();
                 } else {
 
                     // ar trebui sa am toate uuid-urile inregistrarilor pt a parsa fiecare fisier uuid/sirf/depicting1,2,3
                     // pt fiecare fisier am 9 rezultate si le pun intr-o lista  doar daca scorul e mai mic decat 0.25
                     // la final parcurg lista si iau primele 3 cele mai mici valori
-                    List<SurfResult> surfResults = new ArrayList<SurfResult>();
-                    List<Registration> allRegistrations = StockManager.getInstance().getAllRegistrations();
+                    //List<SurfResult> surfResults = new ArrayList<SurfResult>();
+                    //List<Registration> allRegistrations = StockManager.getInstance().getAllRegistrations();
+                    SurfProcessingTask surfProcessingTask = new SurfProcessingTask(RegisterProductActivity.this, objectImgPaths);
+                    surfProcessingTask.execute();
 
-                    for (String objectPath : urls) {
-                        for (Registration registration : allRegistrations) {
-                            // acesta e pathul pt imaginile curente, imaginile obiect
-                            List<String> scenePaths = StockManager.getInstance().getProduct(registration.getProductId()).getUrls();
 
-                            for (String scenePath : scenePaths) {
-                                double score = SurfBaseJni.computeMatchingPoints(objectPath, scenePath);
-                                Log.d("Score:", String.valueOf(score));
 
-                                if (score <= Constants.SURF_MIN_SCORE) {
-                                    SurfResult surfResult = new SurfResult();
-                                    surfResult.setScore(score);
-                                    surfResult.setProductUuid(registration.getUuid());
-                                    surfResult.setMatch(true);
-                                    surfResult.setMatchedPhotoPath(scenePath);
-                                    surfResults.add(surfResult);
-                                }
-                            }
-                        }
-                    }
-                    Log.d("Number of good results:", String.valueOf(surfResults.size()));
                 }
             }
         });
@@ -508,5 +492,9 @@ public class RegisterProductActivity extends ActionBarActivity {
                 }
             }
         });
+    }
+    public void computeSurfResult (List<SurfResult> surfResults){
+        Log.d("Number of good results:", String.valueOf(surfResults.size()));
+        
     }
 }
