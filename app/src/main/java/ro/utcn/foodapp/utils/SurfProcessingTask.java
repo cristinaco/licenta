@@ -59,7 +59,19 @@ public class SurfProcessingTask extends AsyncTask<Void, Void, Void> {
                         surfResult.setProductUuid(registration.getUuid());
                         surfResult.setMatch(true);
                         surfResult.setMatchedPhotoPath(scenePath);
-                        surfResults.add(surfResult);
+                        boolean found = false;
+                        for(SurfResult surf:surfResults){
+
+                            if (!surf.getProductUuid().equals(surfResult.getProductUuid())){
+                                found = false;
+                                continue;
+                            }else{
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(!found)
+                            surfResults.add(surfResult);
                     }
                 }
             }

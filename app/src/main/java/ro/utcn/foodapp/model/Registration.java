@@ -11,6 +11,7 @@ public class Registration implements Serializable{
     private String uuid;
     private Date registrationDate;
     private int productId;
+    private int itemsNumber;
 
     public Date getRegistrationDate() {
         return registrationDate;
@@ -42,5 +43,13 @@ public class Registration implements Serializable{
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public int getItemsNumber() {
+        return itemsNumber;
+    }
+
+    public void setItemsNumber(int itemsNumber) {
+        this.itemsNumber = itemsNumber;
     }
 }

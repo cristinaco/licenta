@@ -23,5 +23,5 @@ public class Constants {
     public static final boolean PERFORM_OCR = true;
     public static final String PRODUCT_IS_IN_EDIT_MODE = "product_is_in_edit_mode";
     public static final String REGISTRATION = "registration";
-    public static final double SURF_MIN_SCORE = 0.25;
+    public static final double SURF_MIN_SCORE = 0.29;
 }

@@ -109,7 +109,7 @@ public class ProductListAdapter extends BaseExpandableListAdapter {
         TextView productIngredients = (TextView) convertView.findViewById(R.id.item_product_ingredients);
 
         productTitle.setText(product.getName());
-        productNumberOfPieces.setText(String.valueOf(product.getPiecesNumber()));
+        productNumberOfPieces.setText(String.valueOf(registration.getItemsNumber()));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
         productExpirationDate.setText(simpleDateFormat.format(product.getExpirationDate()));
         productIngredients.setText(product.getIngredients());

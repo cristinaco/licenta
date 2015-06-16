@@ -16,7 +16,6 @@ public class Product implements Serializable{
     private String ingredients;
     private Date expirationDate;
     private String expirationStatus;
-    private int piecesNumber;
     private List<String> urls;
 
     public String getName() {
@@ -25,15 +24,6 @@ public class Product implements Serializable{
 
     public void setName(String name) {
         this.name = name;
-    }
-
-
-    public int getPiecesNumber() {
-        return piecesNumber;
-    }
-
-    public void setPiecesNumber(int piecesNumber) {
-        this.piecesNumber = piecesNumber;
     }
 
     public Date getExpirationDate() {

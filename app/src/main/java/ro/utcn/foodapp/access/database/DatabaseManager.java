@@ -41,7 +41,6 @@ public class DatabaseManager {
         values.put(Product.COLUMN_NAME_NAME, newProduct.getName());
         values.put(Product.COLUMN_NAME_INGREDIENTS, newProduct.getIngredients());
         values.put(Product.COLUMN_NAME_EXPIRATION_DATE, newProduct.getExpirationDate().getTime());
-        values.put(Product.COLUMN_NAME_PIECES_NUMBER, newProduct.getPiecesNumber());
         values.put(Product.COLUMN_NAME_EXPIRATION_STATUS, newProduct.getExpirationStatus());
 
         // Insert the new row, returning the primary key value of the new row
@@ -58,7 +57,7 @@ public class DatabaseManager {
         return newRowId;
     }
 
-    public long saveRegistration(String productUUID, Date date, long productId) {
+    public long saveRegistration(String productUUID, Date date, long productId, int itemsNumber) {
         // Open connection to database
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -66,6 +65,7 @@ public class DatabaseManager {
         values.put(Registration.COLUMN_NAME_UUID, productUUID);
         values.put(Registration.COLUMN_NAME_REGISTRATION_DATE, date.getTime());
         values.put(Registration.COLUMN_NAME_PRODUCT_ID, productId);
+        values.put(Registration.COLUMN_NAME_ITEMS_NUMBER, itemsNumber);
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(
@@ -115,6 +115,7 @@ public class DatabaseManager {
                 Registration._ID,
                 Registration.COLUMN_NAME_UUID,
                 Registration.COLUMN_NAME_REGISTRATION_DATE,
+                Registration.COLUMN_NAME_ITEMS_NUMBER,
                 Registration.COLUMN_NAME_PRODUCT_ID};
 
         Cursor cursor = db.query(
@@ -137,6 +138,7 @@ public class DatabaseManager {
                 registration.setUuid(cursor.getString(cursor.getColumnIndex(Registration.COLUMN_NAME_UUID)));
                 registration.setRegistrationDate(date);
                 registration.setProductId(cursor.getInt(cursor.getColumnIndex(Registration.COLUMN_NAME_PRODUCT_ID)));
+                registration.setItemsNumber(cursor.getInt(cursor.getColumnIndex(Registration.COLUMN_NAME_ITEMS_NUMBER)));
                 registrations.add(registration);
             }
         } else {
@@ -163,7 +165,6 @@ public class DatabaseManager {
                 Product.COLUMN_NAME_NAME,
                 Product.COLUMN_NAME_INGREDIENTS,
                 Product.COLUMN_NAME_EXPIRATION_DATE,
-                Product.COLUMN_NAME_PIECES_NUMBER,
                 Product.COLUMN_NAME_EXPIRATION_STATUS};
 
         String selection = Product._ID + " = ?";
@@ -183,7 +184,6 @@ public class DatabaseManager {
                 product.setId(cursor.getInt(cursor.getColumnIndex(Product._ID)));
                 product.setName(cursor.getString(cursor.getColumnIndex(Product.COLUMN_NAME_NAME)));
                 product.setIngredients(cursor.getString(cursor.getColumnIndex(Product.COLUMN_NAME_INGREDIENTS)));
-                product.setPiecesNumber(cursor.getInt(cursor.getColumnIndex(Product.COLUMN_NAME_PIECES_NUMBER)));
                 product.setExpirationStatus(cursor.getString(cursor.getColumnIndex(Product.COLUMN_NAME_EXPIRATION_STATUS)));
                 Long expDate = cursor.getLong(cursor.getColumnIndex(Product.COLUMN_NAME_EXPIRATION_DATE));
                 Date date = new Date();
@@ -274,7 +274,6 @@ public class DatabaseManager {
         values.put(Product.COLUMN_NAME_NAME, product.getName());
         values.put(Product.COLUMN_NAME_INGREDIENTS, product.getIngredients());
         values.put(Product.COLUMN_NAME_EXPIRATION_DATE, product.getExpirationDate().getTime());
-        values.put(Product.COLUMN_NAME_PIECES_NUMBER, product.getPiecesNumber());
         values.put(Product.COLUMN_NAME_EXPIRATION_STATUS, product.getExpirationStatus());
 
         // Insert the new row, returning the primary key value of the new row
@@ -287,12 +286,13 @@ public class DatabaseManager {
         db.close();
     }
 
-    public void updateRegistration(String registrationUuid, Date date, int productId) {
+    public void updateRegistration(String registrationUuid, Date date, int productId, int itemsNumber) {
         // Open connection to database
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(Registration.COLUMN_NAME_REGISTRATION_DATE, date.getTime());
+        values.put(Registration.COLUMN_NAME_ITEMS_NUMBER, itemsNumber);
 
         // Insert the new row, returning the primary key value of the new row
         db.update(
@@ -315,6 +315,7 @@ public class DatabaseManager {
                 Registration._ID,
                 Registration.COLUMN_NAME_UUID,
                 Registration.COLUMN_NAME_REGISTRATION_DATE,
+                Registration.COLUMN_NAME_ITEMS_NUMBER,
                 Registration.COLUMN_NAME_PRODUCT_ID};
         String selection = Registration.COLUMN_NAME_UUID + " = ?";
         String[] selectionArgs = {uuid};
@@ -336,6 +337,7 @@ public class DatabaseManager {
                 registration.setId(cursor.getInt(cursor.getColumnIndex(Registration._ID)));
                 registration.setUuid(cursor.getString(cursor.getColumnIndex(Registration.COLUMN_NAME_UUID)));
                 registration.setRegistrationDate(date);
+                registration.setItemsNumber(cursor.getInt(cursor.getColumnIndex(Registration.COLUMN_NAME_ITEMS_NUMBER)));
                 registration.setProductId(cursor.getInt(cursor.getColumnIndex(Registration.COLUMN_NAME_PRODUCT_ID)));
             }
         } else {

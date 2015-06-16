@@ -102,29 +102,31 @@ public class StockManager {
     public void updateProduct(Product product) {
         DatabaseManager.getInstance().updateProduct(product);
     }
-    public void saveRegistration(String productUUID, Date date, long productId) {
-        DatabaseManager.getInstance().saveRegistration(productUUID, date, productId);
+
+    public void saveRegistration(String productUUID, Date date, long productId, int itemsNumber) {
+        DatabaseManager.getInstance().saveRegistration(productUUID, date, productId, itemsNumber);
     }
 
     public List<Registration> getAllRegistrations() {
         return DatabaseManager.getInstance().getAllRegistrations();
     }
 
-    public void updateRegistration(String registrationUuid, Date time, int productId) {
-        DatabaseManager.getInstance().updateRegistration(registrationUuid, time, productId);
+    public void updateRegistration(String registrationUuid, Date time, int productId, int itemsNumber) {
+        DatabaseManager.getInstance().updateRegistration(registrationUuid, time, productId, itemsNumber);
     }
 
     public List<Registration> searchRegistrations(String hint) {
         List<Registration> allRegistrations = getAllRegistrations();
         List<Registration> filteredRegistrations = new ArrayList<>();
-        for(Registration registration: allRegistrations){
+        for (Registration registration : allRegistrations) {
             Product product = StockManager.getInstance().getProduct(registration.getProductId());
-            if(product.getName().toLowerCase().contains(hint.toLowerCase()) || product.getIngredients().toLowerCase().contains(hint.toLowerCase())){
+            if (product.getName().toLowerCase().contains(hint.toLowerCase()) || product.getIngredients().toLowerCase().contains(hint.toLowerCase())) {
                 filteredRegistrations.add(registration);
             }
         }
         return filteredRegistrations;
     }
+
     public void savePhotoPath(String url, long productId) {
         DatabaseManager.getInstance().savePhotoPath(url, productId);
     }

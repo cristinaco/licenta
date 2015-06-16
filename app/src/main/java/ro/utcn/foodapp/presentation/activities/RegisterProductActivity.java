@@ -18,7 +18,6 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.opencv.surf.SurfBaseJni;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -65,6 +64,7 @@ public class RegisterProductActivity extends ActionBarActivity {
     private ImageView productDepicting3;
     private ImageView searchExistitngProduct;
     private Product newProduct;
+    private Registration registration;
     private String registrationUuid = null;
     private String ocrForAction = "";
     private String timestamp;
@@ -99,7 +99,7 @@ public class RegisterProductActivity extends ActionBarActivity {
         view.setFocusableInTouchMode(true);
 
         isInEditMode = getIntent().getBooleanExtra(Constants.PRODUCT_IS_IN_EDIT_MODE, false);
-        Registration registration = (Registration) getIntent().getSerializableExtra(Constants.REGISTRATION);
+        registration = (Registration) getIntent().getSerializableExtra(Constants.REGISTRATION);
         if (registration != null) {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
@@ -112,7 +112,7 @@ public class RegisterProductActivity extends ActionBarActivity {
 
             productNameEditText.setText(newProduct.getName());
             productIngredientsEditText.setText(newProduct.getIngredients());
-            productPiecesNumberEditText.setText(String.valueOf(newProduct.getPiecesNumber()));
+            productPiecesNumberEditText.setText(String.valueOf(registration.getItemsNumber()));
             productExpirationDateEditText.setText(simpleDateFormat.format(newProduct.getExpirationDate()));
 
             for (String url : objectImgPaths) {
@@ -166,7 +166,7 @@ public class RegisterProductActivity extends ActionBarActivity {
         if (newProduct.getExpirationDate() != null) {
             outState.putLong("productExpirationDate", newProduct.getExpirationDate().getTime());
         }
-        outState.putLong("productPiecesNumber", newProduct.getPiecesNumber());
+        outState.putLong("productPiecesNumber", registration.getItemsNumber());
         outState.putStringArrayList("objectImgPaths", (ArrayList<String>) objectImgPaths);
         outState.putBoolean("isInEditMode", isInEditMode);
     }
@@ -181,7 +181,7 @@ public class RegisterProductActivity extends ActionBarActivity {
         newProduct.setName(savedInstanceState.getString("productName"));
         newProduct.setIngredients(savedInstanceState.getString("productIngredients"));
         newProduct.setExpirationDate(new Date(savedInstanceState.getLong("productExpirationDate")));
-        newProduct.setPiecesNumber((int) savedInstanceState.getLong("productPiecesNumber"));
+        registration.setItemsNumber((int) savedInstanceState.getLong("productPiecesNumber"));
         objectImgPaths = savedInstanceState.getStringArrayList("objectImgPaths");
         isInEditMode = savedInstanceState.getBoolean("isInEditMode");
     }
@@ -319,17 +319,17 @@ public class RegisterProductActivity extends ActionBarActivity {
                     newProduct.setExpirationStatus(Constants.PRODUCT_EXPIRATION_STATUS_VALID);
                 }
                 newProduct.setUrls(objectImgPaths);
-                newProduct.setPiecesNumber(Integer.parseInt(productPiecesNumberEditText.getText().toString()));
+                registration.setItemsNumber(Integer.parseInt(productPiecesNumberEditText.getText().toString()));
 
                 Calendar regDate = Calendar.getInstance();
                 regDate.setTime(new Date());
                 if (isInEditMode) {
 
                     StockManager.getInstance().updateProduct(newProduct);
-                    StockManager.getInstance().updateRegistration(registrationUuid, regDate.getTime(), newProduct.getId());
+                    StockManager.getInstance().updateRegistration(registrationUuid, regDate.getTime(), newProduct.getId(), registration.getItemsNumber());
                 } else {
                     long rowId = StockManager.getInstance().saveProduct(newProduct);
-                    StockManager.getInstance().saveRegistration(registrationUuid, regDate.getTime(), rowId);
+                    StockManager.getInstance().saveRegistration(registrationUuid, regDate.getTime(), rowId, registration.getItemsNumber());
                     for (String url : objectImgPaths) {
                         StockManager.getInstance().savePhotoPath(url, rowId);
                     }
@@ -373,7 +373,6 @@ public class RegisterProductActivity extends ActionBarActivity {
                     //List<Registration> allRegistrations = StockManager.getInstance().getAllRegistrations();
                     SurfProcessingTask surfProcessingTask = new SurfProcessingTask(RegisterProductActivity.this, objectImgPaths);
                     surfProcessingTask.execute();
-
 
 
                 }
@@ -494,10 +493,11 @@ public class RegisterProductActivity extends ActionBarActivity {
             }
         });
     }
-    public void computeSurfResult (List<SurfResult> surfResults){
+
+    public void computeSurfResult(List<SurfResult> surfResults) {
         Log.d("Number of good results:", String.valueOf(surfResults.size()));
         String[] mStrings = new String[surfResults.size()];
-        for(int i=0; i<surfResults.size(); i++){
+        for (int i = 0; i < surfResults.size(); i++) {
             Registration registration = StockManager.getInstance().getRegistration(surfResults.get(i).getProductUuid());
             mStrings[i] = StockManager.getInstance().getProduct(registration.getProductId()).getName();
         }
