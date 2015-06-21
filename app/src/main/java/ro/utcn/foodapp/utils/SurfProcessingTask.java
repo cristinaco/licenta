@@ -57,7 +57,7 @@ public class SurfProcessingTask extends AsyncTask<Void, Void, Void> {
                         double score = SurfBaseJni.computeMatchingPoints(objectPath, scenePath);
                         Log.d("Score:", String.valueOf(score));
 
-                        if (score <= Constants.SURF_MIN_SCORE) {
+                        if (score >=0 && score <= Constants.SURF_MIN_SCORE) {
                             SurfResult surfResult = new SurfResult();
                             surfResult.setScore(score);
                             surfResult.setRegistrationUuid(registration.getUuid());
@@ -65,7 +65,7 @@ public class SurfProcessingTask extends AsyncTask<Void, Void, Void> {
                             surfResult.setMatchedPhotoPath(scenePath);
                             //surfResults.add(surfResult);
                             found = true;
-                          boolean exists = false;
+                            boolean exists = false;
                             for (SurfResult surf : surfResults) {
 
                                 if (!surf.getRegistrationUuid().equals(surfResult.getRegistrationUuid())) {

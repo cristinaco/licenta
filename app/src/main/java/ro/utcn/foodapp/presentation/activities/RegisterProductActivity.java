@@ -63,7 +63,7 @@ public class RegisterProductActivity extends ActionBarActivity {
     private ImageView productDepicting1;
     private ImageView productDepicting2;
     private ImageView productDepicting3;
-    private ImageView searchExistitngProduct;
+    private ImageView searchExistingProduct;
     private Product newProduct;
     private Registration registration;
     private String registrationUuid = null;
@@ -88,7 +88,7 @@ public class RegisterProductActivity extends ActionBarActivity {
         productDepicting1 = (ImageView) findViewById(R.id.photo_depicting_product_1);
         productDepicting2 = (ImageView) findViewById(R.id.photo_depicting_product_2);
         productDepicting3 = (ImageView) findViewById(R.id.photo_depicting_product_3);
-        searchExistitngProduct = (ImageView) findViewById(R.id.activate_surf_search);
+        searchExistingProduct = (ImageView) findViewById(R.id.activate_surf_search);
 
         productNameEditText.setEnabled(false);
         productIngredientsEditText.setEnabled(false);
@@ -362,7 +362,7 @@ public class RegisterProductActivity extends ActionBarActivity {
 
     private void setListeners() {
 
-        searchExistitngProduct.setOnClickListener(new View.OnClickListener() {
+        searchExistingProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (objectImgPaths.size() < 1) {
@@ -496,15 +496,17 @@ public class RegisterProductActivity extends ActionBarActivity {
             Toast.makeText(RegisterProductActivity.this, R.string.no_registrations_available, Toast.LENGTH_LONG).show();
         } else {
             Log.d("Number of good results:", String.valueOf(surfResults.size()));
-            final String[] mStrings = new String[surfResults.size()];
+            final String[] mStrings = new String[surfResults.size()+1];
             final Map<String, String> map = new HashMap<>();
+            mStrings[0] = "None";
             for (int i = 0; i < surfResults.size(); i++) {
                 Registration registration = StockManager.getInstance().getRegistration(surfResults.get(i).getRegistrationUuid());
-                mStrings[i] = StockManager.getInstance().getProduct(registration.getProductId()).getName();
-                map.put(registration.getUuid(), mStrings[i]);
+                mStrings[i+1] = StockManager.getInstance().getProduct(registration.getProductId()).getName();
+                map.put(registration.getUuid(), mStrings[i+1]);
             }
+
             if (surfResults.size() > 0) {
-                new MaterialDialog.Builder(this)
+                MaterialDialog dialog = new MaterialDialog.Builder(this)
                         .title("Objects found: " + surfResults.size())
                         .items(mStrings)
                         .cancelable(false)
@@ -515,35 +517,40 @@ public class RegisterProductActivity extends ActionBarActivity {
                                  * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
                                  * returning false here won't allow the newly selected radio button to actually be selected.
                                  **/
-                                //SurfResult surfResult = getSurfResultByProductName(surfResults, text.toString(), map);
-                                Registration oldRegistration = StockManager.getInstance().getRegistration(getSurfResultByProductName(surfResults, text.toString(), map));
-                                Product product = StockManager.getInstance().getProduct(oldRegistration.getProductId());
-                                newProduct.setId(product.getId());
-                                newProduct.setName(product.getName());
-                                newProduct.setIngredients(product.getIngredients());
-                                newProduct.setExpirationDate(product.getExpirationDate());
-                                newProduct.setUrls(product.getUrls());
-                                newProduct.setExpirationStatus(product.getExpirationStatus());
-                                registration.setProductId(newProduct.getId());
-                                registration.setItemsNumber(oldRegistration.getItemsNumber());
+                                if (!text.toString().equals("None")) {
+                                    //SurfResult surfResult = getSurfResultByProductName(surfResults, text.toString(), map);
+                                    Registration oldRegistration = StockManager.getInstance().getRegistration(getSurfResultByProductName(surfResults, text.toString(), map));
+                                    Product product = StockManager.getInstance().getProduct(oldRegistration.getProductId());
+                                    newProduct.setId(product.getId());
+                                    newProduct.setName(product.getName());
+                                    newProduct.setIngredients(product.getIngredients());
+                                    newProduct.setExpirationDate(product.getExpirationDate());
+                                    newProduct.setUrls(objectImgPaths);
+                                    newProduct.setExpirationStatus(product.getExpirationStatus());
+                                    registration.setProductId(newProduct.getId());
+                                    registration.setItemsNumber(oldRegistration.getItemsNumber());
 
-                                productNameEditText.setText(product.getName());
-                                productIngredientsEditText.setText(product.getIngredients());
-                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-                                productExpirationDateEditText.setText(simpleDateFormat.format(product.getExpirationDate()));
-                                productPiecesNumberEditText.setText(String.valueOf(registration.getItemsNumber()));
+                                    productNameEditText.setText(product.getName());
+                                    productIngredientsEditText.setText(product.getIngredients());
+                                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+                                    productExpirationDateEditText.setText(simpleDateFormat.format(product.getExpirationDate()));
+                                    productPiecesNumberEditText.setText(String.valueOf(registration.getItemsNumber()));
 
-                                productNameEditText.setClickable(true);
-                                productNameEditText.setEnabled(true);
-                                productIngredientsEditText.setClickable(true);
-                                productIngredientsEditText.setEnabled(true);
-                                productExpirationDateEditText.setClickable(true);
-                                productExpirationDateEditText.setEnabled(true);
-                                productPiecesNumberEditText.setClickable(true);
-                                productPiecesNumberEditText.setEnabled(true);
+                                    productNameEditText.setClickable(true);
+                                    productNameEditText.setEnabled(true);
+                                    productIngredientsEditText.setClickable(true);
+                                    productIngredientsEditText.setEnabled(true);
+                                    productExpirationDateEditText.setClickable(true);
+                                    productExpirationDateEditText.setEnabled(true);
+                                    productPiecesNumberEditText.setClickable(true);
+                                    productPiecesNumberEditText.setEnabled(true);
 
+                                    return true;
+                                } else {
+                                    dialog.dismiss();
+                                    return true;
+                                }
 
-                                return true;
                             }
                         })
                         .positiveText(R.string.choose)
@@ -558,11 +565,6 @@ public class RegisterProductActivity extends ActionBarActivity {
     }
 
     private String getSurfResultByProductName(List<SurfResult> surfResults, String name, Map<String, String> map) {
-//        for (SurfResult surfResult : surfResults) {
-//            if (surfResult.getMatchedPhotoPath().equals(name)) {
-//                return surfResult;
-//            }
-//        }
         for (String key : map.keySet()) {
             if (map.containsValue(name)) {
                 return key;

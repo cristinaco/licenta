@@ -68,8 +68,8 @@
                             android:layout_height="match_parent"
                             android:layout_marginBottom="2dp"
                             android:gravity="center_vertical"
-                            android:text="sdfjg fghrtjtyfuinifwngorngornvorengoer krgniornviekv erkinrgnoriegnoigbirgn kinrgbioioqregbbnoernorpebnoerbnornbornbornborbnor"
-                            android:inputType="textMultiLine"/>
+                            android:text="sdfjg fghrtjtyfuinifwngorngornvorengoer krgniornviekv erkinrgn"
+                            android:maxLines="5"/>
                         </LinearLayout>
 
                     <LinearLayout
