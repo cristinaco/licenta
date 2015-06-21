@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -101,6 +102,7 @@ public class RegisterProductActivity extends ActionBarActivity {
         isInEditMode = getIntent().getBooleanExtra(Constants.PRODUCT_IS_IN_EDIT_MODE, false);
         registration = (Registration) getIntent().getSerializableExtra(Constants.REGISTRATION);
         if (registration != null) {
+            setTitle(getResources().getString(R.string.activity_edit_product_title));
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
             registrationUuid = registration.getUuid();
@@ -127,6 +129,7 @@ public class RegisterProductActivity extends ActionBarActivity {
 
 
         } else {
+            setTitle(getResources().getString(R.string.activity_add_product_title));
             registrationUuid = String.valueOf(UUID.randomUUID());
             this.tempDir = new File(FileUtil.getDrTempDir(this), registrationUuid);
             this.tempDir.mkdirs();
@@ -305,7 +308,7 @@ public class RegisterProductActivity extends ActionBarActivity {
     }
 
     private void saveProduct() {
-        if (productNameEditText.getText() == null || productIngredientsEditText.getText() == null || productExpirationDateEditText.getText() == null || productPiecesNumberEditText.getText() == null || objectImgPaths.size() < 3) {
+        if (productNameEditText.getText() == null || productIngredientsEditText.getText() == null || productExpirationDateEditText.getText() == null || productPiecesNumberEditText.getText() == null || productPiecesNumberEditText.getText().equals("") || objectImgPaths.size() < 3) {
             Toast.makeText(this, getResources().getString(R.string.activity_add_product_complete_all_fields), Toast.LENGTH_SHORT).show();
         } else {
             Date date = isExpirationDateValid(productExpirationDateEditText.getText().toString());
@@ -362,15 +365,9 @@ public class RegisterProductActivity extends ActionBarActivity {
         searchExistitngProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (objectImgPaths.size() < 2) {
-                    Toast.makeText(RegisterProductActivity.this, "Please take all three depicting photos!", Toast.LENGTH_LONG).show();
+                if (objectImgPaths.size() < 1) {
+                    Toast.makeText(RegisterProductActivity.this, "Please take at least one photo of the product!", Toast.LENGTH_LONG).show();
                 } else {
-
-                    // ar trebui sa am toate uuid-urile inregistrarilor pt a parsa fiecare fisier uuid/sirf/depicting1,2,3
-                    // pt fiecare fisier am 9 rezultate si le pun intr-o lista  doar daca scorul e mai mic decat 0.25
-                    // la final parcurg lista si iau primele 3 cele mai mici valori
-                    //List<SurfResult> surfResults = new ArrayList<SurfResult>();
-                    //List<Registration> allRegistrations = StockManager.getInstance().getAllRegistrations();
                     SurfProcessingTask surfProcessingTask = new SurfProcessingTask(RegisterProductActivity.this, objectImgPaths);
                     surfProcessingTask.execute();
 
@@ -494,28 +491,83 @@ public class RegisterProductActivity extends ActionBarActivity {
         });
     }
 
-    public void computeSurfResult(List<SurfResult> surfResults) {
-        Log.d("Number of good results:", String.valueOf(surfResults.size()));
-        String[] mStrings = new String[surfResults.size()];
-        for (int i = 0; i < surfResults.size(); i++) {
-            Registration registration = StockManager.getInstance().getRegistration(surfResults.get(i).getProductUuid());
-            mStrings[i] = StockManager.getInstance().getProduct(registration.getProductId()).getName();
+    public void computeSurfResult(final List<SurfResult> surfResults) {
+        if (surfResults == null) {
+            Toast.makeText(RegisterProductActivity.this, R.string.no_registrations_available, Toast.LENGTH_LONG).show();
+        } else {
+            Log.d("Number of good results:", String.valueOf(surfResults.size()));
+            final String[] mStrings = new String[surfResults.size()];
+            final Map<String, String> map = new HashMap<>();
+            for (int i = 0; i < surfResults.size(); i++) {
+                Registration registration = StockManager.getInstance().getRegistration(surfResults.get(i).getRegistrationUuid());
+                mStrings[i] = StockManager.getInstance().getProduct(registration.getProductId()).getName();
+                map.put(registration.getUuid(), mStrings[i]);
+            }
+            if (surfResults.size() > 0) {
+                new MaterialDialog.Builder(this)
+                        .title("Objects found: " + surfResults.size())
+                        .items(mStrings)
+                        .cancelable(false)
+                        .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
+                            @Override
+                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                /**
+                                 * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
+                                 * returning false here won't allow the newly selected radio button to actually be selected.
+                                 **/
+                                //SurfResult surfResult = getSurfResultByProductName(surfResults, text.toString(), map);
+                                Registration oldRegistration = StockManager.getInstance().getRegistration(getSurfResultByProductName(surfResults, text.toString(), map));
+                                Product product = StockManager.getInstance().getProduct(oldRegistration.getProductId());
+                                newProduct.setId(product.getId());
+                                newProduct.setName(product.getName());
+                                newProduct.setIngredients(product.getIngredients());
+                                newProduct.setExpirationDate(product.getExpirationDate());
+                                newProduct.setUrls(product.getUrls());
+                                newProduct.setExpirationStatus(product.getExpirationStatus());
+                                registration.setProductId(newProduct.getId());
+                                registration.setItemsNumber(oldRegistration.getItemsNumber());
+
+                                productNameEditText.setText(product.getName());
+                                productIngredientsEditText.setText(product.getIngredients());
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+                                productExpirationDateEditText.setText(simpleDateFormat.format(product.getExpirationDate()));
+                                productPiecesNumberEditText.setText(String.valueOf(registration.getItemsNumber()));
+
+                                productNameEditText.setClickable(true);
+                                productNameEditText.setEnabled(true);
+                                productIngredientsEditText.setClickable(true);
+                                productIngredientsEditText.setEnabled(true);
+                                productExpirationDateEditText.setClickable(true);
+                                productExpirationDateEditText.setEnabled(true);
+                                productPiecesNumberEditText.setClickable(true);
+                                productPiecesNumberEditText.setEnabled(true);
+
+
+                                return true;
+                            }
+                        })
+                        .positiveText(R.string.choose)
+                        .show();
+            } else {
+                new MaterialDialog.Builder(this)
+                        .title("Objects found: " + surfResults.size())
+                        .cancelable(true)
+                        .show();
+            }
         }
-        new MaterialDialog.Builder(this)
-                .title("Objects found: " + surfResults.size())
-                .items(mStrings)
-                .cancelable(false)
-                .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
-                    @Override
-                    public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                        /**
-                         * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
-                         * returning false here won't allow the newly selected radio button to actually be selected.
-                         **/
-                        return true;
-                    }
-                })
-                .positiveText(R.string.choose)
-                .show();
+    }
+
+    private String getSurfResultByProductName(List<SurfResult> surfResults, String name, Map<String, String> map) {
+//        for (SurfResult surfResult : surfResults) {
+//            if (surfResult.getMatchedPhotoPath().equals(name)) {
+//                return surfResult;
+//            }
+//        }
+        for (String key : map.keySet()) {
+            if (map.containsValue(name)) {
+                return key;
+            }
+        }
+        return null;
     }
 }

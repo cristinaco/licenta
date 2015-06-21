@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -58,8 +59,6 @@ public class MainActivity extends ActionBarActivity {
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_products);
         numberExpiredProductsEditText = (TextView) findViewById(R.id.main_activity_no_expired_products);
         searchEditText = (EditText) findViewById(R.id.main_activity_search_value);
-
-        getSupportActionBar().setTitle(getResources().getString(R.string.main_activity_title));
 
         productListAdapter = new ProductListAdapter(MainActivity.this);
         expandableListView.setAdapter(productListAdapter);

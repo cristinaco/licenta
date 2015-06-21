@@ -43,35 +43,43 @@ public class SurfProcessingTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         List<Registration> allRegistrations = StockManager.getInstance().getAllRegistrations();
+        if (allRegistrations.size() == 0) {
+            return null;
+        }
         surfResults = new ArrayList<>();
         for (String objectPath : objectImgPaths) {
             for (Registration registration : allRegistrations) {
-                // acesta e pathul pt imaginile curente, imaginile obiect
                 List<String> scenePaths = StockManager.getInstance().getProduct(registration.getProductId()).getUrls();
 
+                boolean found = false;
                 for (String scenePath : scenePaths) {
-                    double score = SurfBaseJni.computeMatchingPoints(objectPath, scenePath);
-                    Log.d("Score:", String.valueOf(score));
+                    if (!found) {
+                        double score = SurfBaseJni.computeMatchingPoints(objectPath, scenePath);
+                        Log.d("Score:", String.valueOf(score));
 
-                    if (score <= Constants.SURF_MIN_SCORE) {
-                        SurfResult surfResult = new SurfResult();
-                        surfResult.setScore(score);
-                        surfResult.setProductUuid(registration.getUuid());
-                        surfResult.setMatch(true);
-                        surfResult.setMatchedPhotoPath(scenePath);
-                        boolean found = false;
-                        for(SurfResult surf:surfResults){
+                        if (score <= Constants.SURF_MIN_SCORE) {
+                            SurfResult surfResult = new SurfResult();
+                            surfResult.setScore(score);
+                            surfResult.setRegistrationUuid(registration.getUuid());
+                            surfResult.setMatch(true);
+                            surfResult.setMatchedPhotoPath(scenePath);
+                            //surfResults.add(surfResult);
+                            found = true;
+                          boolean exists = false;
+                            for (SurfResult surf : surfResults) {
 
-                            if (!surf.getProductUuid().equals(surfResult.getProductUuid())){
-                                found = false;
-                                continue;
-                            }else{
-                                found = true;
-                                break;
+                                if (!surf.getRegistrationUuid().equals(surfResult.getRegistrationUuid())) {
+                                    exists = false;
+                                    continue;
+                                } else {
+                                    exists = true;
+                                    break;
+                                }
+                            }
+                            if (!exists) {
+                                surfResults.add(surfResult);
                             }
                         }
-                        if(!found)
-                            surfResults.add(surfResult);
                     }
                 }
             }

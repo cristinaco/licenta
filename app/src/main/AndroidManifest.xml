@@ -22,7 +22,7 @@
         android:name=".utils.ApplicationContext">
         <activity
             android:name=".presentation.activities.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/registered_products">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

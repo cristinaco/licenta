@@ -25,7 +25,7 @@
 
     <string name="progress_dialog">Progress Dialog</string>
     <string name="wait_while_performing_ocr">Please wait while performing OCR…</string>
-    <string name="title_activity_add_product">Add product</string>
+    <string name="title_activity_add_product">Register product</string>
     <string name="product_name">Name</string>
     <string name="product_description">Description</string>
     <string name="action_save">Save</string>
@@ -35,7 +35,7 @@
     <string name="title_activity_capture">CaptureActivity</string>
 
     <string name="image_dialog_description">Image Preview</string>
-    <string name="title_activity_preview_photo">PreviewPhotoActivity</string>
+    <string name="title_activity_preview_photo">OCR result</string>
     <string name="action_save_changes">Save</string>
     <string name="action_save_ocr_result">Save</string>
     <string name="action_edit_ocr_result">Edit</string>
@@ -54,5 +54,8 @@
     <string name="search">Search</string>
     <string name="wait_while_performing_surf">Please wait while performing object detection...</string>
     <string name="choose">Choose</string>
+    <string name="no_registrations_available">There are no products registered!</string>
+    <string name="registered_products">Registered products</string>
+    <string name="activity_edit_product_title">Edit product</string>
 
 </resources>

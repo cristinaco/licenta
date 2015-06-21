@@ -74,7 +74,6 @@ extern "C"{
           matcher.match( descriptors_object, descriptors_scene, matches );
 
           double max_dist = 0; double min_dist = 100;
-		LOGI("Scene descriptors size:=%d",descriptors_scene.rows);
           //-- Quick calculation of max and min distances between keypoints
           for( int i = 0; i < descriptors_object.rows; i++ )
           { double dist = matches[i].distance;
@@ -96,12 +95,10 @@ extern "C"{
 					goodMatches++;
 				}
           }
-		  score/=descriptors_object.rows;
+			score/=descriptors_object.rows;
 		 
-		LOGI("Number of good matches:=%d",goodMatches);
-		  int percentage = 0;
-		  percentage = (goodMatches*100)/descriptors_object.rows;
-		   LOGI("Percentage:=%d",percentage);
+			LOGI("Number of good matches:=%d",goodMatches);
+		 
             return score;
       }
 }

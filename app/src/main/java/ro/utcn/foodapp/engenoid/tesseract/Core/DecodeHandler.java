@@ -41,7 +41,6 @@ public class DecodeHandler extends Handler {
         if (performOcr) {
             // Launch OCR asynchronously, so we get the dialog box displayed immediately
             new OcrRecognizeAsyncTask(cameraCaptureActivity, tessBaseAPI, data, width, height).execute();
-            //beepManager.playBeepSoundAndVibrate();
             cameraCaptureActivity.runOnUiThread(new Runnable() {
                 public void run() {
                     cameraCaptureActivity.displayOcrProgressDialog();

@@ -37,56 +37,6 @@ public class CaptureSimplePhotoAsyncTask extends AsyncTask<Void, Void, Boolean> 
     @Override
     protected Boolean doInBackground(Void... params) {
         bmp = cameraCaptureActivity.getCameraEngine().buildLuminanceSource(data, bitmapWidth, bitmapHeight).renderCroppedGreyscaleBitmap();
-
-        //bmp = Bitmap.createBitmap(data, bitmapWidth,bitmapHeight,Bitmap.Config.ARGB_8888);
-
-
-
-
-
-//        final int pixCount = bitmapWidth * bitmapHeight;
-//        int[] intGreyBuffer = new int[pixCount];
-//        for(int i=0; i < pixCount; i++)
-//        {
-//            int greyValue = (int)intGreyBuffer[i] & 0xff;
-//            intGreyBuffer[i] = 0xff000000 | (greyValue << 16) | (greyValue << 8) | greyValue;
-//        }
-//        Bitmap grayScaledPic = Bitmap.createBitmap(intGreyBuffer, bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888);
-        // Bitmap bit = BitmapTools.decodeByteArray(data,bitmapWidth,bitmapHeight, BitmapTools.ScalingLogic.FIT);
-
-//        byte[] rgbData = data;
-//        int nrOfPixels = rgbData.length / 3; // Three bytes per pixel.
-//        int pixels[] = new int[nrOfPixels];
-//        for(int i = 0; i < nrOfPixels; i++) {
-//            int r = data[3*i];
-//            int g = data[3*i + 1];
-//            int b = data[3*i + 2];
-//            pixels[i] = Color.rgb(r, g, b);
-//        }
-        //Bitmap bitmap = Bitmap.createBitmap(pixels, bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888);
-        //Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
-
-        //bmp = new PlanarYUVLuminanceSource(data, bitmapWidth, bitmapHeight, 0, 0, 0, 0, false).renderCroppedGreyscaleBitmap();
-//        bmp = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888);
-//        //bmp.copyPixelsFromBuffer(ByteBuffer.wrap(data));
-//
-//        byte[] Bits = new byte[data.length * 4]; //That's where the RGBA array goes.
-//        int i;
-//        for (i = 0; i < data.length; i++) {
-//            Bits[i * 4] =
-//                    Bits[i * 4 + 1] =
-//                            Bits[i * 4 + 2] = (byte) ~data[i]; //Invert the source bits
-//            Bits[i * 4 + 3] = -1;//0xff, that's the alpha.
-//        }
-//
-////Now put these nice RGBA pixels into a Bitmap object
-//
-//        bmp = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888);
-//        bmp.copyPixelsFromBuffer(ByteBuffer.wrap(Bits));
-
-
-        // Check for failure
-        //bmp = bm;
         if (bmp == null) {
             return false;
         }

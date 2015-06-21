@@ -120,8 +120,6 @@ public class CameraCaptureActivity extends Activity implements SurfaceHolder.Cal
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            //getCameraEngine().startPreview();
-            // Creating the handler starts the preview, which can also throw a RuntimeException.
             handler = new CaptureActivityHandler(this, cameraEngine, performOcr);
         }
     }
